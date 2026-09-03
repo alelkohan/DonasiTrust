@@ -1,0 +1,120 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/*
+| Design token DonasiTrust.
+| Warna utama teal-hijau: dibaca sebagai "aman & tepercaya" tanpa terasa
+| korporat-dingin seperti biru bank. Aksen amber dipakai HANYA untuk hal
+| yang butuh perhatian (menunggu review, saldo belum tercairkan).
+*/
+@theme {
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-brand-50: #ecfdf7;
+  --color-brand-100: #d1fae8;
+  --color-brand-200: #a7f3d5;
+  --color-brand-300: #6ee7bd;
+  --color-brand-400: #34d3a2;
+  --color-brand-500: #14b88a;
+  --color-brand-600: #069370;
+  --color-brand-700: #04755c;
+  --color-brand-800: #065c4a;
+  --color-brand-900: #064c3f;
+  --color-brand-950: #022c23;
+
+  --color-ink-50: #f6f7f9;
+  --color-ink-100: #eceef2;
+  --color-ink-200: #d5d9e2;
+  --color-ink-300: #b0b8c8;
+  --color-ink-400: #8592a8;
+  --color-ink-500: #66748d;
+  --color-ink-600: #515d74;
+  --color-ink-700: #424b5e;
+  --color-ink-800: #394050;
+  --color-ink-900: #0f172a;
+  --color-ink-950: #080d19;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-ink-50 text-ink-800 antialiased;
+  }
+
+  /* Fokus keyboard harus selalu terlihat — syarat aksesibilitas dasar. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-600;
+  }
+
+  [x-cloak] {
+    display: none !important;
+  }
+}
+
+@layer components {
+  .dt-card {
+    @apply rounded-2xl border border-ink-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-12px_rgba(15,23,42,0.12)];
+  }
+
+  .dt-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold
+           transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .dt-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50 bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800;
+  }
+
+  .dt-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50 border border-ink-200 bg-white text-ink-700 hover:bg-ink-50;
+  }
+
+  .dt-btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50 bg-rose-600 text-white hover:bg-rose-700;
+  }
+
+  .dt-input {
+    @apply w-full rounded-xl border border-ink-200 bg-white px-3.5 py-2.5 text-sm text-ink-900
+           placeholder:text-ink-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/25 focus:outline-none;
+  }
+
+  .dt-label {
+    @apply mb-1.5 block text-sm font-medium text-ink-700;
+  }
+
+  .dt-hint {
+    @apply mt-1.5 text-xs text-ink-500;
+  }
+
+  .dt-error {
+    @apply mt-1.5 text-xs font-medium text-rose-600;
+  }
+
+  .dt-badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap;
+  }
+
+  .dt-table {
+    @apply w-full text-left text-sm;
+  }
+
+  .dt-table thead th {
+    @apply border-b border-ink-200 px-4 py-3 text-xs font-semibold tracking-wide text-ink-500 uppercase;
+  }
+
+  .dt-table tbody td {
+    @apply border-b border-ink-100 px-4 py-3 align-top;
+  }
+
+  .dt-link {
+    @apply font-medium text-brand-700 underline-offset-2 hover:underline;
+  }
+}
