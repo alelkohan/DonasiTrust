@@ -20,7 +20,7 @@
                 </span>
 
                 <h1 class="mt-5 text-4xl leading-[1.1] font-extrabold tracking-tight text-ink-900 sm:text-5xl lg:text-6xl">
-                    Donasi Anda tidak berhenti di<br class="hidden sm:block">
+                    Donasi Anda tidak berhenti di kata<br class="hidden sm:block">
                     <span class="text-brand-600">&ldquo;terima&nbsp;kasih&rdquo;.</span>
                 </h1>
 
