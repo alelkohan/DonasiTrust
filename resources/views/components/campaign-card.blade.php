@@ -37,9 +37,15 @@
                 </p>
             </div>
 
-            <p class="mt-3 truncate text-xs text-ink-500">
-                oleh {{ $campaign->user->organization ?: $campaign->user->name }}
-            </p>
+            <div class="mt-3 flex items-center gap-1.5 text-xs text-ink-600">
+                <span class="truncate">oleh <strong class="font-semibold text-ink-800">{{ $campaign->user->organization ?: $campaign->user->name }}</strong></span>
+                @if ($campaign->user->isVerified())
+                    <span class="inline-flex items-center gap-0.5 rounded-full bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-700 shrink-0" title="Pengaju Terverifikasi KTP">
+                        <svg class="h-3 w-3 fill-current text-sky-600" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+                        Terverifikasi
+                    </span>
+                @endif
+            </div>
         </div>
     </div>
 </article>
