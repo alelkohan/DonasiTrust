@@ -29,7 +29,7 @@ return [
     'milestone_first_max_share' => 0.70,
     'milestone_min_two_above' => 10_000_000,
 
-    'min_donation' => 10000,
+    'min_donation' => 1,
     'max_donation' => 500000000,
 
     /* Batas ukuran unggahan (KB). */

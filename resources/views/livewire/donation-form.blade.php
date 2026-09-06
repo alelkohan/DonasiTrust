@@ -57,7 +57,7 @@
             </div>
 
             <p id="amount-hint" class="dt-hint" x-show="!pesanNominal">
-                Minimal {{ rupiah(config('donasi.min_donation')) }}, maksimal {{ rupiah_ringkas(config('donasi.max_donation')) }}.
+                Nominal bebas (mulai {{ rupiah(config('donasi.min_donation')) }} hingga {{ rupiah_ringkas(config('donasi.max_donation')) }}).
             </p>
             <p class="dt-error" x-show="pesanNominal" x-cloak x-text="pesanNominal"></p>
 

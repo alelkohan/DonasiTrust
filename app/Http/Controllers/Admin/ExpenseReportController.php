@@ -73,7 +73,10 @@ class ExpenseReportController extends Controller
             }
         });
 
-        return back()->with('status', 'LPJ berhasil diverifikasi.');
+        // Broadcast email ke seluruh donatur kampanye via Queue Worker
+        \App\Jobs\SendExpenseReportBroadcastJob::dispatch($expense);
+
+        return back()->with('status', 'LPJ berhasil diverifikasi dan notifikasi email dikirim ke donatur.');
     }
 
     public function reject(Request $request, ExpenseReport $expense, AuditLogger $audit)

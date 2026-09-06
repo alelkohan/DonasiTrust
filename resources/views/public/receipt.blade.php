@@ -73,7 +73,10 @@
                     Ini <strong>bukan</strong> tanda tangan digital: verifikasi tetap dilakukan oleh server kami,
                     bukan oleh pihak ketiga secara mandiri.
                 </p>
-                <a href="{{ route('verifikasi.form') }}" class="dt-link mt-3 inline-block text-sm">Verifikasi kuitansi ini &rarr;</a>
+                <a href="{{ route('verifikasi.form', ['reference' => $donation->reference, 'code' => $shortCode]) }}" class="dt-btn-secondary mt-3 inline-flex items-center gap-2 text-xs py-2 px-3">
+                    <svg class="h-4 w-4 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 12 4.5 4.5L19 7.5"/></svg>
+                    Verifikasi Keaslian Kuitansi ini (1-Klik Opsi) &rarr;
+                </a>
             </div>
 
             @if ($donation->message)

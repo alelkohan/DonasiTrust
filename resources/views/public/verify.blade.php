@@ -75,13 +75,13 @@
         <div>
             <label for="reference" class="dt-label">Nomor transaksi</label>
             <input id="reference" name="reference" type="text" required class="dt-input font-mono"
-                   placeholder="DT-2026-000042" value="{{ old('reference') }}">
+                   placeholder="DT-2026-000042" value="{{ old('reference', $prefill_ref ?? '') }}">
         </div>
 
         <div>
             <label for="code" class="dt-label">Kode verifikasi</label>
             <input id="code" name="code" type="text" required class="dt-input font-mono tracking-wider"
-                   placeholder="A1B2C3D4E5F6G7H8" value="{{ old('code') }}">
+                   placeholder="A1B2C3D4E5F6G7H8" value="{{ old('code', $prefill_code ?? '') }}">
             <p class="dt-hint">Tertera di bagian bawah kuitansi digital Anda.</p>
         </div>
 

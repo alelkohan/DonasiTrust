@@ -93,6 +93,32 @@ class DonationForm extends Component
 
     public function submit(DonationService $donations)
     {
+        if (! $this->isValidAmount) {
+            $this->addError('amount', 'Nominal minimal '
+                .rupiah((int) config('donasi.min_donation')).' dan maksimal '
+                .rupiah((int) config('donasi.max_donation')).'.');
+
+            return null;
+        }
+
+        if (! auth()->check()) {
+            session([
+                'pending_donation' => [
+                    'campaign_id' => $this->campaign->id,
+                    'amount' => $this->amountValue,
+                    'donor_name' => $this->donorName ?: null,
+                    'donor_email' => $this->donorEmail ?: null,
+                    'message' => $this->note ?: null,
+                    'is_anonymous' => $this->isAnonymous,
+                ],
+                'url.intended' => route('kampanye.show', $this->campaign->slug),
+            ]);
+
+            session()->flash('status', 'Silakan masuk atau daftar terlebih dahulu untuk melanjutkan transaksi donasi.');
+
+            return $this->redirectRoute('login');
+        }
+
         $this->validate();
 
         if (! $this->isValidAmount) {
@@ -105,8 +131,8 @@ class DonationForm extends Component
 
         $donation = $donations->create($this->campaign, [
             'amount' => $this->amountValue,
-            'donor_name' => $this->donorName ?: null,
-            'donor_email' => $this->donorEmail ?: null,
+            'donor_name' => $this->isAnonymous ? 'Anonim' : ($this->donorName ?: auth()->user()->name),
+            'donor_email' => $this->donorEmail ?: auth()->user()->email,
             'message' => $this->note ?: null,
             'is_anonymous' => $this->isAnonymous,
         ]);

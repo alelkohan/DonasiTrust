@@ -25,18 +25,7 @@
         <div class="min-w-0">
             <div class="dt-card overflow-hidden">
                 <div class="aspect-[16/9] bg-ink-100">
-                    @if ($campaign->cover_path)
-                        <img src="{{ asset('storage/'.$campaign->cover_path) }}" alt="" class="h-full w-full object-cover">
-                    @else
-                        <div class="flex h-full w-full flex-col items-center justify-center gap-2.5 bg-ink-100" aria-label="Belum ada foto">
-                            <svg class="h-12 w-12 text-ink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <rect x="3" y="4" width="18" height="16" rx="2"/>
-                                <circle cx="8.5" cy="9.5" r="1.5"/>
-                                <path d="m4 17 4.5-4.5 3 3L15 11l5 5"/>
-                            </svg>
-                            <span class="text-sm font-medium text-ink-400">Belum ada foto</span>
-                        </div>
-                    @endif
+                    <img src="{{ $campaign->coverUrl() }}" alt="{{ $campaign->title }}" class="h-full w-full object-cover">
                 </div>
 
                 <div class="p-6 sm:p-7">

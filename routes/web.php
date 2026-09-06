@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CampaignReviewController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserVerificationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CampaignBrowseController;
 use App\Http\Controllers\DonaturDashboardController;
@@ -42,6 +43,7 @@ Route::post('/kampanye/{campaign}/donasi', [DonationController::class, 'store'])
     ->name('donasi.store');
 
 Route::get('/donasi/{donation}/pembayaran', [DonationController::class, 'checkout'])->name('donasi.checkout');
+Route::get('/donasi/{donation}/status', [DonationController::class, 'status'])->name('donasi.status');
 Route::post('/donasi/{donation}/simulasi-bayar', [DonationController::class, 'simulatePayment'])
     ->middleware('throttle:20,1')
     ->name('donasi.simulasi');
@@ -69,6 +71,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/masuk', [AuthenticatedSessionController::class, 'store'])->middleware('throttle:10,1');
     Route::get('/daftar', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/daftar', [RegisteredUserController::class, 'store'])->middleware('throttle:10,1');
+
+    // Google Socialite OAuth
+    Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 });
 
 Route::post('/keluar', [AuthenticatedSessionController::class, 'destroy'])

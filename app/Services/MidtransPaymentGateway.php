@@ -3,14 +3,13 @@
 namespace App\Services;
 
 use App\Models\Donation;
+use Illuminate\Support\Str;
+use Midtrans\Config;
+use Midtrans\CoreApi;
+use Midtrans\Snap;
 
 /**
- * Kerangka integrasi Midtrans (Snap / QRIS).
- *
- * BELUM DIIMPLEMENTASIKAN. Sengaja dibiarkan melempar exception daripada
- * mengembalikan data palsu, supaya tidak ada yang mengira pembayaran asli
- * sudah jalan. Untuk mengaktifkan: pasang `midtrans/midtrans-php`, isi
- * MIDTRANS_SERVER_KEY, lalu lengkapi metode di bawah.
+ * Integrasi Midtrans Snap & Core API QRIS (Sandbox & Produksi).
  */
 class MidtransPaymentGateway implements PaymentGateway
 {
@@ -19,28 +18,120 @@ class MidtransPaymentGateway implements PaymentGateway
         return 'midtrans';
     }
 
+    private function setupConfig(): void
+    {
+        $serverKey = (string) config('donasi.midtrans.server_key');
+
+        Config::$serverKey = $serverKey;
+        Config::$isProduction = (bool) config('donasi.midtrans.is_production', false);
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+    }
+
     public function createCharge(Donation $donation): array
     {
-        throw new \RuntimeException(
-            'Integrasi Midtrans belum diimplementasikan. Set PAYMENT_GATEWAY=mock di .env.'
-        );
+        // Jika donasi sudah memiliki snap_token yang valid tanpa error, gunakan yang tersimpan
+        if (! empty($donation->gateway_payload['snap_token']) && empty($donation->gateway_payload['error'])) {
+            return $donation->gateway_payload;
+        }
+
+        $this->setupConfig();
+
+        $orderId = $donation->reference;
+
+        $params = [
+            'transaction_details' => [
+                'order_id' => $orderId,
+                'gross_amount' => (int) $donation->amount,
+            ],
+            'customer_details' => [
+                'first_name' => $donation->donor_name ?: 'Donatur',
+                'email' => $donation->donor_email ?: 'donatur@donasitrust.test',
+            ],
+            'item_details' => [
+                [
+                    'id' => 'CAMP-'.$donation->campaign_id,
+                    'price' => (int) $donation->amount,
+                    'quantity' => 1,
+                    'name' => Str::limit($donation->campaign->title ?? 'Donasi Kampanye', 50),
+                ],
+            ],
+        ];
+
+        $snapToken = null;
+        $redirectUrl = null;
+        $qrString = null;
+        $error = null;
+
+        try {
+            $tx = Snap::createTransaction($params);
+            $snapToken = $tx->token ?? null;
+            $redirectUrl = $tx->redirect_url ?? null;
+        } catch (\Exception $e) {
+            $errorMsg = $e->getMessage();
+
+            // Retry dengan unique timestamp suffix jika order_id sudah pernah dicoba sebelumnya
+            try {
+                $orderId = $donation->reference.'-v'.time();
+                $params['transaction_details']['order_id'] = $orderId;
+                $tx = Snap::createTransaction($params);
+                $snapToken = $tx->token ?? null;
+                $redirectUrl = $tx->redirect_url ?? null;
+                $errorMsg = null;
+            } catch (\Exception $ex) {
+                $errorMsg = $ex->getMessage();
+            }
+
+            $error = $errorMsg;
+        }
+
+        // Dapatkan string QRIS asli (000201...) khusus untuk Midtrans QRIS Simulator di mode Sandbox
+        if (! config('donasi.midtrans.is_production')) {
+            try {
+                $coreParams = [
+                    'payment_type' => 'qris',
+                    'transaction_details' => [
+                        'order_id' => $orderId.'-qris',
+                        'gross_amount' => (int) $donation->amount,
+                    ],
+                    'qris' => [
+                        'acquirer' => 'gopay',
+                    ],
+                ];
+                $coreRes = CoreApi::charge($coreParams);
+                if (is_object($coreRes)) {
+                    $qrString = $coreRes->qr_string ?? null;
+                }
+            } catch (\Exception $ex) {
+                // Abaikan error Core API fallback
+            }
+        }
+
+        return [
+            'gateway_reference' => $donation->reference,
+            'order_id' => $orderId,
+            'snap_token' => $snapToken,
+            'redirect_url' => $redirectUrl,
+            'qr_string' => $qrString,
+            'qr_payload' => $qrString ?: $donation->reference,
+            'error' => $error,
+            'expires_at' => now()->addHours(24)->toIso8601String(),
+        ];
     }
 
     public function verifyWebhook(array $payload): bool
     {
-        // Midtrans mengirim signature_key = sha512(order_id + status_code + gross_amount + server_key)
         $serverKey = (string) config('donasi.midtrans.server_key');
 
         if ($serverKey === '') {
             return false;
         }
 
-        $expected = hash('sha512',
-            ($payload['order_id'] ?? '').
-            ($payload['status_code'] ?? '').
-            ($payload['gross_amount'] ?? '').
-            $serverKey
-        );
+        $orderId = (string) ($payload['order_id'] ?? '');
+        $statusCode = (string) ($payload['status_code'] ?? '');
+        $grossAmount = (string) ($payload['gross_amount'] ?? '');
+
+        $expected = hash('sha512', $orderId.$statusCode.$grossAmount.$serverKey);
 
         return hash_equals($expected, (string) ($payload['signature_key'] ?? ''));
     }

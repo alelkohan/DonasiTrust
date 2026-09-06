@@ -49,7 +49,12 @@ class RegisteredUserController extends Controller
 
         $audit->record('user.registered', $user, ['role' => $user->role], $user);
 
-        return redirect()->to($user->homeRoute())
+        if ($donation = app(\App\Services\DonationService::class)->processPendingDonation($user)) {
+            return redirect()->route('donasi.checkout', $donation->reference)
+                ->with('status', 'Akun berhasil dibuat! Silakan selesaikan transaksi donasi Anda.');
+        }
+
+        return redirect()->intended($user->homeRoute())
             ->with('status', 'Selamat datang di DonasiTrust, '.$user->name.'.');
     }
 }
