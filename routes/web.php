@@ -69,6 +69,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/masuk', [AuthenticatedSessionController::class, 'store'])->middleware('throttle:10,1');
     Route::get('/daftar', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/daftar', [RegisteredUserController::class, 'store'])->middleware('throttle:10,1');
+
+    Route::get('/auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'redirect'])->name('auth.google');
+    Route::post('/auth/google/mock', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'mockLogin'])->name('auth.google.mock');
+    Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 });
 
 Route::post('/keluar', [AuthenticatedSessionController::class, 'destroy'])
@@ -84,6 +88,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profil.edit');
     Route::put('/profil', [ProfileController::class, 'update'])->name('profil.update');
     Route::put('/profil/kata-sandi', [ProfileController::class, 'updatePassword'])->name('profil.password');
+    Route::post('/otp/kirim', [\App\Http\Controllers\OtpController::class, 'send'])
+        ->middleware('throttle:10,1')->name('otp.send');
 
     // Verifikasi dua langkah. Throttle-nya rapat karena setiap endpoint di sini
     // menerima kode enam digit — tanpa batas laju, menebaknya cuma soal waktu.

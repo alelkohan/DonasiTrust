@@ -25,6 +25,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'google_id',
         'password',
         'role',
         'phone',
@@ -35,6 +36,9 @@ class User extends Authenticatable
         'bank_name',
         'bank_account_number',
         'bank_account_holder',
+        'pending_bank_name',
+        'pending_bank_account_number',
+        'pending_bank_account_holder',
         'verification_status',
         'verification_note',
         'verified_at',
@@ -57,6 +61,9 @@ class User extends Authenticatable
         'bank_name',
         'bank_account_number',
         'bank_account_holder',
+        'pending_bank_name',
+        'pending_bank_account_number',
+        'pending_bank_account_holder',
     ];
 
     protected function casts(): array
@@ -83,6 +90,11 @@ class User extends Authenticatable
     public function donations(): HasMany
     {
         return $this->hasMany(Donation::class);
+    }
+
+    public function emailOtps(): HasMany
+    {
+        return $this->hasMany(EmailOtp::class);
     }
 
     public function isAdmin(): bool
@@ -142,6 +154,30 @@ class User extends Authenticatable
             str_repeat('*', max(0, strlen($nomor) - 4)),
             $ekor,
             $this->bank_account_holder,
+        );
+    }
+
+    public function hasPendingPayoutAccount(): bool
+    {
+        return filled($this->pending_bank_name)
+            && filled($this->pending_bank_account_number)
+            && filled($this->pending_bank_account_holder);
+    }
+
+    public function maskedPendingPayoutAccount(): ?string
+    {
+        if (! $this->hasPendingPayoutAccount()) {
+            return null;
+        }
+
+        $nomor = preg_replace('/\s+/', '', (string) $this->pending_bank_account_number);
+        $ekor = substr($nomor, -4);
+
+        return sprintf('%s %s%s a.n. %s',
+            strtoupper($this->pending_bank_name),
+            str_repeat('*', max(0, strlen($nomor) - 4)),
+            $ekor,
+            $this->pending_bank_account_holder,
         );
     }
 

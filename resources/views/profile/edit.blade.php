@@ -42,21 +42,29 @@
 
         <div class="space-y-6">
             <section class="dt-card p-5 sm:p-6">
-                <h2 class="text-lg font-bold text-ink-900">Ganti kata sandi</h2>
+                <h2 class="text-lg font-bold text-ink-900">{{ $user->password ? 'Ganti kata sandi' : 'Buat kata sandi akun' }}</h2>
                 <form method="POST" action="{{ route('profil.password') }}" class="mt-5 space-y-4">
                     @csrf @method('PUT')
 
-                    <div>
-                        <label for="current_password" class="dt-label">Kata sandi saat ini</label>
-                        <input id="current_password" name="current_password" type="password" required
-                               autocomplete="current-password" class="dt-input">
-                    </div>
+                    @if ($user->password)
+                        <div>
+                            <label for="current_password" class="dt-label">Kata sandi saat ini</label>
+                            <input id="current_password" name="current_password" type="password" required
+                                   autocomplete="current-password" class="dt-input">
+                            @error('current_password') <p class="dt-error">{{ $message }}</p> @enderror
+                        </div>
+                    @else
+                        <p class="text-xs text-ink-600">
+                            Akun Anda terhubung dengan Google dan belum memiliki kata sandi mandiri. Anda bisa membuatnya di sini.
+                        </p>
+                    @endif
 
                     <div>
                         <label for="new_password" class="dt-label">Kata sandi baru</label>
                         <input id="new_password" name="password" type="password" required
                                autocomplete="new-password" class="dt-input">
                         <p class="dt-hint">Minimal 8 karakter, ada huruf dan angka.</p>
+                        @error('password') <p class="dt-error">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
@@ -65,7 +73,11 @@
                                autocomplete="new-password" class="dt-input">
                     </div>
 
-                    <button type="submit" class="dt-btn-secondary">Perbarui kata sandi</button>
+                    <div class="rounded-xl border border-ink-200 bg-ink-50/60 p-3.5">
+                        <x-otp-input purpose="password_change" label="Kode Verifikasi Email" />
+                    </div>
+
+                    <button type="submit" class="dt-btn-secondary">{{ $user->password ? 'Perbarui kata sandi' : 'Simpan kata sandi' }}</button>
                 </form>
             </section>
 

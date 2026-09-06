@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Disbursement;
+use App\Models\EmailOtp;
 use App\Models\Milestone;
 use App\Services\AuditLogger;
+use App\Services\OtpService;
 use App\Services\TotpGuard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -97,7 +99,7 @@ class DisbursementController extends Controller
         return back()->with('status', 'Pencairan ditolak.');
     }
 
-    public function release(Request $request, Disbursement $disbursement, AuditLogger $audit, TotpGuard $totp)
+    public function release(Request $request, Disbursement $disbursement, AuditLogger $audit, TotpGuard $totp, OtpService $otp)
     {
         if ($disbursement->status !== Disbursement::STATUS_APPROVED) {
             return back()->with('error', 'Hanya pencairan yang disetujui yang dapat dirilis.');
@@ -107,19 +109,18 @@ class DisbursementController extends Controller
             'proof' => 'required|image|max:' . config('donasi.max_upload_kb'),
         ]);
 
-        // Titik paling rawan di seluruh alur: setelah ini sistem menyatakan
-        // uang sudah keluar, dan tahap berikutnya ikut terbuka. Diperiksa
-        // SEBELUM berkas disimpan supaya kode yang salah tidak meninggalkan
-        // bukti transfer yatim di disk.
-        //
-        // allowWindow: admin biasanya memproses antrean pencairan sekaligus.
-        // Satu kode membuka jendela 15 menit; caranya dicatat di jejak audit.
-        $metode = $totp->assertValid(
-            $request->user(),
-            $request->input('totp_code'),
-            'disbursement.release',
-            allowWindow: true,
-        );
+        // Verifikasi dua langkah via OTP Email (atau fallback TOTP)
+        if ($request->filled('otp_code')) {
+            $otp->assertValid($request->user(), EmailOtp::PURPOSE_DISBURSEMENT_RELEASE, $request->input('otp_code'));
+            $metode = 'otp_email';
+        } else {
+            $metode = $totp->assertValid(
+                $request->user(),
+                $request->input('totp_code'),
+                'disbursement.release',
+                allowWindow: true,
+            );
+        }
 
         $proofPath = $request->file('proof')->store('pencairan');
 

@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
+    @stack('head')
 </head>
 <body class="min-h-full">
 <div class="grid min-h-screen lg:grid-cols-2">
@@ -63,5 +65,6 @@
         </div>
     </div>
 </div>
+@livewireScripts
 </body>
 </html>

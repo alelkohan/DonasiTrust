@@ -42,16 +42,18 @@ class TwoFactorDisbursementTest extends TestCase
         $this->totp = app(Totp::class);
     }
 
-    // --- 1. Pengajuan pencairan: sengaja TIDAK bergerbang --------------------
+    // --- 1. Pengajuan pencairan: membutuhkan OTP email --------------------
 
-    public function test_pengajuan_pencairan_tidak_meminta_kode_authenticator(): void
+    public function test_pengajuan_pencairan_membutuhkan_otp_email_tetapi_bukan_authenticator(): void
     {
-        // Pengaju tanpa dua langkah sama sekali — mayoritas pengguna nyata:
-        // pengurus masjid, keluarga pasien, relawan daerah.
         [$pengaju, $campaign, $milestone] = $this->kampanyeSiapCair();
+        $this->buatOtp($pengaju, \App\Models\EmailOtp::PURPOSE_DISBURSEMENT_REQUEST, '123456');
 
         $this->actingAs($pengaju)
-            ->post($this->rutePengajuan($campaign, $milestone), ['purpose' => 'Beli material'])
+            ->post($this->rutePengajuan($campaign, $milestone), [
+                'purpose' => 'Beli material',
+                'otp_code' => '123456',
+            ])
             ->assertSessionHasNoErrors();
 
         $this->assertSame(1, Disbursement::count());
@@ -61,9 +63,13 @@ class TwoFactorDisbursementTest extends TestCase
     public function test_pengajuan_mengunci_rekening_tujuan_dari_profil_terverifikasi(): void
     {
         [$pengaju, $campaign, $milestone] = $this->kampanyeSiapCair();
+        $this->buatOtp($pengaju, \App\Models\EmailOtp::PURPOSE_DISBURSEMENT_REQUEST, '123456');
 
         $this->actingAs($pengaju)
-            ->post($this->rutePengajuan($campaign, $milestone), ['purpose' => 'Beli material'])
+            ->post($this->rutePengajuan($campaign, $milestone), [
+                'purpose' => 'Beli material',
+                'otp_code' => '123456',
+            ])
             ->assertSessionHasNoErrors();
 
         $disbursement = Disbursement::sole();
@@ -76,10 +82,12 @@ class TwoFactorDisbursementTest extends TestCase
     public function test_rekening_tujuan_tidak_bisa_ditentukan_dari_request(): void
     {
         [$pengaju, $campaign, $milestone] = $this->kampanyeSiapCair();
+        $this->buatOtp($pengaju, \App\Models\EmailOtp::PURPOSE_DISBURSEMENT_REQUEST, '123456');
 
         $this->actingAs($pengaju)
             ->post($this->rutePengajuan($campaign, $milestone), [
                 'purpose' => 'Beli material',
+                'otp_code' => '123456',
                 // Inilah sebabnya pengajuan tidak perlu digerbangi: parameter
                 // titipan pun tidak bisa mengalihkan tujuan dananya.
                 'payee_account_number' => '6660000000',
@@ -106,7 +114,7 @@ class TwoFactorDisbursementTest extends TestCase
             ->post(route('verifikasi.identitas.store'), $this->payloadVerifikasi([
                 'bank_account_number' => '6660000000',
             ]))
-            ->assertSessionHasErrors('totp_code');
+            ->assertSessionHasErrors('otp_code');
 
         // Rekening lama harus utuh.
         $this->assertSame('337401004821530', $pengaju->fresh()->bank_account_number);
@@ -127,7 +135,8 @@ class TwoFactorDisbursementTest extends TestCase
 
         $segar = $pengaju->fresh();
 
-        $this->assertSame('6660000000', $segar->bank_account_number);
+        $this->assertSame('6660000000', $segar->pending_bank_account_number);
+        $this->assertSame('337401004821530', $segar->bank_account_number);
         // Ganti rekening selalu mengembalikan status ke menunggu peninjauan.
         $this->assertSame(User::VERIFICATION_PENDING, $segar->verification_status);
     }
@@ -710,6 +719,18 @@ class TwoFactorDisbursementTest extends TestCase
             'payee_account_number' => '337401004821530',
             'payee_account_holder' => 'AHMAD FAUZI',
             'status' => Disbursement::STATUS_APPROVED,
+        ]);
+    }
+
+    private function buatOtp(User $user, string $purpose, string $code = '123456'): void
+    {
+        \App\Models\EmailOtp::create([
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'purpose' => $purpose,
+            'code_hash' => \Illuminate\Support\Facades\Hash::make($code),
+            'attempts' => 0,
+            'expires_at' => now()->addMinutes(5),
         ]);
     }
 }

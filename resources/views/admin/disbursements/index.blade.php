@@ -156,36 +156,29 @@
                                                 {{-- Gerbang dua langkah, sama seperti di halaman detail:
                                                      melepas dana tidak boleh cukup dengan satu klik dari
                                                      sesi yang sudah login. --}}
-                                                @if (auth()->user()->hasTwoFactorEnabled())
-                                                    @if ($jendelaTerbuka)
-                                                        <p class="rounded-lg border border-brand-200 bg-brand-50/70 p-2.5 text-xs leading-relaxed text-brand-900">
-                                                            Verifikasi Anda masih berlaku <strong>{{ $sisaJendela }} menit</strong> lagi —
-                                                            kode tidak diminta ulang.
-                                                        </p>
-                                                    @else
-                                                        <div>
-                                                            <label class="dt-label text-xs">Kode verifikasi dua langkah</label>
-                                                            <input type="text" name="totp_code" inputmode="numeric" required
+                                                @if (auth()->user()->hasTwoFactorEnabled() && $jendelaTerbuka)
+                                                    <p class="rounded-lg border border-brand-200 bg-brand-50/70 p-2.5 text-xs leading-relaxed text-brand-900">
+                                                        Verifikasi Anda masih berlaku <strong>{{ $sisaJendela }} menit</strong> lagi —
+                                                        kode tidak diminta ulang.
+                                                    </p>
+                                                @else
+                                                    <div class="bg-white p-2.5 rounded-lg border border-brand-200">
+                                                        <x-otp-input purpose="disbursement_release" label="Kode Verifikasi Email" />
+                                                    </div>
+                                                    @if (auth()->user()->hasTwoFactorEnabled())
+                                                        <div class="pt-1">
+                                                            <label class="dt-label text-xs">Atau kode Authenticator</label>
+                                                            <input type="text" name="totp_code" inputmode="numeric"
                                                                    autocomplete="one-time-code" maxlength="9" placeholder="000000"
                                                                    class="dt-input bg-white text-center font-mono text-sm tracking-[0.3em]">
-                                                            <p class="dt-hint text-xs">Berlaku {{ \App\Services\TotpGuard::SUDO_WINDOW_MINUTES }} menit untuk pencairan berikutnya.</p>
                                                         </div>
                                                     @endif
-
-                                                    <div class="flex justify-end gap-1.5 pt-1">
-                                                        <button type="button" @click="openRelease = false" class="dt-btn-secondary py-1 px-2.5 text-xs">Batal</button>
-                                                        <button type="submit" class="dt-btn-primary py-1 px-3 text-xs">Simpan &amp; Rilis</button>
-                                                    </div>
-                                                @else
-                                                    <p class="rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-xs leading-relaxed text-amber-900">
-                                                        Melepas dana butuh kode authenticator.
-                                                        <a href="{{ route('keamanan.index') }}" class="font-semibold underline">Aktifkan dulu di halaman Keamanan</a>.
-                                                    </p>
-
-                                                    <div class="flex justify-end pt-1">
-                                                        <button type="button" @click="openRelease = false" class="dt-btn-secondary py-1 px-2.5 text-xs">Tutup</button>
-                                                    </div>
                                                 @endif
+
+                                                <div class="flex justify-end gap-1.5 pt-1">
+                                                    <button type="button" @click="openRelease = false" class="dt-btn-secondary py-1 px-2.5 text-xs">Batal</button>
+                                                    <button type="submit" class="dt-btn-primary py-1 px-3 text-xs">Simpan &amp; Rilis</button>
+                                                </div>
                                             </form>
                                         </div>
                                     @elseif ($disb->status === \App\Models\Disbursement::STATUS_RELEASED)

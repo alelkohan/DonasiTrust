@@ -86,10 +86,11 @@
                                         </p>
                                     @endif
                                 </div>
-                                {{-- Tidak ada kode authenticator di sini, dan itu disengaja:
-                                     rekening tujuan sudah terkunci ke profil terverifikasi, jadi
-                                     akun yang dibajak pun tidak bisa mengalihkan dana ke mana-mana.
-                                     Gerbangnya ada di penggantian rekening, bukan di sini. --}}
+
+                                <div class="rounded-xl border border-ink-200 bg-white p-3.5">
+                                    <x-otp-input purpose="disbursement_request" label="Kode Verifikasi Email" />
+                                </div>
+
                                 <div class="flex gap-2">
                                     <button type="submit" class="dt-btn-primary">Kirim pengajuan</button>
                                     <button type="button" @click="open = false" class="dt-btn-secondary">Batal</button>

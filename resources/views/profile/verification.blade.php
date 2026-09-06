@@ -53,13 +53,12 @@
     <div @if ($user->verification_status === 'verified') x-show="ubahRekening" x-cloak class="mt-6" @endif>
         @if ($user->verification_status === 'verified')
             <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-sm text-amber-900">
-                <p class="font-semibold">Mengubah rekening akan mengulang verifikasi</p>
+                <p class="font-semibold">Mengubah rekening akan mengulang verifikasi admin</p>
                 <ul class="mt-1.5 list-disc space-y-1 pl-5 text-xs leading-relaxed text-amber-900/85">
                     <li>Status akun kembali <strong>menunggu peninjauan</strong>, dan selama itu tidak ada
                         pencairan yang bisa diajukan.</li>
-                    <li>KTP perlu diunggah ulang — admin mencocokkan <strong>nama pemilik rekening baru</strong>
-                        dengan nama di KTP. Itulah yang menahan dana dialihkan ke nama orang lain.</li>
-                    <li>Pemberitahuan dikirim ke email Anda, supaya perubahan yang bukan Anda lakukan tetap ketahuan.</li>
+                    <li>Admin akan mencocokkan <strong>nama pemilik rekening baru</strong> dengan dokumen KTP Anda yang sudah tersimpan sebelumnya. Anda tidak perlu mengunggah KTP atau mengetik NIK lagi.</li>
+                    <li>Pemberitahuan dikirim ke email Anda, dan perubahan memerlukan kode OTP Email demi keamanan.</li>
                 </ul>
                 <button type="button" @click="ubahRekening = false" class="dt-btn-secondary mt-3 py-1 px-3 text-xs">
                     Batal, kembali
@@ -68,8 +67,16 @@
         @endif
 
         @if ($user->verification_status === 'pending')
-            <div class="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                Dokumen Anda sedang ditinjau admin. Anda tetap bisa mengunggah ulang jika ada yang keliru.
+            <div class="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-sm text-amber-900">
+                @if ($user->hasPendingPayoutAccount() && $user->hasPayoutAccount())
+                    <p class="font-semibold">Pengajuan perubahan rekening sedang ditinjau admin</p>
+                    <p class="mt-1 text-xs text-amber-800">
+                        Anda mengajukan rekening baru: <strong>{{ $user->maskedPendingPayoutAccount() }}</strong>.
+                        Jika ditolak, akun akan otomatis tetap menggunakan rekening terdaftar sebelumnya ({{ $user->maskedPayoutAccount() }}).
+                    </p>
+                @else
+                    Dokumen Anda sedang ditinjau admin. Anda tetap bisa mengunggah ulang jika ada yang keliru.
+                @endif
             </div>
         @endif
 
@@ -92,24 +99,38 @@
                            placeholder="Kosongkan jika mengajukan atas nama pribadi">
                 </div>
 
-                <div>
-                    <label for="identity_number" class="dt-label">Nomor NIK (16 digit)</label>
-                    <input id="identity_number" name="identity_number" type="text" inputmode="numeric"
-                           maxlength="16" required class="dt-input font-mono tracking-wider"
-                           value="{{ old('identity_number') }}" placeholder="3374xxxxxxxxxxxx">
-                    <p class="dt-hint">
-                        Hanya 4 digit terakhir yang disimpan di basis data. Nomor lengkap dipakai sekali
-                        untuk pencocokan dengan dokumen, lalu dibuang.
-                    </p>
-                </div>
+                @if (! empty($user->identity_document_path) && ! empty($user->identity_number_hash))
+                    <div class="rounded-xl border border-ink-200 bg-ink-50/70 p-4 text-xs text-ink-600">
+                        <div class="flex items-center gap-2 font-semibold text-ink-800">
+                            <svg class="h-4 w-4 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Dokumen Identitas & NIK Tersimpan</span>
+                        </div>
+                        <p class="mt-1 text-ink-500">
+                            NIK (akhiran ••••{{ $user->identity_number_last4 }}) dan foto KTP Anda telah tersimpan secara aman dari verifikasi sebelumnya. Anda tidak perlu mengunggah ulang.
+                        </p>
+                    </div>
+                @else
+                    <div>
+                        <label for="identity_number" class="dt-label">Nomor NIK (16 digit)</label>
+                        <input id="identity_number" name="identity_number" type="text" inputmode="numeric"
+                               maxlength="16" required class="dt-input font-mono tracking-wider"
+                               value="{{ old('identity_number') }}" placeholder="3374xxxxxxxxxxxx">
+                        <p class="dt-hint">
+                            Hanya 4 digit terakhir yang disimpan di basis data. Nomor lengkap dipakai sekali
+                            untuk pencocokan dengan dokumen, lalu dibuang.
+                        </p>
+                    </div>
 
-                <div>
-                    <label for="identity_document" class="dt-label">Foto/scan KTP</label>
-                    <input id="identity_document" name="identity_document" type="file" required
-                           accept=".jpg,.jpeg,.png,.pdf"
-                           class="dt-input file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-brand-700">
-                    <p class="dt-hint">JPG, PNG, atau PDF. Maksimal {{ round(config('donasi.max_upload_kb') / 1024, 1) }} MB.</p>
-                </div>
+                    <div>
+                        <label for="identity_document" class="dt-label">Foto/scan KTP</label>
+                        <input id="identity_document" name="identity_document" type="file" required
+                               accept=".jpg,.jpeg,.png,.pdf"
+                               class="dt-input file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-brand-700">
+                        <p class="dt-hint">JPG, PNG, atau PDF. Maksimal {{ round(config('donasi.max_upload_kb') / 1024, 1) }} MB.</p>
+                    </div>
+                @endif
 
                 {{-- Rekening tujuan pencairan --}}
                 <div class="rounded-xl border border-ink-200 bg-ink-50/60 p-4">
@@ -145,7 +166,7 @@
                                    required maxlength="120" class="dt-input"
                                    value="{{ old('bank_account_holder', $user->bank_account_holder) }}"
                                    placeholder="Sesuai buku tabungan">
-                            <p class="dt-hint">Harus cocok dengan nama di KTP yang Anda unggah.</p>
+                            <p class="dt-hint">Harus cocok dengan nama di KTP Anda.</p>
                             @error('bank_account_holder') <p class="dt-error">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -157,28 +178,23 @@
                      MENGGANTI rekening di halaman ini, dan di sinilah kodenya diminta.
                      Hanya muncul kalau sudah punya rekening tersimpan: pendaftaran
                      pertama belum punya apa pun untuk dicuri. --}}
-                @if ($user->hasTwoFactorEnabled() && $user->hasPayoutAccount())
-                    <div class="rounded-xl border border-brand-200 bg-brand-50/60 p-4">
-                        <label for="totp_code" class="dt-label">Kode verifikasi dua langkah</label>
-                        <input id="totp_code" name="totp_code" inputmode="numeric" maxlength="9"
-                               autocomplete="one-time-code" placeholder="000000"
-                               class="dt-input max-w-44 bg-white text-center font-mono text-lg tracking-[0.3em]">
-                        <p class="mt-2 text-xs leading-relaxed text-brand-900/80">
+                @if ($user->hasPayoutAccount())
+                    <div class="rounded-xl border border-brand-200 bg-brand-50/60 p-4 space-y-3">
+                        <x-otp-input purpose="bank_change" label="Kode Verifikasi Email (Wajib jika mengganti rekening)" />
+                        <p class="text-xs leading-relaxed text-brand-900/80">
                             Wajib diisi <strong>bila Anda mengubah rekening tujuan</strong>. Mengganti rekening
-                            adalah satu-satunya cara dana bisa diarahkan ke pihak lain, jadi langkah ini
-                            dikunci lebih rapat daripada pengajuan pencairan biasa.
+                            adalah titik paling berisiko karena dana dapat dialihkan, sehingga membutuhkan validasi kode OTP dari email Anda.
                         </p>
-                        @error('totp_code') <p class="dt-error">{{ $message }}</p> @enderror
-                    </div>
-                @elseif ($user->hasPayoutAccount() && ! $user->hasTwoFactorEnabled())
-                    <div class="rounded-xl border border-amber-200 bg-amber-50 p-4">
-                        <p class="text-sm font-semibold text-amber-900">Lindungi rekening pencairan Anda</p>
-                        <p class="mt-1 text-xs leading-relaxed text-amber-900/80">
-                            Tanpa verifikasi dua langkah, siapa pun yang berhasil masuk ke akun Anda bisa
-                            mengganti rekening tujuan dari halaman ini.
-                            <a href="{{ route('keamanan.index') }}" class="font-semibold underline">Aktifkan verifikasi dua langkah</a>
-                            — pengaju yang mengaktifkannya juga mendapat lencana di halaman kampanyenya.
-                        </p>
+
+                        @if ($user->hasTwoFactorEnabled())
+                            <div class="pt-2 border-t border-brand-200">
+                                <label for="totp_code" class="dt-label">Atau gunakan kode aplikasi authenticator (TOTP)</label>
+                                <input id="totp_code" name="totp_code" inputmode="numeric" maxlength="9"
+                                       autocomplete="one-time-code" placeholder="000000"
+                                       class="dt-input max-w-44 bg-white text-center font-mono text-lg tracking-[0.3em]">
+                                @error('totp_code') <p class="dt-error">{{ $message }}</p> @enderror
+                            </div>
+                        @endif
                     </div>
                 @endif
 

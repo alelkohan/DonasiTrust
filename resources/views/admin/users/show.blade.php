@@ -54,10 +54,36 @@
             </dl>
 
             {{-- Rekening tujuan pencairan: WAJIB diperiksa admin --}}
-            <div class="mt-5 rounded-xl border p-4 {{ $user->hasPayoutAccount() ? 'border-ink-200 bg-ink-50/60' : 'border-amber-200 bg-amber-50' }}">
-                <h3 class="text-sm font-bold text-ink-900">Rekening tujuan pencairan</h3>
+            <div class="mt-5 rounded-xl border p-4 {{ $user->hasPendingPayoutAccount() ? 'border-amber-300 bg-amber-50/70' : ($user->hasPayoutAccount() ? 'border-ink-200 bg-ink-50/60' : 'border-amber-200 bg-amber-50') }}">
+                @if ($user->hasPendingPayoutAccount())
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">Perubahan Rekening Diajukan</span>
+                    </div>
+                    <h3 class="mt-2 text-sm font-bold text-ink-900">Rekening Baru yang Diajukan</h3>
+                    <dl class="mt-2.5 space-y-2 text-sm">
+                        <div class="flex justify-between gap-4">
+                            <dt class="text-ink-500">Bank Baru</dt>
+                            <dd class="font-semibold text-ink-900">{{ $user->pending_bank_name }}</dd>
+                        </div>
+                        <div class="flex justify-between gap-4">
+                            <dt class="text-ink-500">Nomor Rekening Baru</dt>
+                            <dd class="font-mono font-semibold text-ink-900">{{ $user->pending_bank_account_number }}</dd>
+                        </div>
+                        <div class="flex justify-between gap-4">
+                            <dt class="text-ink-500">Atas Nama Baru</dt>
+                            <dd class="text-right font-semibold text-ink-900">{{ $user->pending_bank_account_holder }}</dd>
+                        </div>
+                    </dl>
 
-                @if ($user->hasPayoutAccount())
+                    @if ($user->hasPayoutAccount())
+                        <div class="mt-3.5 border-t border-amber-200/80 pt-3 text-xs text-ink-600">
+                            <span class="font-semibold text-ink-700">Rekening Saat Ini (Aktif):</span>
+                            <p class="mt-0.5 font-mono text-ink-600">{{ $user->bank_name }} - {{ $user->bank_account_number }} a.n. {{ $user->bank_account_holder }}</p>
+                            <p class="mt-1 text-ink-500">Jika ditolak, sistem otomatis membatalkan perubahan dan akun kembali memakai rekening aktif di atas.</p>
+                        </div>
+                    @endif
+                @elseif ($user->hasPayoutAccount())
+                    <h3 class="text-sm font-bold text-ink-900">Rekening tujuan pencairan</h3>
                     <dl class="mt-3 space-y-2.5 text-sm">
                         <div class="flex justify-between gap-4">
                             <dt class="text-ink-500">Bank</dt>
@@ -78,6 +104,7 @@
                         bisa mengalir ke rekening ini.
                     </p>
                 @else
+                    <h3 class="text-sm font-bold text-ink-900">Rekening tujuan pencairan</h3>
                     <p class="mt-2 text-sm text-amber-900">
                         Belum diisi. Pengguna ini tidak akan bisa mengajukan pencairan sampai
                         rekening tujuannya terdaftar.

@@ -175,38 +175,32 @@
                         {{-- Langkah terakhir dan tidak bisa ditarik kembali: setelah ini
                              sistem menyatakan dana sudah keluar dan tahap berikutnya
                              ikut terbuka. --}}
-                        @if (auth()->user()->hasTwoFactorEnabled())
-                            @if ($jendelaTerbuka)
-                                <p class="flex items-start gap-2 rounded-xl border border-brand-200 bg-brand-50/70 p-3 text-xs leading-relaxed text-brand-900">
-                                    <svg class="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l2.8 1.7"/></svg>
-                                    <span>
-                                        Verifikasi dua langkah Anda masih berlaku {{ $sisaJendela }} menit lagi,
-                                        jadi kode tidak diminta ulang. Setiap rilis tetap tercatat di jejak audit.
-                                    </span>
-                                </p>
-                            @else
+                        @if (auth()->user()->hasTwoFactorEnabled() && $jendelaTerbuka)
+                            <p class="flex items-start gap-2 rounded-xl border border-brand-200 bg-brand-50/70 p-3 text-xs leading-relaxed text-brand-900">
+                                <svg class="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l2.8 1.7"/></svg>
+                                <span>
+                                    Sesi verifikasi dua langkah Anda masih berlaku {{ $sisaJendela }} menit lagi. Setiap rilis tetap tercatat di jejak audit.
+                                </span>
+                            </p>
+                        @else
+                            <div class="rounded-xl border border-ink-200 bg-white p-3.5">
+                                <x-otp-input purpose="disbursement_release" label="Kode Verifikasi Email Admin" />
+                            </div>
+                            @if (auth()->user()->hasTwoFactorEnabled())
+                                <div class="relative my-2">
+                                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-ink-200"></div></div>
+                                    <div class="relative flex justify-center text-xs text-ink-500 uppercase"><span class="bg-white px-2">atau gunakan TOTP</span></div>
+                                </div>
                                 <div>
-                                    <label for="totp_code" class="dt-label">Kode verifikasi dua langkah</label>
-                                    <input id="totp_code" name="totp_code" inputmode="numeric" required
+                                    <label for="totp_code" class="dt-label">Kode Aplikasi Authenticator</label>
+                                    <input id="totp_code" name="totp_code" inputmode="numeric"
                                            autocomplete="one-time-code" maxlength="9" placeholder="000000"
                                            class="dt-input text-center font-mono text-lg tracking-[0.4em]">
-                                    <p class="dt-hint">
-                                        Enam digit dari aplikasi authenticator Anda. Berlaku
-                                        {{ \App\Services\TotpGuard::SUDO_WINDOW_MINUTES }} menit untuk pencairan berikutnya.
-                                    </p>
                                 </div>
                             @endif
-
-                            <button type="submit" class="dt-btn-primary w-full py-3">Tandai sudah dicairkan</button>
-                        @else
-                            <div class="rounded-xl border border-amber-200 bg-amber-50 p-3.5">
-                                <p class="text-sm font-semibold text-amber-900">Verifikasi dua langkah belum aktif</p>
-                                <p class="mt-1 text-xs leading-relaxed text-amber-900/80">
-                                    Melepas dana butuh kode dari aplikasi authenticator.
-                                    <a href="{{ route('keamanan.index') }}" class="font-semibold underline">Aktifkan dulu di halaman Keamanan</a>.
-                                </p>
-                            </div>
                         @endif
+
+                        <button type="submit" class="dt-btn-primary w-full py-3">Tandai sudah dicairkan</button>
                     </form>
                 </section>
             @endif

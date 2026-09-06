@@ -40,12 +40,41 @@ class UserVerificationController extends Controller
             return back()->withErrors(['note' => 'Alasan penolakan wajib diisi.']);
         }
 
-        $user->update([
-            'verification_status' => $data['decision'],
+        $updateData = [
             'verification_note' => $data['note'] ?? null,
-            'verified_at' => $data['decision'] === 'verified' ? now() : null,
             'verified_by' => $request->user()->id,
-        ]);
+        ];
+
+        if ($data['decision'] === 'verified') {
+            $updateData['verification_status'] = User::VERIFICATION_VERIFIED;
+            $updateData['verified_at'] = now();
+
+            // Jika ada pengajuan rekening baru yang sedang ditinjau, setujui dan jadikan rekening aktif
+            if ($user->hasPendingPayoutAccount()) {
+                $updateData['bank_name'] = $user->pending_bank_name;
+                $updateData['bank_account_number'] = $user->pending_bank_account_number;
+                $updateData['bank_account_holder'] = $user->pending_bank_account_holder;
+                $updateData['pending_bank_name'] = null;
+                $updateData['pending_bank_account_number'] = null;
+                $updateData['pending_bank_account_holder'] = null;
+            }
+        } else {
+            // Keputusan ditolak:
+            // Jika pengguna sudah memiliki rekening aktif sebelumnya (pernah terverifikasi),
+            // batalkan pengajuan rekening baru dan kembalikan ke rekening sebelumnya serta status kembali verified.
+            if ($user->hasPendingPayoutAccount() && $user->hasPayoutAccount()) {
+                $updateData['pending_bank_name'] = null;
+                $updateData['pending_bank_account_number'] = null;
+                $updateData['pending_bank_account_holder'] = null;
+                $updateData['verification_status'] = User::VERIFICATION_VERIFIED;
+            } else {
+                // Pengajuan verifikasi identitas pertama kali yang ditolak
+                $updateData['verification_status'] = User::VERIFICATION_REJECTED;
+                $updateData['verified_at'] = null;
+            }
+        }
+
+        $user->update($updateData);
 
         $audit->record(
             $data['decision'] === 'verified' ? 'user.verified' : 'user.rejected',

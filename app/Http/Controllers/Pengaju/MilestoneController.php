@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Pengaju;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\Disbursement;
+use App\Models\EmailOtp;
 use App\Models\ExpenseReport;
 use App\Models\Milestone;
 use App\Services\AuditLogger;
+use App\Services\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +50,7 @@ class MilestoneController extends Controller
         Campaign $campaign,
         Milestone $milestone,
         AuditLogger $audit,
+        OtpService $otp,
     ) {
         $this->authorize('manageFunds', $campaign);
 
@@ -81,7 +84,12 @@ class MilestoneController extends Controller
 
         $data = $request->validate([
             'purpose' => 'required|string|max:1000',
+            'otp_code' => 'required|string',
+        ], [
+            'otp_code.required' => 'Kode verifikasi email wajib diisi untuk mengajukan pencairan.',
         ]);
+
+        $otp->assertValid($request->user(), EmailOtp::PURPOSE_DISBURSEMENT_REQUEST, $data['otp_code']);
 
         DB::transaction(function () use ($campaign, $milestone, $data, $pemilik, $audit) {
             $disbursement = Disbursement::create([

@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         // --- Akun demo -------------------------------------------------------
         $admin = User::create([
             'name' => 'Admin DonasiTrust',
-            'email' => 'admin@donasitrust.test',
+            'email' => 'jokibuat121@gmail.com',
             'password' => 'password123',
             'role' => User::ROLE_ADMIN,
             'verification_status' => User::VERIFICATION_VERIFIED,
@@ -417,7 +417,7 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        $this->command?->info('Seeder selesai. Login: admin@donasitrust.test / password123');
+        $this->command?->info('Seeder selesai. Login: jokibuat121@gmail.com / password123');
         $this->command?->info('Kunci TOTP demo (admin & pengaju): '.self::DEMO_TOTP_SECRET);
         $this->command?->comment('Masukkan kunci itu ke aplikasi authenticator sebagai entri manual '
             .'untuk mencoba alur pencairan.');
