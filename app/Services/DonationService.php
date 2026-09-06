@@ -93,6 +93,11 @@ class DonationService
                 'campaign' => $campaign->title,
             ]);
 
+            if (filled($fresh->donor_email)) {
+                \Illuminate\Support\Facades\Mail::to($fresh->donor_email)
+                    ->queue(new \App\Mail\DonationReceiptMail($fresh));
+            }
+
             return true;
         });
     }
@@ -122,5 +127,28 @@ class DonationService
 
             break;
         }
+    }
+
+    /** Proses pending donasi yang disimpan di session saat pengguna belum login. */
+    public function processPendingDonation(\App\Models\User $user): ?Donation
+    {
+        $pending = session()->pull('pending_donation');
+
+        if (! $pending || empty($pending['campaign_id']) || empty($pending['amount'])) {
+            return null;
+        }
+
+        $campaign = Campaign::find($pending['campaign_id']);
+        if (! $campaign) {
+            return null;
+        }
+
+        return $this->create($campaign, [
+            'amount' => $pending['amount'],
+            'donor_name' => ($pending['is_anonymous'] ?? false) ? 'Anonim' : ($pending['donor_name'] ?: $user->name),
+            'donor_email' => $user->email,
+            'message' => $pending['message'] ?? null,
+            'is_anonymous' => $pending['is_anonymous'] ?? false,
+        ]);
     }
 }

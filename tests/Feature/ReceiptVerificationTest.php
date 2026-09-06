@@ -75,4 +75,14 @@ class ReceiptVerificationTest extends TestCase
 
         $this->assertFalse($verifier->matches($donation->fresh(), $kodeLama));
     }
+
+    public function test_verifikasi_otomatis_via_query_parameter(): void
+    {
+        $donation = $this->donation();
+        $code = app(ReceiptVerifier::class)->shortCode($donation);
+
+        $this->get('/verifikasi?reference='.$donation->reference.'&code='.$code)
+            ->assertOk()
+            ->assertSee('Kuitansi asli dan terdaftar');
+    }
 }

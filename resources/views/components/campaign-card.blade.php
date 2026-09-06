@@ -6,22 +6,9 @@
 
 <article class="dt-card group flex flex-col overflow-hidden transition-shadow hover:shadow-[0_2px_4px_rgba(15,23,42,0.05),0_16px_40px_-16px_rgba(15,23,42,0.22)]">
     <a href="{{ route('kampanye.show', $campaign) }}" class="block aspect-[16/9] overflow-hidden bg-ink-100">
-        @if ($campaign->cover_path)
-            <img src="{{ asset('storage/'.$campaign->cover_path) }}" alt=""
-                 loading="lazy"
-                 class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]">
-        @else
-            {{-- Penanda "belum ada foto". Sebelumnya di sini ada ikon hati, dan
-                 itu terbaca sebagai tombol suka — sinyal yang keliru. --}}
-            <div class="flex h-full w-full flex-col items-center justify-center gap-2 bg-ink-100">
-                <svg class="h-8 w-8 text-ink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="3" y="4" width="18" height="16" rx="2"/>
-                    <circle cx="8.5" cy="9.5" r="1.5"/>
-                    <path d="m4 17 4.5-4.5 3 3L15 11l5 5"/>
-                </svg>
-                <span class="text-xs font-medium text-ink-400">Belum ada foto</span>
-            </div>
-        @endif
+        <img src="{{ $campaign->coverUrl() }}" alt="{{ $campaign->title }}"
+             loading="lazy"
+             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]">
     </a>
 
     <div class="flex flex-1 flex-col p-5">
@@ -50,9 +37,15 @@
                 </p>
             </div>
 
-            <p class="mt-3 truncate text-xs text-ink-500">
-                oleh {{ $campaign->user->organization ?: $campaign->user->name }}
-            </p>
+            <div class="mt-3 flex items-center gap-1.5 text-xs text-ink-600">
+                <span class="truncate">oleh <strong class="font-semibold text-ink-800">{{ $campaign->user->organization ?: $campaign->user->name }}</strong></span>
+                @if ($campaign->user->isVerified())
+                    <span class="inline-flex items-center gap-0.5 rounded-full bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-700 shrink-0" title="Pengaju Terverifikasi KTP">
+                        <svg class="h-3 w-3 fill-current text-sky-600" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+                        Terverifikasi
+                    </span>
+                @endif
+            </div>
         </div>
     </div>
 </article>

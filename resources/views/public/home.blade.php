@@ -134,6 +134,31 @@
     </div>
 </section>
 
+{{-- Kategori Pilihan (AyoBantu Style) --}}
+<section class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between">
+        <h2 class="text-xl font-extrabold tracking-tight text-ink-900">Pilih Kategori Donasi</h2>
+        <a href="{{ route('kampanye.index') }}" class="dt-link text-xs">Lihat Semua Kategori &rarr;</a>
+    </div>
+
+    <div class="mt-4 flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
+        @foreach ([
+            ['Pendidikan', 'pendidikan', '', 'bg-emerald-50 text-emerald-700 border-emerald-200'],
+            ['Kesehatan', 'kesehatan', '', 'bg-rose-50 text-rose-700 border-rose-200'],
+            ['Bencana Alam', 'bencana', '', 'bg-amber-50 text-amber-700 border-amber-200'],
+            ['Sosial', 'sosial', '', 'bg-sky-50 text-sky-700 border-sky-200'],
+            ['Lingkungan', 'lingkungan', '', 'bg-teal-50 text-teal-700 border-teal-200'],
+            ['Infrastruktur', 'infrastruktur', '', 'bg-indigo-50 text-indigo-700 border-indigo-200'],
+        ] as $cat)
+            <a href="{{ route('kampanye.index', ['kategori' => $cat[1]]) }}"
+               class="flex shrink-0 items-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-semibold transition-all hover:scale-105 shadow-xs {{ $cat[3] }}">
+                <span class="text-base">{{ $cat[2] }}</span>
+                <span>{{ $cat[0] }}</span>
+            </a>
+        @endforeach
+    </div>
+</section>
+
 {{-- Kampanye pilihan --}}
 <section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
     <div class="flex flex-wrap items-end justify-between gap-4">

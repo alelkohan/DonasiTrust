@@ -27,8 +27,13 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(Campaign::class, CampaignPolicy::class);
 
-        // Paksa HTTPS di produksi supaya kredensial & kuitansi tidak lewat plaintext.
-        if ($this->app->environment('production')) {
+        // Otomatis sesuaikan Root URL & Scheme dengan host yang sedang mengakses (support IP lokal & Tunnel HP)
+        if (! $this->app->runningInConsole() && request()->getHost()) {
+            URL::forceRootUrl(request()->schemeAndHttpHost());
+            if (request()->isSecure() || request()->header('X-Forwarded-Proto') === 'https') {
+                URL::forceScheme('https');
+            }
+        } elseif ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
 

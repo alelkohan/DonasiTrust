@@ -57,7 +57,28 @@ class DonationController extends Controller
             $donation->refresh();
         }
 
+        if (config('donasi.gateway') === 'midtrans' && (empty($donation->gateway_payload['snap_token']) || ! empty($donation->gateway_payload['error']))) {
+            $charge = app(PaymentGateway::class)->createCharge($donation);
+            $donation->gateway_payload = $charge;
+            $donation->save();
+        }
+
         return view('public.checkout', compact('donation'));
+    }
+
+    /** API Status pembayaran untuk polling otomatis (realtime auto-redirect). */
+    public function status(Donation $donation)
+    {
+        $donation->load('campaign');
+
+        return response()->json([
+            'status' => $donation->status,
+            'is_paid' => $donation->isPaid(),
+            'redirect_url' => route('kampanye.transparansi', [
+                'campaign' => $donation->campaign->slug,
+                'paid' => 1,
+            ]),
+        ]);
     }
 
     /**

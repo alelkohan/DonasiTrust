@@ -44,6 +44,11 @@ class AuthenticatedSessionController extends Controller
         RateLimiter::clear($key);
         $request->session()->regenerate();
 
+        if ($donation = app(\App\Services\DonationService::class)->processPendingDonation($request->user())) {
+            return redirect()->route('donasi.checkout', $donation->reference)
+                ->with('status', 'Selamat datang kembali! Silakan selesaikan transaksi donasi Anda.');
+        }
+
         return redirect()->intended($request->user()->homeRoute());
     }
 

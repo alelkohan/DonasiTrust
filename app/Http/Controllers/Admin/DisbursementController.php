@@ -145,6 +145,9 @@ class DisbursementController extends Controller
             ]);
         });
 
-        return back()->with('status', 'Dana berhasil ditandai telah dicairkan.');
+        // Broadcast email ke seluruh donatur kampanye via Queue Worker
+        \App\Jobs\SendDisbursementBroadcastJob::dispatch($disbursement);
+
+        return back()->with('status', 'Dana berhasil ditandai telah dicairkan dan notifikasi email dikirim ke donatur.');
     }
 }

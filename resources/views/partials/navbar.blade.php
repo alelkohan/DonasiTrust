@@ -19,10 +19,11 @@
             @if (! ($is_dashboard ?? false))
                 <x-nav-link :href="route('kampanye.index')" :active="request()->routeIs('kampanye.index')">Kampanye</x-nav-link>
                 <x-nav-link :href="route('transparansi')" :active="request()->routeIs('transparansi')">Transparansi</x-nav-link>
-                <x-nav-link :href="route('verifikasi.form')" :active="request()->routeIs('verifikasi.*')">Cek Kuitansi</x-nav-link>
+                <x-nav-link :href="route('donatur.dashboard')" :active="request()->routeIs('donatur.dashboard')">Riwayat Saya</x-nav-link>
             @endif
         </div>
 
+        {{-- Desktop Menu --}}
         <div class="ml-auto hidden items-center gap-2 md:flex">
             @guest
                 <a href="{{ route('login') }}" class="dt-btn-secondary">Masuk</a>
@@ -65,35 +66,18 @@
             @endguest
         </div>
 
-        <button type="button" @click="open = !open" :aria-expanded="open.toString()" aria-controls="menu-mobile"
-                class="ml-auto grid h-10 w-10 place-items-center rounded-xl border border-ink-200 text-ink-700 md:hidden">
-            <span class="sr-only">Buka menu</span>
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path x-show="!open" d="M4 7h16M4 12h16M4 17h16"/>
-                <path x-show="open" x-cloak d="m6 6 12 12M18 6 6 18"/>
-            </svg>
-        </button>
-    </nav>
-
-    <div id="menu-mobile" x-show="open" x-cloak x-collapse class="border-t border-ink-200 bg-white md:hidden">
-        <div class="space-y-1 px-4 py-3">
-            @if (! ($is_dashboard ?? false))
-                <a href="{{ route('kampanye.index') }}" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-ink-700 hover:bg-ink-50">Kampanye</a>
-                <a href="{{ route('transparansi') }}" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-ink-700 hover:bg-ink-50">Transparansi</a>
-                <a href="{{ route('verifikasi.form') }}" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-ink-700 hover:bg-ink-50">Cek Kuitansi</a>
-                <hr class="my-2 border-ink-100">
-            @endif
+        {{-- Mobile Header Right --}}
+        <div class="ml-auto flex items-center gap-2 md:hidden">
             @guest
-                <a href="{{ route('login') }}" class="dt-btn-secondary w-full">Masuk</a>
-                <a href="{{ route('register') }}" class="dt-btn-primary mt-2 w-full">Daftar</a>
+                <a href="{{ route('login') }}" class="dt-btn-secondary py-1.5 px-3 text-xs">Masuk</a>
             @else
-                <a href="{{ $u->homeRoute() }}" class="dt-btn-primary w-full">Dasbor saya</a>
-                <a href="{{ route('profil.edit') }}" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-ink-700 hover:bg-ink-50">Profil</a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button class="w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium text-rose-600 hover:bg-rose-50">Keluar</button>
-                </form>
+                <a href="{{ $u->homeRoute() }}" class="flex items-center gap-1.5 rounded-xl border border-ink-200 py-1 px-2.5 text-xs font-semibold text-ink-700 bg-white shadow-xs">
+                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-brand-600 text-[10px] font-bold text-white">
+                        {{ Str::upper(Str::substr($u->name, 0, 1)) }}
+                    </span>
+                    {{ Str::of($u->name)->explode(" ")->first() }}
+                </a>
             @endguest
         </div>
-    </div>
+    </nav>
 </header>

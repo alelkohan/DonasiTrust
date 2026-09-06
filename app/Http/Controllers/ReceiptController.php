@@ -19,10 +19,40 @@ class ReceiptController extends Controller
         ]);
     }
 
-    /** Form verifikasi mandiri untuk siapa pun, tanpa perlu akun. */
-    public function form()
+    /** Form verifikasi mandiri untuk siapa pun. Mendukung verifikasi otomatis 1-klik via URL. */
+    public function form(Request $request, ReceiptVerifier $verifier)
     {
-        return view('public.verify');
+        $ref = $request->query('reference') ?? $request->query('ref');
+        $code = $request->query('code');
+
+        if (filled($ref) && filled($code)) {
+            $donation = Donation::with('campaign')
+                ->where('reference', strtoupper(trim($ref)))
+                ->first();
+
+            $expected = $donation ? $verifier->for($donation) : null;
+            $submitted = strtolower(trim($code));
+
+            $valid = $donation && $expected && (
+                hash_equals($expected, $submitted)
+                || hash_equals(substr($expected, 0, 16), substr($submitted, 0, 16))
+            ) && strlen($submitted) >= 16;
+
+            return view('public.verify', [
+                'result' => [
+                    'valid' => (bool) $valid,
+                    'donation' => $valid ? $donation : null,
+                    'reference' => $ref,
+                ],
+                'prefill_ref' => $ref,
+                'prefill_code' => $code,
+            ]);
+        }
+
+        return view('public.verify', [
+            'prefill_ref' => $ref,
+            'prefill_code' => $code,
+        ]);
     }
 
     public function check(Request $request, ReceiptVerifier $verifier)
