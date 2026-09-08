@@ -20,7 +20,7 @@
 @endphp
 
 @section('content')
-<div class="w-full px-4 py-8 sm:px-6 lg:px-10">
+<div class="w-full py-8">
 
     <header class="max-w-3xl mb-8">
         <span class="inline-block rounded bg-[#99ff04] px-3 py-1 text-xs font-black uppercase tracking-wider text-black mb-3">

@@ -2,7 +2,7 @@
 @section('title', 'Semua Kampanye · DonasiTrust')
 
 @section('content')
-<div class="w-full px-4 py-6 sm:px-6 lg:px-10 relative"
+<div class="w-full py-6 relative"
      x-data="{
         loading: false,
         fetchUrl(url) {
@@ -60,7 +60,7 @@
     </div>
 
     {{-- Sticky Header & Inline Filter Controls --}}
-    <div class="sticky top-14 sm:top-[60px] z-30 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 py-3 bg-[#12101c]/95 backdrop-blur-md border-b border-white/10 flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6 transition-all">
+    <div class="sticky top-14 sm:top-[60px] z-30 -mx-3 px-3 sm:-mx-4 sm:px-4 lg:-mx-6 lg:px-6 py-3 bg-[#12101c]/95 backdrop-blur-md border-b border-white/10 flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6 transition-all">
         <div>
             <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
                 <span>Kampanye Aktif</span>

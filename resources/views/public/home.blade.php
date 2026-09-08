@@ -69,7 +69,7 @@
 
 {{-- VGen Hero Header Section --}}
 <section class="relative overflow-hidden bg-[#12101c] pt-8 pb-8 text-white w-full">
-    <div class="relative w-full px-4 sm:px-6 lg:px-10">
+    <div class="relative w-full">
         
         {{-- Title & Hero Main Search Bar Row (Initial Position at top) --}}
         <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-8">
@@ -191,7 +191,7 @@
 </section>
 
 {{-- STICKY CATEGORY BAR (Search Bar merges inside when scrolled down past the hero section) --}}
-<section class="sticky top-[60px] z-30 bg-[#12101c]/95 backdrop-blur-md py-3 border-b border-white/10 shadow-2xl w-full px-4 sm:px-6 lg:px-10">
+<section class="sticky top-[60px] z-30 bg-[#12101c]/95 backdrop-blur-md py-3 border-b border-white/10 shadow-2xl w-full -mx-3 px-3 sm:-mx-4 sm:px-4 lg:-mx-6 lg:px-6">
     <div class="flex flex-col gap-2.5">
         
         {{-- Search Input (Appears ONLY when sticky on scroll) --}}
@@ -258,16 +258,16 @@
     </div>
 </section>
 
-{{-- VGen Style Campaign Cards Grid (Dynamically updated via AJAX) --}}
-<section class="w-full px-4 pt-6 pb-16 sm:px-6 lg:px-10">
-    <div id="campaign-grid-container" class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 min-h-[300px]">
-        @include('partials.campaign-grid', ['campaigns' => $campaigns])
+{{-- MAIN CAMPAIGN GRID SECTION --}}
+<section class="w-full pt-6 pb-16">
+    <div id="campaign-grid-container" class="w-full transition-all duration-300">
+        @include('partials.campaign-grid')
     </div>
 </section>
 
 {{-- Three Pillars Section --}}
-<section class="border-t border-white/10 bg-[#0e0c16] py-16 w-full">
-    <div class="w-full px-4 sm:px-6 lg:px-10">
+<section class="border-t border-white/10 py-16 w-full">
+    <div class="w-full">
         <div class="max-w-2xl">
             <h2 class="text-3xl font-black tracking-tight text-white">3 Pilar Akuntabilitas DonasiTrust</h2>
             <p class="mt-2 text-sm text-slate-400">
@@ -308,7 +308,7 @@
 </section>
 
 {{-- CTA Section --}}
-<section class="w-full px-4 py-16 sm:px-6 lg:px-10">
+<section class="w-full py-16">
     <div class="relative overflow-hidden rounded-3xl bg-[#1b182a] p-8 sm:p-12 border border-white/15 shadow-2xl">
         <div class="grid items-center gap-8 lg:grid-cols-[1.5fr_1fr]">
             <div>

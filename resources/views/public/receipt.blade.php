@@ -2,7 +2,7 @@
 @section('title', 'Kuitansi Digital '.$donation->reference.' · DonasiTrust')
 
 @section('content')
-<div class="w-full max-w-2xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+<div class="w-full max-w-2xl mx-auto py-8">
 
     @if ($donation->isPaid())
         <div class="mb-6 flex items-center gap-3.5 rounded-3xl border border-[#99ff04]/30 bg-[#99ff04]/10 p-5 shadow-2xl">

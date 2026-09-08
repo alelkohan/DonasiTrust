@@ -54,7 +54,7 @@
         });
     }
 }" class="sticky top-0 z-40 h-[60px] border-b border-white/10 bg-[#13111c]/95 text-white backdrop-blur-md transition-colors duration-300">
-    <nav class="w-full h-full px-4 sm:px-6 lg:px-10 flex items-center gap-3" aria-label="Navigasi utama">
+    <nav class="w-full h-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 flex items-center gap-3" aria-label="Navigasi utama">
 
         {{-- Brand Logo --}}
         <a href="{{ route('home') }}" class="flex shrink-0 items-center gap-2.5 group">

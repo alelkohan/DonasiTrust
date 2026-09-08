@@ -2,7 +2,7 @@
 @section('title', 'Verifikasi kuitansi · DonasiTrust')
 
 @section('content')
-<div class="w-full max-w-3xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+<div class="w-full max-w-3xl mx-auto py-12">
 
     <header class="text-center">
         <span class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#99ff04] text-black font-black shadow-lg" aria-hidden="true">

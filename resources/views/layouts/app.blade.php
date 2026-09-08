@@ -46,7 +46,7 @@
 
 @include('partials.navbar')
 
-<main id="konten" class="flex-1 w-full">
+<main id="konten" class="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
     @include('partials.flash')
     @yield('content')
 </main>

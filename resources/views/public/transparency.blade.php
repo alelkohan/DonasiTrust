@@ -9,7 +9,7 @@
 @endphp
 
 @section('content')
-<div class="w-full px-4 py-8 sm:px-6 lg:px-10">
+<div class="w-full py-8">
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
         <nav class="text-xs font-bold text-slate-400" aria-label="Breadcrumb">
             <a href="{{ route('transparansi') }}" class="hover:text-[#99ff04] transition-colors">Ledger Publik</a>
