@@ -1,128 +1,184 @@
 @extends('layouts.dashboard')
-@section('title', 'Profil saya')
-
+@section('title', 'Profil Saya')
 
 @section('panel')
-    <h1 class="text-2xl font-extrabold tracking-tight text-ink-900">Profil saya</h1>
+<div class="space-y-6">
 
-    <div class="mt-6 grid gap-6 lg:grid-cols-2">
-        <section class="dt-card p-5 sm:p-6">
-            <h2 class="text-lg font-bold text-ink-900">Data diri</h2>
-            <form method="POST" action="{{ route('profil.update') }}" class="mt-5 space-y-4">
+    {{-- Page Header --}}
+    <div class="border-b border-white/10 pb-5">
+        <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white">Profil Saya</h1>
+        <p class="mt-1 text-xs sm:text-sm font-medium text-slate-400">Kelola identitas, nomor WhatsApp, kata sandi, dan status keamanan akun Anda</p>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+        
+        {{-- Section 1: Data Diri Form --}}
+        <section class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl backdrop-blur-md">
+            <h2 class="text-base font-black text-white flex items-center gap-2">
+                <span class="grid h-7 w-7 place-items-center rounded-lg bg-[#99ff04] text-black text-xs font-black">1</span>
+                <span>Informasi Data Diri</span>
+            </h2>
+
+            <form method="POST" action="{{ route('profil.update') }}" class="mt-6 space-y-4">
                 @csrf @method('PUT')
 
                 <div>
-                    <label for="name" class="dt-label">Nama lengkap</label>
-                    <input id="name" name="name" type="text" required class="dt-input" value="{{ old('name', $user->name) }}">
+                    <label for="name" class="block text-xs font-bold text-slate-300 mb-1.5">Nama Lengkap</label>
+                    <input id="name" name="name" type="text" required 
+                           class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#99ff04] focus:outline-none transition-all" 
+                           value="{{ old('name', $user->name) }}">
                 </div>
 
                 <div>
-                    <label class="dt-label" for="email-display">Email</label>
-                    <input id="email-display" type="email" class="dt-input bg-ink-50" value="{{ $user->email }}" disabled>
-                    <p class="dt-hint">Email tidak bisa diubah sendiri — hubungi admin jika perlu diganti.</p>
+                    <label for="email-display" class="block text-xs font-bold text-slate-300 mb-1.5">Alamat Email</label>
+                    <input id="email-display" type="email" 
+                           class="w-full rounded-xl border border-white/10 bg-[#12101c] px-4 py-2.5 text-sm text-slate-400 cursor-not-allowed" 
+                           value="{{ $user->email }}" disabled>
+                    <p class="mt-1 text-[11px] text-slate-400">Email terkunci demi keamanan — hubungi admin jika perlu perubahan.</p>
                 </div>
 
                 <div>
-                    <label for="phone" class="dt-label">Nomor WhatsApp</label>
-                    <input id="phone" name="phone" type="tel" class="dt-input" value="{{ old('phone', $user->phone) }}">
+                    <label for="phone" class="block text-xs font-bold text-slate-300 mb-1.5">Nomor WhatsApp</label>
+                    <input id="phone" name="phone" type="tel" 
+                           class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#99ff04] focus:outline-none transition-all" 
+                           value="{{ old('phone', $user->phone) }}" placeholder="08xxxxxxxxxx">
                 </div>
 
                 @if ($user->isPengaju())
                     <div>
-                        <label for="organization" class="dt-label">Lembaga / organisasi</label>
-                        <input id="organization" name="organization" type="text" class="dt-input"
+                        <label for="organization" class="block text-xs font-bold text-slate-300 mb-1.5">Lembaga / Organisasi</label>
+                        <input id="organization" name="organization" type="text" 
+                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#99ff04] focus:outline-none transition-all"
                                value="{{ old('organization', $user->organization) }}"
-                               placeholder="Nama lembaga yang tampil di kampanye">
+                               placeholder="Nama lembaga yang akan tampil di halaman kampanye">
                     </div>
                 @endif
 
-                <button type="submit" class="dt-btn-primary">Simpan perubahan</button>
+                <div class="pt-2">
+                    <button type="submit" class="w-full rounded-full bg-[#99ff04] px-6 py-2.5 text-xs font-black text-black hover:bg-[#84e000] shadow-md shadow-[#99ff04]/20 transition-all">
+                        Simpan Perubahan Data Diri
+                    </button>
+                </div>
             </form>
         </section>
 
+        {{-- Section 2: Kata Sandi & Status Akun --}}
         <div class="space-y-6">
-            <section class="dt-card p-5 sm:p-6">
-                <h2 class="text-lg font-bold text-ink-900">{{ $user->password ? 'Ganti kata sandi' : 'Buat kata sandi akun' }}</h2>
-                <form method="POST" action="{{ route('profil.password') }}" class="mt-5 space-y-4">
+            {{-- Form Ganti Kata Sandi --}}
+            <section class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl backdrop-blur-md">
+                <h2 class="text-base font-black text-white flex items-center gap-2">
+                    <span class="grid h-7 w-7 place-items-center rounded-lg bg-[#231f36] text-[#99ff04] text-xs font-black border border-white/10">2</span>
+                    <span>{{ $user->password ? 'Perbarui Kata Sandi' : 'Buat Kata Sandi Akun' }}</span>
+                </h2>
+
+                <form method="POST" action="{{ route('profil.password') }}" class="mt-6 space-y-4">
                     @csrf @method('PUT')
 
                     @if ($user->password)
                         <div>
-                            <label for="current_password" class="dt-label">Kata sandi saat ini</label>
+                            <label for="current_password" class="block text-xs font-bold text-slate-300 mb-1.5">Kata Sandi Saat Ini</label>
                             <input id="current_password" name="current_password" type="password" required
-                                   autocomplete="current-password" class="dt-input">
-                            @error('current_password') <p class="dt-error">{{ $message }}</p> @enderror
+                                   autocomplete="current-password" 
+                                   class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white focus:border-[#99ff04] focus:outline-none transition-all">
+                            @error('current_password') <p class="mt-1 text-xs font-bold text-rose-400">{{ $message }}</p> @enderror
                         </div>
                     @else
-                        <p class="text-xs text-ink-600">
-                            Akun Anda terhubung dengan Google dan belum memiliki kata sandi mandiri. Anda bisa membuatnya di sini.
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Akun Anda terhubung dengan Google. Anda dapat membuat kata sandi mandiri di bawah ini.
                         </p>
                     @endif
 
                     <div>
-                        <label for="new_password" class="dt-label">Kata sandi baru</label>
+                        <label for="new_password" class="block text-xs font-bold text-slate-300 mb-1.5">Kata Sandi Baru</label>
                         <input id="new_password" name="password" type="password" required
-                               autocomplete="new-password" class="dt-input">
-                        <p class="dt-hint">Minimal 8 karakter, ada huruf dan angka.</p>
-                        @error('password') <p class="dt-error">{{ $message }}</p> @enderror
+                               autocomplete="new-password" 
+                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white focus:border-[#99ff04] focus:outline-none transition-all">
+                        <p class="mt-1 text-[11px] text-slate-400">Minimal 8 karakter, kombinasi huruf dan angka.</p>
+                        @error('password') <p class="mt-1 text-xs font-bold text-rose-400">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label for="password_confirmation" class="dt-label">Ulangi kata sandi baru</label>
+                        <label for="password_confirmation" class="block text-xs font-bold text-slate-300 mb-1.5">Ulangi Kata Sandi Baru</label>
                         <input id="password_confirmation" name="password_confirmation" type="password" required
-                               autocomplete="new-password" class="dt-input">
+                               autocomplete="new-password" 
+                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white focus:border-[#99ff04] focus:outline-none transition-all">
                     </div>
 
-                    <div class="rounded-xl border border-ink-200 bg-ink-50/60 p-3.5">
+                    <div class="rounded-2xl border border-white/10 bg-[#12101c] p-4">
                         <x-otp-input purpose="password_change" label="Kode Verifikasi Email" />
                     </div>
 
-                    <button type="submit" class="dt-btn-secondary">{{ $user->password ? 'Perbarui kata sandi' : 'Simpan kata sandi' }}</button>
+                    <div class="pt-2">
+                        <button type="submit" class="w-full rounded-full border border-white/20 bg-[#231f36] px-6 py-2.5 text-xs font-extrabold text-white hover:border-[#99ff04] hover:text-[#99ff04] transition-all">
+                            {{ $user->password ? 'Perbarui Kata Sandi' : 'Simpan Kata Sandi' }}
+                        </button>
                 </form>
             </section>
 
-            <section class="dt-card p-5 sm:p-6">
-                <h2 class="text-lg font-bold text-ink-900">Status akun</h2>
-                <dl class="mt-4 space-y-3 text-sm">
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-ink-500">Peran</dt>
-                        <dd class="font-semibold text-ink-900">{{ $user->roleLabel() }}</dd>
-                    </div>
-                    <div class="flex items-center justify-between gap-4">
-                        <dt class="text-ink-500">Verifikasi identitas</dt>
-                        <dd>
-                            <x-badge :tone="match($user->verification_status) {
-                                'verified' => 'success',
-                                'pending' => 'warning',
-                                'rejected' => 'danger',
-                                default => 'neutral',
-                            }">{{ $user->verificationLabel() }}</x-badge>
+            {{-- Ringkasan Status Akun --}}
+            <section class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl backdrop-blur-md">
+                <h2 class="text-base font-black text-white">Status &amp; Keamanan Akun</h2>
+                
+                <dl class="mt-4 space-y-3.5 text-xs border-t border-white/10 pt-4">
+                    <div class="flex justify-between items-center">
+                        <dt class="text-slate-400">Peran Pengguna</dt>
+                        <dd class="font-black text-white bg-[#231f36] px-3 py-1 rounded-full border border-white/10">
+                            {{ $user->roleLabel() }}
                         </dd>
                     </div>
-                    <div class="flex items-center justify-between gap-4">
-                        <dt class="text-ink-500">Verifikasi dua langkah</dt>
+
+                    <div class="flex justify-between items-center">
+                        <dt class="text-slate-400">Verifikasi Identitas</dt>
                         <dd>
-                            <x-badge :tone="$user->hasTwoFactorEnabled() ? 'success' : 'warning'">
-                                {{ $user->hasTwoFactorEnabled() ? 'Aktif' : 'Belum aktif' }}
-                            </x-badge>
+                            @if ($user->isVerified())
+                                <span class="rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-black text-emerald-400 border border-emerald-500/30">
+                                    ✓ Terverifikasi
+                                </span>
+                            @else
+                                <span class="rounded-full bg-amber-500/15 px-3 py-1 text-[11px] font-black text-amber-300 border border-amber-500/30">
+                                    {{ $user->verificationLabel() }}
+                                </span>
+                            @endif
                         </dd>
                     </div>
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-ink-500">Bergabung</dt>
-                        <dd class="font-semibold text-ink-900">{{ $user->created_at->translatedFormat('d F Y') }}</dd>
+
+                    <div class="flex justify-between items-center">
+                        <dt class="text-slate-400">Verifikasi Dua Langkah (2FA)</dt>
+                        <dd>
+                            @if ($user->hasTwoFactorEnabled())
+                                <span class="rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-black text-emerald-400 border border-emerald-500/30">
+                                    ✓ Aktif
+                                </span>
+                            @else
+                                <span class="rounded-full bg-amber-500/15 px-3 py-1 text-[11px] font-black text-amber-300 border border-amber-500/30">
+                                    Belum Aktif
+                                </span>
+                            @endif
+                        </dd>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <dt class="text-slate-400">Tanggal Bergabung</dt>
+                        <dd class="font-bold text-white">{{ $user->created_at->translatedFormat('d F Y') }}</dd>
                     </div>
                 </dl>
 
-                <a href="{{ route('keamanan.index') }}" class="dt-btn-secondary mt-5 w-full">
-                    {{ $user->hasTwoFactorEnabled() ? 'Kelola keamanan akun' : 'Aktifkan verifikasi dua langkah' }}
-                </a>
-
-                @if (! $user->isVerified() && ! $user->isAdmin())
-                    <a href="{{ route('verifikasi.identitas') }}" class="dt-btn-primary mt-3 w-full">
-                        Verifikasi identitas sekarang
+                <div class="mt-6 space-y-2">
+                    <a href="{{ route('keamanan.index') }}" class="flex w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-[#231f36] py-2.5 text-xs font-extrabold text-white hover:border-[#99ff04] hover:text-[#99ff04] transition-all">
+                        <span>{{ $user->hasTwoFactorEnabled() ? 'Kelola Keamanan 2FA' : 'Aktifkan Verifikasi Dua Langkah' }}</span>
                     </a>
-                @endif
+
+                    @if (! $user->isVerified() && ! $user->isAdmin())
+                        <a href="{{ route('verifikasi.identitas') }}" class="flex w-full items-center justify-center gap-2 rounded-full bg-[#99ff04] py-2.5 text-xs font-black text-black hover:bg-[#84e000] shadow-md shadow-[#99ff04]/20 transition-all">
+                            <span>Verifikasi Identitas Sekarang &rarr;</span>
+                        </a>
+                    @endif
+                </div>
             </section>
+
         </div>
+
     </div>
+
+</div>
 @endsection

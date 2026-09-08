@@ -1,38 +1,58 @@
 @extends('layouts.dashboard')
-@section('title', 'Dasbor pengaju')
-
+@section('title', 'Dasbor Pengaju')
 
 @section('panel')
-    <header class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-extrabold tracking-tight text-ink-900">Dasbor pengaju</h1>
-            <p class="mt-1 text-sm text-ink-600">{{ auth()->user()->organization ?: auth()->user()->name }}</p>
-        </div>
-        @if (auth()->user()->canSubmitCampaign())
-            <a href="{{ route('pengaju.kampanye.create') }}" class="dt-btn-primary">Buat kampanye baru</a>
-        @endif
-    </header>
+<div class="space-y-6">
 
-    {{-- Penunjuk arah untuk pengaju baru. Tanpa ini, orang yang baru mendaftar
-         menemukan semuanya terkunci dan tidak tahu dia ada di langkah mana. --}}
+    {{-- Header Welcome Banner --}}
+    <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-[#1b182a] via-[#231f36] to-[#1b182a] p-6 sm:p-8 shadow-xl">
+        <div aria-hidden="true" class="absolute -top-12 -right-12 h-64 w-64 rounded-full bg-[#99ff04]/10 blur-3xl pointer-events-none"></div>
+        
+        <div class="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex items-center gap-4">
+                <div class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#99ff04] text-black font-black text-xl shadow-lg shadow-[#99ff04]/20">
+                    {{ Str::upper(Str::substr(auth()->user()->name, 0, 1)) }}
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white">
+                        Dasbor Pengaju
+                    </h1>
+                    <p class="mt-1 text-xs sm:text-sm font-semibold text-[#99ff04]">
+                        {{ auth()->user()->organization ?: auth()->user()->name }}
+                    </p>
+                </div>
+            </div>
+
+            @if (auth()->user()->canSubmitCampaign())
+                <a href="{{ route('pengaju.kampanye.create') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#99ff04] px-5 py-2.5 text-xs font-black text-black hover:bg-[#84e000] transition-all hover:scale-105 active:scale-95 shadow-md shadow-[#99ff04]/20 shrink-0">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <span>Buat Kampanye Baru</span>
+                </a>
+            @endif
+        </div>
+    </div>
+
+    {{-- Penunjuk Arah / Onboarding Step Timeline --}}
     @php
         $u = auth()->user();
         $sudahKirimBerkas = in_array($u->verification_status, ['pending', 'verified', 'rejected'], true);
 
         $langkah = [
             [
-                'judul' => 'Buat akun',
-                'ket' => 'Selesai.',
+                'judul' => '1. Pendaftaran Akun',
+                'ket' => 'Akun pengaju berhasil dibuat.',
                 'keadaan' => 'selesai',
                 'aksi' => null,
             ],
             [
-                'judul' => 'Verifikasi identitas & rekening',
+                'judul' => '2. Verifikasi Identitas & Rekening',
                 'ket' => match ($u->verification_status) {
-                    'verified' => 'Disetujui admin.',
-                    'pending' => 'Berkas terkirim, sedang ditinjau admin. Biasanya 1x24 jam.',
-                    'rejected' => 'Ditolak — perbaiki sesuai catatan admin, lalu kirim ulang.',
-                    default => 'Unggah KTP dan daftarkan rekening tujuan pencairan.',
+                    'verified' => 'Identitas terverifikasi. Rekening pencairan terkunci aman.',
+                    'pending' => 'Berkas terkirim, sedang ditinjau tim admin.',
+                    'rejected' => 'Ditolak — perbaiki berkas sesuai catatan admin lalu kirim ulang.',
+                    default => 'Unggah foto KTP dan daftarkan rekening tujuan pencairan.',
                 },
                 'keadaan' => match ($u->verification_status) {
                     'verified' => 'selesai',
@@ -40,15 +60,15 @@
                     'rejected' => 'gagal',
                     default => 'berjalan',
                 },
-                'aksi' => $u->isVerified() ? null : ['Buka verifikasi', route('verifikasi.identitas')],
+                'aksi' => $u->isVerified() ? null : ['Buka Verifikasi Identitas', route('verifikasi.identitas')],
             ],
             [
-                'judul' => 'Susun kampanye & ajukan',
+                'judul' => '3. Susun Kampanye & Ajukan Review',
                 'ket' => $u->isVerified()
-                    ? 'Anda sudah bisa membuat kampanye.'
-                    : 'Terbuka setelah identitas Anda terverifikasi.',
+                    ? 'Anda sudah memiliki izin membuat kampanye baru.'
+                    : 'Fitur pengajuan kampanye terbuka setelah verifikasi disetujui.',
                 'keadaan' => $u->isVerified() ? 'berjalan' : 'terkunci',
-                'aksi' => $u->canSubmitCampaign() ? ['Buat kampanye', route('pengaju.kampanye.create')] : null,
+                'aksi' => $u->canSubmitCampaign() ? ['Buat Kampanye Sekarang', route('pengaju.kampanye.create')] : null,
             ],
         ];
 
@@ -56,100 +76,138 @@
     @endphp
 
     @unless ($u->isVerified() && $campaigns->isNotEmpty())
-        <section class="dt-card mt-6 p-5 sm:p-6">
-            <div class="flex flex-wrap items-baseline justify-between gap-2">
-                <h2 class="text-lg font-bold text-ink-900">Langkah menuju kampanye pertama</h2>
-                <p class="text-sm text-ink-500">Langkah {{ $nomorAktif }} dari 3</p>
+        <div class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl backdrop-blur-md">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+                <div>
+                    <h2 class="text-base font-black text-white">Panduan Alur Pengajuan</h2>
+                    <p class="text-xs font-medium text-slate-400">Langkah {{ $nomorAktif }} dari 3 untuk memulai kampanye</p>
+                </div>
+                <span class="rounded-full bg-[#231f36] px-3 py-1 text-xs font-extrabold text-slate-300 border border-white/10">
+                    Progres Akun
+                </span>
             </div>
 
-            <ol class="mt-5 space-y-0">
+            <ol class="space-y-6">
                 @foreach ($langkah as $i => $l)
-                    <li class="relative flex gap-4 pb-6 last:pb-0">
+                    <li class="relative flex gap-4">
                         @unless ($loop->last)
-                            <span class="absolute top-9 left-[15px] h-full w-px bg-ink-200" aria-hidden="true"></span>
+                            <span class="absolute top-8 left-[15px] bottom-0 w-0.5 bg-white/10" aria-hidden="true"></span>
                         @endunless
 
                         <span @class([
-                            'relative z-10 grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-bold',
-                            'bg-brand-600 text-white' => $l['keadaan'] === 'selesai',
-                            'bg-amber-500 text-white' => $l['keadaan'] === 'menunggu',
-                            'bg-rose-600 text-white' => $l['keadaan'] === 'gagal',
-                            'bg-ink-900 text-white' => $l['keadaan'] === 'berjalan',
-                            'bg-ink-200 text-ink-500' => $l['keadaan'] === 'terkunci',
+                            'relative z-10 grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-black shadow-md',
+                            'bg-[#99ff04] text-black' => $l['keadaan'] === 'selesai',
+                            'bg-amber-400 text-black' => $l['keadaan'] === 'menunggu',
+                            'bg-rose-500 text-white' => $l['keadaan'] === 'gagal',
+                            'bg-[#231f36] text-[#99ff04] border border-[#99ff04]/30' => $l['keadaan'] === 'berjalan',
+                            'bg-[#231f36] text-slate-500 border border-white/10' => $l['keadaan'] === 'terkunci',
                         ])>
                             @if ($l['keadaan'] === 'selesai')
-                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 7.5"/></svg>
+                                ✓
                             @else
                                 {{ $i + 1 }}
                             @endif
                         </span>
 
                         <div class="min-w-0 flex-1 pt-0.5">
-                            <p class="text-sm font-semibold text-ink-900">{{ $l['judul'] }}</p>
-                            <p class="mt-0.5 text-sm leading-relaxed text-ink-600">{{ $l['ket'] }}</p>
+                            <p class="text-sm font-extrabold text-white">{{ $l['judul'] }}</p>
+                            <p class="mt-1 text-xs font-medium leading-relaxed text-slate-300">{{ $l['ket'] }}</p>
 
                             @if ($l['aksi'])
-                                <a href="{{ $l['aksi'][1] }}" class="dt-btn-primary mt-3">{{ $l['aksi'][0] }}</a>
+                                <a href="{{ $l['aksi'][1] }}" class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#99ff04] px-4 py-1.5 text-xs font-black text-black hover:bg-[#84e000] transition-all">
+                                    <span>{{ $l['aksi'][0] }}</span>
+                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </a>
                             @endif
                         </div>
                     </li>
                 @endforeach
             </ol>
-        </section>
+        </div>
     @endunless
 
-    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <x-stat label="Kampanye" :value="$stats['kampanye']" :hint="$stats['aktif'].' sedang tayang'" />
-        <x-stat label="Total terkumpul" :value="rupiah($stats['terkumpul'])" tone="success" />
-        <x-stat label="Sudah dicairkan" :value="rupiah($stats['tercairkan'])" />
-        <x-stat label="Pencairan menunggu" :value="$pendingDisbursements"
-                hint="Diproses admin" :tone="$pendingDisbursements > 0 ? 'warning' : 'neutral'" />
+    {{-- Stat Cards Grid --}}
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="rounded-2xl border border-white/10 bg-[#1b182a] p-5 shadow-lg backdrop-blur-md">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Total Kampanye</span>
+            <div class="mt-2 text-2xl font-black text-white tabular-nums">{{ $stats['kampanye'] }}</div>
+            <div class="mt-1 text-[11px] font-semibold text-[#99ff04]">{{ $stats['aktif'] }} sedang tayang</div>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-[#1b182a] p-5 shadow-lg backdrop-blur-md">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Total Terkumpul</span>
+            <div class="mt-2 text-2xl font-black text-white tabular-nums">{{ rupiah($stats['terkumpul']) }}</div>
+            <div class="mt-1 text-[11px] font-medium text-slate-400">Dari donatur publik</div>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-[#1b182a] p-5 shadow-lg backdrop-blur-md">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Sudah Dicairkan</span>
+            <div class="mt-2 text-2xl font-black text-[#99ff04] tabular-nums">{{ rupiah($stats['tercairkan']) }}</div>
+            <div class="mt-1 text-[11px] font-medium text-slate-400">Pencairan per milestone</div>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-[#1b182a] p-5 shadow-lg backdrop-blur-md">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Pencairan Menunggu</span>
+            <div class="mt-2 text-2xl font-black text-amber-300 tabular-nums">{{ $pendingDisbursements }}</div>
+            <div class="mt-1 text-[11px] font-medium text-slate-400">Dalam review admin</div>
+        </div>
     </div>
 
-    <section class="dt-card mt-6 overflow-hidden">
-        <div class="flex items-center justify-between p-5 sm:p-6">
-            <h2 class="text-lg font-bold text-ink-900">Kampanye saya</h2>
-            <a href="{{ route('pengaju.kampanye.index') }}" class="dt-link text-sm">Kelola semua &rarr;</a>
+    {{-- Kampanye Saya List --}}
+    <div class="rounded-3xl border border-white/10 bg-[#1b182a] shadow-xl overflow-hidden backdrop-blur-md">
+        <div class="flex items-center justify-between border-b border-white/10 px-6 py-5">
+            <h2 class="text-base font-black text-white">Kampanye Terbaru Saya</h2>
+            <a href="{{ route('pengaju.kampanye.index') }}" class="text-xs font-extrabold text-[#99ff04] hover:underline">
+                Kelola Semua Kampanye &rarr;
+            </a>
         </div>
 
         @if ($campaigns->isEmpty())
-            <div class="border-t border-ink-100 px-5 py-12 text-center sm:px-6">
-                <p class="text-sm text-ink-500">Belum ada kampanye. Mulai dengan menyusun RAB dan tahapan pencairan.</p>
+            <div class="px-6 py-12 text-center">
+                <p class="text-xs sm:text-sm font-medium text-slate-400">Belum ada kampanye yang dibuat.</p>
                 @if (auth()->user()->canSubmitCampaign())
-                    <a href="{{ route('pengaju.kampanye.create') }}" class="dt-btn-primary mt-4">Buat kampanye pertama</a>
+                    <a href="{{ route('pengaju.kampanye.create') }}" class="mt-4 inline-flex items-center gap-2 rounded-full bg-[#99ff04] px-5 py-2 text-xs font-black text-black hover:bg-[#84e000]">
+                        <span>Buat Kampanye Pertama</span>
+                    </a>
                 @endif
             </div>
         @else
-            <ul class="divide-y divide-ink-100 border-t border-ink-100">
+            <ul class="divide-y divide-white/10">
                 @foreach ($campaigns->take(5) as $campaign)
-                    <li class="flex flex-wrap items-center gap-4 px-5 py-4 sm:px-6">
+                    <li class="flex flex-wrap items-center justify-between gap-4 px-6 py-4 hover:bg-white/5 transition-colors">
                         <div class="min-w-0 flex-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <p class="font-semibold text-ink-900">{{ $campaign->title }}</p>
-                                <x-badge :tone="match($campaign->status) {
-                                    'approved', 'completed' => 'success',
-                                    'pending' => 'warning',
-                                    'rejected' => 'danger',
-                                    default => 'neutral',
-                                }">{{ $campaign->statusLabel() }}</x-badge>
+                                <h3 class="text-sm font-black text-white line-clamp-1">{{ $campaign->title }}</h3>
+                                <span class="rounded-full bg-[#231f36] px-2.5 py-0.5 text-[10px] font-extrabold text-slate-300 border border-white/10">
+                                    {{ $campaign->statusLabel() }}
+                                </span>
                             </div>
                             <div class="mt-2 max-w-xs">
-                                <x-progress :value="$campaign->progressPercent()" />
+                                <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#231f36]">
+                                    <div class="h-full bg-[#99ff04]" style="width: {{ $campaign->progressPercent() }}%"></div>
+                                </div>
                             </div>
-                            <p class="mt-1.5 text-xs text-ink-500 tabular-nums">
-                                {{ rupiah($campaign->collected_amount) }} dari {{ rupiah($campaign->target_amount) }}
+                            <p class="mt-1 text-[11px] font-bold text-slate-400 tabular-nums">
+                                {{ rupiah($campaign->collected_amount) }} <span class="font-normal text-slate-500">dari {{ rupiah($campaign->target_amount) }}</span>
                             </p>
                         </div>
+
                         <div class="flex gap-2">
                             @if ($campaign->isEditable())
-                                <a href="{{ route('pengaju.kampanye.edit', $campaign) }}" class="dt-btn-secondary">Ubah</a>
+                                <a href="{{ route('pengaju.kampanye.edit', $campaign) }}" class="rounded-xl border border-white/20 bg-[#231f36] px-3 py-1.5 text-xs font-extrabold text-white hover:border-[#99ff04] hover:text-[#99ff04]">
+                                    Edit
+                                </a>
                             @elseif ($campaign->isPublished())
-                                <a href="{{ route('kampanye.transparansi', $campaign) }}" class="dt-btn-secondary">Ledger</a>
+                                <a href="{{ route('kampanye.transparansi', $campaign) }}" class="rounded-xl border border-white/20 bg-[#231f36] px-3 py-1.5 text-xs font-extrabold text-white hover:border-[#99ff04] hover:text-[#99ff04]">
+                                    Ledger Publik
+                                </a>
                             @endif
                         </div>
                     </li>
                 @endforeach
             </ul>
         @endif
-    </section>
+    </div>
+
+</div>
 @endsection

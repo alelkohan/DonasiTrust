@@ -105,7 +105,7 @@ class AppServiceProvider extends ServiceProvider
             } else {
                 $menu = [
                     [
-                        'label' => 'Dasbor',
+                        'label' => 'Riwayat donasi',
                         'url' => route('donatur.dashboard'),
                         'active' => request()->routeIs('donatur.dashboard'),
                     ],

@@ -2,13 +2,15 @@
 
 @php
 $tones = [
-    'neutral' => 'bg-ink-100 text-ink-700',
-    'success' => 'bg-brand-100 text-brand-800',
-    'warning' => 'bg-amber-100 text-amber-800',
-    'danger'  => 'bg-rose-100 text-rose-700',
-    'info'    => 'bg-sky-100 text-sky-800',
-    'brand'   => 'bg-brand-600 text-white',
+    'neutral' => 'bg-[#231f36] text-slate-300 border border-white/10',
+    'success' => 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30',
+    'warning' => 'bg-amber-500/15 text-amber-300 border border-amber-500/30',
+    'danger'  => 'bg-rose-500/15 text-rose-300 border border-rose-500/30',
+    'info'    => 'bg-sky-500/15 text-sky-300 border border-sky-500/30',
+    'brand'   => 'bg-[#99ff04] text-black font-black',
 ];
 @endphp
 
-<span {{ $attributes->class(['dt-badge', $tones[$tone] ?? $tones['neutral']]) }}>{{ $slot }}</span>
+<span {{ $attributes->class(['inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-extrabold', $tones[$tone] ?? $tones['neutral']]) }}>
+    {{ $slot }}
+</span>

@@ -1,47 +1,47 @@
 @extends('layouts.dashboard')
-@section('title', 'Verifikasi identitas')
-
+@section('title', 'Verifikasi Identitas')
 
 @section('panel')
-{{-- Pengaju yang SUDAH terverifikasi tetap perlu bisa mengganti rekening
-     pencairan — pindah bank, rekening lama ditutup, salah ketik nomor. Sebelum
-     ini form-nya tidak dirender sama sekali untuk mereka, sehingga satu-satunya
-     kelompok yang punya rekening untuk diganti justru tidak punya caranya. --}}
-<div x-data="{ ubahRekening: false }">
-    <h1 class="text-2xl font-extrabold tracking-tight text-ink-900">Verifikasi identitas</h1>
-    <p class="mt-2 max-w-2xl text-ink-600">
-        Sebelum bisa menggalang dana, identitas Anda diperiksa <strong>manusia</strong> — bukan sistem otomatis.
-        Kami tidak punya akses ke basis data kependudukan, jadi kami tidak akan berpura-pura bisa
-        memverifikasi NIK secara instan.
-    </p>
+<div x-data="{ ubahRekening: false }" class="space-y-6">
 
+    {{-- Page Header --}}
+    <div class="border-b border-white/10 pb-5">
+        <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white">Verifikasi Identitas &amp; Rekening</h1>
+        <p class="mt-1 text-xs sm:text-sm font-medium leading-relaxed text-slate-400 max-w-2xl">
+            Sebelum bisa menggalang dana, identitas Anda ditinjau oleh tim admin untuk memastikan legalitas, keamanan donatur, dan kunci rekening pencairan.
+        </p>
+    </div>
+
+    {{-- Status Card for Already Verified Users --}}
     @if ($user->verification_status === 'verified')
-        <div class="dt-card mt-6 border-brand-300 p-6" x-show="! ubahRekening">
-            <div class="flex items-start gap-3.5">
-                <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-600 text-white" aria-hidden="true">
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 7.5"/></svg>
+        <div class="rounded-3xl border border-emerald-500/30 bg-emerald-500/10 p-6 shadow-xl backdrop-blur-md" x-show="! ubahRekening">
+            <div class="flex items-start gap-4">
+                <span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#99ff04] text-black font-black text-lg shadow-md">
+                    ✓
                 </span>
-                <div>
-                    <h2 class="font-bold text-ink-900">Identitas Anda sudah terverifikasi</h2>
-                    <p class="mt-1 text-sm text-ink-600">
-                        Diverifikasi pada {{ $user->verified_at?->translatedFormat('d F Y, H:i') }}.
-                        Anda bisa mengajukan kampanye sekarang.
+                <div class="min-w-0 flex-1">
+                    <h2 class="text-base font-black text-white">Identitas Anda Sudah Terverifikasi</h2>
+                    <p class="mt-1 text-xs text-slate-300">
+                        Diverifikasi pada {{ $user->verified_at?->translatedFormat('d F Y, H:i') }}. Anda memiliki akses penuh untuk menggalang dana.
                     </p>
+
                     @if ($user->hasPayoutAccount())
-                        <dl class="mt-4 rounded-xl border border-ink-200 bg-ink-50 p-4 text-sm">
-                            <dt class="text-xs font-semibold tracking-wide text-ink-500 uppercase">Rekening pencairan terdaftar</dt>
-                            <dd class="mt-1 font-semibold text-ink-900">{{ $user->maskedPayoutAccount() }}</dd>
-                        </dl>
+                        <div class="mt-4 rounded-2xl border border-white/10 bg-[#12101c]/80 p-4 text-xs">
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Rekening Pencairan Terdaftar</span>
+                            <div class="mt-1 font-mono font-bold text-[#99ff04] text-sm">{{ $user->maskedPayoutAccount() }}</div>
+                        </div>
                     @endif
 
-                    <div class="mt-4 flex flex-wrap gap-2">
+                    <div class="mt-5 flex flex-wrap gap-3">
                         @if ($user->isPengaju())
-                            <a href="{{ route('pengaju.kampanye.create') }}" class="dt-btn-primary">Buat kampanye</a>
+                            <a href="{{ route('pengaju.kampanye.create') }}" class="inline-flex items-center gap-2 rounded-full bg-[#99ff04] px-5 py-2 text-xs font-black text-black hover:bg-[#84e000] shadow-md shadow-[#99ff04]/20">
+                                <span>Buat Kampanye Baru &rarr;</span>
+                            </a>
                         @endif
 
                         @if ($user->hasPayoutAccount())
-                            <button type="button" @click="ubahRekening = true" class="dt-btn-secondary">
-                                Ubah rekening pencairan
+                            <button type="button" @click="ubahRekening = true" class="rounded-full border border-white/20 bg-[#231f36] px-4 py-2 text-xs font-extrabold text-white hover:border-[#99ff04] hover:text-[#99ff04]">
+                                Ubah Rekening Pencairan
                             </button>
                         @endif
                     </div>
@@ -50,174 +50,172 @@
         </div>
     @endif
 
-    <div @if ($user->verification_status === 'verified') x-show="ubahRekening" x-cloak class="mt-6" @endif>
+    <div @if ($user->verification_status === 'verified') x-show="ubahRekening" x-cloak class="space-y-6" @else class="space-y-6" @endif>
         @if ($user->verification_status === 'verified')
-            <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-sm text-amber-900">
-                <p class="font-semibold">Mengubah rekening akan mengulang verifikasi admin</p>
-                <ul class="mt-1.5 list-disc space-y-1 pl-5 text-xs leading-relaxed text-amber-900/85">
-                    <li>Status akun kembali <strong>menunggu peninjauan</strong>, dan selama itu tidak ada
-                        pencairan yang bisa diajukan.</li>
-                    <li>Admin akan mencocokkan <strong>nama pemilik rekening baru</strong> dengan dokumen KTP Anda yang sudah tersimpan sebelumnya. Anda tidak perlu mengunggah KTP atau mengetik NIK lagi.</li>
-                    <li>Pemberitahuan dikirim ke email Anda, dan perubahan memerlukan kode OTP Email demi keamanan.</li>
+            <div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 text-xs text-amber-200">
+                <p class="font-extrabold text-amber-300 text-sm">Mengubah Rekening Akan Mengulang Proses Verifikasi</p>
+                <ul class="mt-2 list-disc space-y-1 pl-5 leading-relaxed text-slate-300">
+                    <li>Status akun kembali <strong class="text-amber-300">Menunggu Peninjauan</strong>.</li>
+                    <li>Admin akan mencocokkan nama pemilik rekening baru dengan dokumen KTP Anda yang tersimpan.</li>
+                    <li>Perubahan memerlukan validasi Kode OTP Email demi keamanan.</li>
                 </ul>
-                <button type="button" @click="ubahRekening = false" class="dt-btn-secondary mt-3 py-1 px-3 text-xs">
-                    Batal, kembali
+                <button type="button" @click="ubahRekening = false" class="mt-4 rounded-full border border-white/20 bg-[#231f36] px-4 py-1.5 text-xs font-bold text-white hover:border-amber-300">
+                    Batal, Kembali
                 </button>
             </div>
         @endif
 
         @if ($user->verification_status === 'pending')
-            <div class="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-sm text-amber-900">
+            <div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs font-bold text-amber-200">
                 @if ($user->hasPendingPayoutAccount() && $user->hasPayoutAccount())
-                    <p class="font-semibold">Pengajuan perubahan rekening sedang ditinjau admin</p>
-                    <p class="mt-1 text-xs text-amber-800">
-                        Anda mengajukan rekening baru: <strong>{{ $user->maskedPendingPayoutAccount() }}</strong>.
-                        Jika ditolak, akun akan otomatis tetap menggunakan rekening terdaftar sebelumnya ({{ $user->maskedPayoutAccount() }}).
+                    <p class="font-extrabold text-amber-300">Pengajuan Perubahan Rekening Sedang Ditinjau Admin</p>
+                    <p class="mt-1 font-normal text-slate-300">
+                        Anda mengajukan rekening baru: <strong class="font-mono text-amber-300">{{ $user->maskedPendingPayoutAccount() }}</strong>.
+                        Jika ditolak, akun akan tetap menggunakan rekening terdaftar sebelumnya ({{ $user->maskedPayoutAccount() }}).
                     </p>
                 @else
-                    Dokumen Anda sedang ditinjau admin. Anda tetap bisa mengunggah ulang jika ada yang keliru.
+                    ⏳ Dokumen Anda sedang dalam antrean review tim admin. Anda tetap dapat memperbarui pengajuan di bawah jika terdapat kekeliruan.
                 @endif
             </div>
         @endif
 
         @if ($user->verification_status === 'rejected' && $user->verification_note)
-            <div class="mt-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
-                <p class="font-semibold">Pengajuan sebelumnya ditolak</p>
-                <p class="mt-1">{{ $user->verification_note }}</p>
+            <div class="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-200">
+                <p class="font-extrabold text-rose-300">Pengajuan Sebelumnya Ditolak:</p>
+                <p class="mt-1 leading-relaxed">{{ $user->verification_note }}</p>
             </div>
         @endif
 
-        <div class="mt-6 grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+        <div class="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+            
+            {{-- Form Verifikasi Identitas --}}
             <form method="POST" action="{{ route('verifikasi.identitas.store') }}" enctype="multipart/form-data"
-                  class="dt-card space-y-4 p-5 sm:p-6">
+                  class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl backdrop-blur-md space-y-5">
                 @csrf
 
                 <div>
-                    <label for="organization" class="dt-label">Lembaga / organisasi <span class="font-normal text-ink-400">(opsional)</span></label>
-                    <input id="organization" name="organization" type="text" class="dt-input"
+                    <label for="organization" class="block text-xs font-bold text-slate-300 mb-1.5">
+                        Lembaga / Organisasi <span class="font-normal text-slate-400">(Opsional)</span>
+                    </label>
+                    <input id="organization" name="organization" type="text" 
+                           class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#99ff04] focus:outline-none transition-all"
                            value="{{ old('organization', $user->organization) }}"
-                           placeholder="Kosongkan jika mengajukan atas nama pribadi">
+                           placeholder="Kosongkan jika atas nama pribadi">
                 </div>
 
                 @if (! empty($user->identity_document_path) && ! empty($user->identity_number_hash))
-                    <div class="rounded-xl border border-ink-200 bg-ink-50/70 p-4 text-xs text-ink-600">
-                        <div class="flex items-center gap-2 font-semibold text-ink-800">
-                            <svg class="h-4 w-4 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+                    <div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300">
+                        <div class="flex items-center gap-2 font-black text-emerald-400">
+                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
-                            <span>Dokumen Identitas & NIK Tersimpan</span>
+                            <span>Dokumen Identitas &amp; NIK Tersimpan Aman</span>
                         </div>
-                        <p class="mt-1 text-ink-500">
-                            NIK (akhiran ••••{{ $user->identity_number_last4 }}) dan foto KTP Anda telah tersimpan secara aman dari verifikasi sebelumnya. Anda tidak perlu mengunggah ulang.
+                        <p class="mt-1 text-slate-300 leading-relaxed">
+                            NIK (akhiran ••••{{ $user->identity_number_last4 }}) dan foto KTP Anda telah tersimpan secara aman dari verifikasi sebelumnya. Anda tidak perlu mengunggah ulang KTP.
                         </p>
                     </div>
                 @else
                     <div>
-                        <label for="identity_number" class="dt-label">Nomor NIK (16 digit)</label>
+                        <label for="identity_number" class="block text-xs font-bold text-slate-300 mb-1.5">Nomor NIK (16 Digit)</label>
                         <input id="identity_number" name="identity_number" type="text" inputmode="numeric"
-                               maxlength="16" required class="dt-input font-mono tracking-wider"
+                               maxlength="16" required 
+                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm font-mono text-white placeholder-slate-500 focus:border-[#99ff04] focus:outline-none transition-all"
                                value="{{ old('identity_number') }}" placeholder="3374xxxxxxxxxxxx">
-                        <p class="dt-hint">
-                            Hanya 4 digit terakhir yang disimpan di basis data. Nomor lengkap dipakai sekali
-                            untuk pencocokan dengan dokumen, lalu dibuang.
+                        <p class="mt-1 text-[11px] text-slate-400">
+                            Hanya 4 digit terakhir NIK yang disimpan di basis data demi privasi.
                         </p>
                     </div>
 
                     <div>
-                        <label for="identity_document" class="dt-label">Foto/scan KTP</label>
+                        <label for="identity_document" class="block text-xs font-bold text-slate-300 mb-1.5">Foto / Scan Dokumen KTP</label>
                         <input id="identity_document" name="identity_document" type="file" required
                                accept=".jpg,.jpeg,.png,.pdf"
-                               class="dt-input file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-brand-700">
-                        <p class="dt-hint">JPG, PNG, atau PDF. Maksimal {{ round(config('donasi.max_upload_kb') / 1024, 1) }} MB.</p>
+                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-[#99ff04] file:px-3 file:py-1 file:text-xs file:font-black file:text-black">
+                        <p class="mt-1 text-[11px] text-slate-400">Format JPG, PNG, atau PDF (Maks. {{ round(config('donasi.max_upload_kb') / 1024, 1) }} MB).</p>
                     </div>
                 @endif
 
-                {{-- Rekening tujuan pencairan --}}
-                <div class="rounded-xl border border-ink-200 bg-ink-50/60 p-4">
-                    <h3 class="text-sm font-bold text-ink-900">Rekening tujuan pencairan</h3>
-                    <p class="mt-1 text-xs leading-relaxed text-ink-600">
-                        Dana kampanye hanya bisa dicairkan ke rekening ini. Nomornya diperiksa admin
-                        bersamaan dengan KTP, dan tidak bisa diubah sendiri setelah terverifikasi —
-                        itu yang membuat dana tidak bisa dialihkan ke rekening lain saat pencairan.
-                    </p>
+                {{-- Rekening Pencairan --}}
+                <div class="rounded-2xl border border-white/10 bg-[#12101c]/80 p-5 space-y-4">
+                    <div>
+                        <h3 class="text-sm font-black text-white">Rekening Tujuan Pencairan</h3>
+                        <p class="mt-1 text-xs text-slate-400 leading-relaxed">
+                            Dana kampanye yang disetujui hanya akan ditransfer ke rekening ini demi keamanan donatur.
+                        </p>
+                    </div>
 
-                    <div class="mt-4 space-y-4">
-                        <div>
-                            <label for="bank_name" class="dt-label">Nama bank</label>
-                            <input id="bank_name" name="bank_name" type="text" required maxlength="60"
-                                   class="dt-input" value="{{ old('bank_name', $user->bank_name) }}"
-                                   placeholder="BCA / BRI / Mandiri / BSI">
-                            @error('bank_name') <p class="dt-error">{{ $message }}</p> @enderror
-                        </div>
+                    <div>
+                        <label for="bank_name" class="block text-xs font-bold text-slate-300 mb-1.5">Nama Bank</label>
+                        <input id="bank_name" name="bank_name" type="text" required maxlength="60"
+                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white focus:border-[#99ff04] focus:outline-none transition-all" 
+                               value="{{ old('bank_name', $user->bank_name) }}"
+                               placeholder="BCA / BRI / Mandiri / BSI / Bank Jago">
+                    </div>
 
-                        <div>
-                            <label for="bank_account_number" class="dt-label">Nomor rekening</label>
-                            <input id="bank_account_number" name="bank_account_number" type="text"
-                                   inputmode="numeric" required maxlength="40"
-                                   class="dt-input font-mono tracking-wider"
-                                   value="{{ old('bank_account_number', $user->bank_account_number) }}"
-                                   placeholder="1234567890">
-                            @error('bank_account_number') <p class="dt-error">{{ $message }}</p> @enderror
-                        </div>
+                    <div>
+                        <label for="bank_account_number" class="block text-xs font-bold text-slate-300 mb-1.5">Nomor Rekening</label>
+                        <input id="bank_account_number" name="bank_account_number" type="text"
+                               inputmode="numeric" required maxlength="40"
+                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm font-mono text-white focus:border-[#99ff04] focus:outline-none transition-all"
+                               value="{{ old('bank_account_number', $user->bank_account_number) }}"
+                               placeholder="1234567890">
+                    </div>
 
-                        <div>
-                            <label for="bank_account_holder" class="dt-label">Nama pemilik rekening</label>
-                            <input id="bank_account_holder" name="bank_account_holder" type="text"
-                                   required maxlength="120" class="dt-input"
-                                   value="{{ old('bank_account_holder', $user->bank_account_holder) }}"
-                                   placeholder="Sesuai buku tabungan">
-                            <p class="dt-hint">Harus cocok dengan nama di KTP Anda.</p>
-                            @error('bank_account_holder') <p class="dt-error">{{ $message }}</p> @enderror
-                        </div>
+                    <div>
+                        <label for="bank_account_holder" class="block text-xs font-bold text-slate-300 mb-1.5">Nama Pemilik Rekening</label>
+                        <input id="bank_account_holder" name="bank_account_holder" type="text"
+                               required maxlength="120" 
+                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white focus:border-[#99ff04] focus:outline-none transition-all"
+                               value="{{ old('bank_account_holder', $user->bank_account_holder) }}"
+                               placeholder="Sesuai buku tabungan & KTP">
+                        <p class="mt-1 text-[11px] text-slate-400">Harus sesuai dengan nama pada dokumen KTP yang diunggah.</p>
                     </div>
                 </div>
 
-                {{-- Gerbang dua langkah di titik yang benar-benar berisiko.
-                     Mencairkan dana ke rekening lain memang mustahil — tujuannya
-                     terkunci ke profil ini. Maka jalur serangan yang tersisa adalah
-                     MENGGANTI rekening di halaman ini, dan di sinilah kodenya diminta.
-                     Hanya muncul kalau sudah punya rekening tersimpan: pendaftaran
-                     pertama belum punya apa pun untuk dicuri. --}}
+                {{-- Verification OTP / TOTP Security Step --}}
                 @if ($user->hasPayoutAccount())
-                    <div class="rounded-xl border border-brand-200 bg-brand-50/60 p-4 space-y-3">
-                        <x-otp-input purpose="bank_change" label="Kode Verifikasi Email (Wajib jika mengganti rekening)" />
-                        <p class="text-xs leading-relaxed text-brand-900/80">
-                            Wajib diisi <strong>bila Anda mengubah rekening tujuan</strong>. Mengganti rekening
-                            adalah titik paling berisiko karena dana dapat dialihkan, sehingga membutuhkan validasi kode OTP dari email Anda.
-                        </p>
-
+                    <div class="rounded-2xl border border-[#99ff04]/30 bg-[#99ff04]/10 p-5 space-y-4">
+                        <x-otp-input purpose="bank_change" label="Kode Verifikasi Email (Wajib jika mengubah rekening)" />
+                        
                         @if ($user->hasTwoFactorEnabled())
-                            <div class="pt-2 border-t border-brand-200">
-                                <label for="totp_code" class="dt-label">Atau gunakan kode aplikasi authenticator (TOTP)</label>
+                            <div class="pt-3 border-t border-white/10">
+                                <label for="totp_code" class="block text-xs font-bold text-[#99ff04] mb-1.5">Atau gunakan Kode Aplikasi Authenticator (TOTP)</label>
                                 <input id="totp_code" name="totp_code" inputmode="numeric" maxlength="9"
                                        autocomplete="one-time-code" placeholder="000000"
-                                       class="dt-input max-w-44 bg-white text-center font-mono text-lg tracking-[0.3em]">
-                                @error('totp_code') <p class="dt-error">{{ $message }}</p> @enderror
+                                       class="w-36 rounded-xl border border-white/20 bg-[#12101c] px-3 py-2 text-center font-mono text-base font-black text-white tracking-widest">
                             </div>
                         @endif
                     </div>
                 @endif
 
-                <button type="submit" class="dt-btn-primary w-full py-3">Kirim untuk diverifikasi</button>
+                <button type="submit" class="w-full rounded-full bg-[#99ff04] px-6 py-3 text-xs font-black text-black hover:bg-[#84e000] shadow-md shadow-[#99ff04]/20 transition-all">
+                    Kirim Berkas Verifikasi &rarr;
+                </button>
             </form>
 
-            <aside class="dt-card p-5 sm:p-6">
-                <h2 class="text-sm font-bold text-ink-900">Bagaimana dokumen Anda disimpan</h2>
-                <ul class="mt-4 space-y-3.5 text-sm text-ink-600">
-                    @foreach ([
-                        'Berkas masuk ke penyimpanan privat, di luar folder publik web server. Tidak ada URL langsung yang bisa ditebak.',
-                        'Hanya admin dan Anda sendiri yang bisa membukanya, lewat route yang mengecek izin di setiap permintaan.',
-                        'NIK lengkap tidak pernah masuk basis data — hanya 4 digit terakhir.',
-                        'Setiap kali admin memutuskan verifikasi, keputusannya tercatat di jejak audit.',
-                    ] as $point)
-                        <li class="flex gap-2.5">
-                            <svg class="mt-0.5 h-4 w-4 shrink-0 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 7.5"/></svg>
-                            <span class="leading-relaxed">{{ $point }}</span>
-                        </li>
-                    @endforeach
+            {{-- Privacy Info Aside --}}
+            <aside class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl backdrop-blur-md">
+                <h2 class="text-sm font-black text-white">Standar Keamanan Privasi Dokumen</h2>
+                <ul class="mt-4 space-y-3.5 text-xs text-slate-300">
+                    <li class="flex gap-2.5">
+                        <span class="text-[#99ff04] font-bold">✓</span>
+                        <span class="leading-relaxed">Dokumen KTP disimpan di direktori privat terenkripsi di luar akses web publik.</span>
+                    </li>
+                    <li class="flex gap-2.5">
+                        <span class="text-[#99ff04] font-bold">✓</span>
+                        <span class="leading-relaxed">Hanya dibuka oleh tim verifikator resmi melalui middleware authorization.</span>
+                    </li>
+                    <li class="flex gap-2.5">
+                        <span class="text-[#99ff04] font-bold">✓</span>
+                        <span class="leading-relaxed">Nomor NIK lengkap tidak pernah disimpan permanen di database SQL.</span>
+                    </li>
                 </ul>
             </aside>
+
         </div>
+
     </div>
+
 </div>
 @endsection

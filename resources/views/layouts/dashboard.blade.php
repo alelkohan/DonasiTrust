@@ -2,24 +2,24 @@
 
 @section('content')
 <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-    <div class="lg:grid lg:grid-cols-[220px_1fr] lg:gap-8">
+    <div class="lg:grid lg:grid-cols-[240px_1fr] lg:gap-8">
 
-        {{-- Navigasi samping. Di layar kecil jadi baris scroll horizontal. --}}
+        {{-- Navigasi samping dasbor --}}
         <nav aria-label="Navigasi dasbor" class="mb-6 lg:mb-0">
-            <ul class="flex gap-1 overflow-x-auto pb-2 lg:sticky lg:top-24 lg:flex-col lg:overflow-visible lg:pb-0">
+            <ul class="flex gap-2 overflow-x-auto pb-2 lg:sticky lg:top-24 lg:flex-col lg:overflow-visible lg:pb-0">
                 @foreach ($menu ?? [] as $item)
                     <li class="shrink-0">
                         <a href="{{ $item['url'] }}" wire:navigate @class([
-                            'flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm font-medium whitespace-nowrap transition-colors',
-                            'bg-brand-600 text-white' => $item['active'] ?? false,
-                            'text-ink-600 hover:bg-white hover:text-ink-900' => ! ($item['active'] ?? false),
+                            'flex items-center justify-between gap-2.5 rounded-2xl px-4 py-3 text-xs font-extrabold whitespace-nowrap transition-all shadow-sm',
+                            'bg-[#99ff04] text-black shadow-lg shadow-[#99ff04]/20' => $item['active'] ?? false,
+                            'bg-[#1b182a] text-slate-300 hover:bg-[#231f36] hover:text-white border border-white/10' => ! ($item['active'] ?? false),
                         ]) @if($item['active'] ?? false) aria-current="page" @endif>
-                            {{ $item['label'] }}
+                            <span>{{ $item['label'] }}</span>
                             @if (! empty($item['badge']))
                                 <span @class([
-                                    'ml-auto rounded-full px-1.5 py-0.5 text-xs font-bold',
-                                    'bg-white/20 text-white' => $item['active'] ?? false,
-                                    'bg-amber-100 text-amber-800' => ! ($item['active'] ?? false),
+                                    'ml-auto rounded-full px-2 py-0.5 text-[10px] font-black',
+                                    'bg-black/20 text-black' => $item['active'] ?? false,
+                                    'bg-rose-500/20 text-rose-300 border border-rose-500/30' => ! ($item['active'] ?? false),
                                 ])>{{ $item['badge'] }}</span>
                             @endif
                         </a>
