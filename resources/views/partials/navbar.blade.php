@@ -149,4 +149,51 @@
             </button>
         </div>
     </nav>
+
+    {{-- Mobile Dropdown Menu Drawer --}}
+    <div x-show="open"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-3"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-3"
+         @click.away="open = false"
+         class="md:hidden border-t border-b border-white/10 bg-[#13111c]/98 backdrop-blur-xl px-4 py-4 space-y-3"
+         style="display: none;">
+        
+        <div class="flex flex-col gap-1.5">
+            <a href="{{ route('kampanye.index') }}" 
+               class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition-all {{ request()->routeIs('kampanye.*') ? 'bg-[#99ff04]/10 text-[#99ff04]' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+                <span>🔍 Eksplor Kampanye</span>
+            </a>
+
+            <a href="{{ route('transparansi') }}" 
+               class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition-all {{ request()->routeIs('transparansi*') ? 'bg-[#99ff04]/10 text-[#99ff04]' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+                <span>📋 Audit Ledger HMAC</span>
+            </a>
+
+            @if(Route::has('verifikasi.form'))
+                <a href="{{ route('verifikasi.form') }}" 
+                   class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition-all {{ request()->routeIs('verifikasi.*') ? 'bg-[#99ff04]/10 text-[#99ff04]' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+                    <span>🛡️ Verifikasi Kuitansi</span>
+                </a>
+            @endif
+        </div>
+
+        <div class="pt-3 border-t border-white/10 flex flex-col gap-2">
+            @guest
+                <a href="{{ route('login') }}" class="w-full text-center rounded-xl border border-white/20 bg-white/10 py-2.5 text-xs font-extrabold text-white hover:bg-white/20 transition-all">
+                    Masuk Akun
+                </a>
+                <a href="{{ route('register') }}" class="w-full text-center rounded-xl bg-[#99ff04] py-2.5 text-xs font-black text-black hover:bg-[#84e000] transition-all">
+                    Daftar Sebagai Pengaju+
+                </a>
+            @else
+                <a href="{{ $u->homeRoute() }}" class="w-full flex items-center justify-center gap-2 rounded-xl bg-[#99ff04] py-2.5 text-xs font-black text-black">
+                    <span>Ke Dasbor ({{ $u->name }})</span>
+                </a>
+            @endguest
+        </div>
+    </div>
 </header>
