@@ -13,7 +13,13 @@
     searchHtml: '',
     initScroll() {
         const checkScroll = () => {
-            this.isSticky = window.scrollY > 240;
+            const el = document.getElementById('static-navtab');
+            if (el) {
+                const rect = el.getBoundingClientRect();
+                this.isSticky = rect.bottom < 60;
+            } else {
+                this.isSticky = window.scrollY > 300;
+            }
         };
         window.addEventListener('scroll', checkScroll, { passive: true });
         checkScroll();
@@ -68,7 +74,7 @@
 }" x-init="initScroll(); if (searchQuery) { doSearch(); }">
 
 {{-- VGen Hero Header Section --}}
-<section class="relative overflow-hidden bg-[#12101c] pt-8 pb-8 text-white w-full">
+<section class="relative bg-[#12101c] pt-8 pb-8 text-white w-full">
     <div class="relative w-full">
         
         {{-- Title & Hero Main Search Bar Row (Initial Position at top) --}}
@@ -190,46 +196,59 @@
     </div>
 </section>
 
-{{-- STICKY CATEGORY BAR (Search Bar merges inside when scrolled down past the hero section) --}}
-<section class="sticky top-[60px] z-30 bg-[#12101c]/95 backdrop-blur-md py-3 border-b border-white/10 shadow-2xl w-full -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-    <div class="flex flex-col gap-2.5">
-        
-        {{-- Search Input (Appears ONLY when sticky on scroll) --}}
-        <div x-show="isSticky"
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0 -translate-y-2 scale-98"
-             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-             x-transition:leave="transition ease-in duration-150"
-             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-             x-transition:leave-end="opacity-0 -translate-y-2 scale-98"
-             class="w-full">
-            <div class="relative flex items-center">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                </span>
-                <input type="text"
-                       x-model="searchQuery"
-                       @input.debounce.300ms="doSearch()"
-                       placeholder="Cari kampanye, kategori, atau pengaju..."
-                       class="w-full rounded-2xl border border-white/15 bg-[#231f36] py-3 pl-11 pr-20 text-xs sm:text-sm font-medium text-white placeholder-slate-400 shadow-xl backdrop-blur-md transition-all focus:border-[#99ff04] focus:outline-none focus:ring-1 focus:ring-[#99ff04]">
+{{-- STATIC IN-FLOW CATEGORY NAVTAB (Non-sticky, no shadow, no overflow-hidden) --}}
+<div id="static-navtab" class="w-full py-4 border-b border-white/10 mb-6">
+    <div class="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <button type="button"
+                    @click="switchCategory('semua')"
+                    :class="activeCategory === 'semua' || !activeCategory ? 'category-btn-active scale-105' : 'category-btn-inactive'"
+                    class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-black transition-all">
+                Semua
+            </button>
+
+            @foreach ($categories as $key => $label)
                 <button type="button"
-                        x-show="searchQuery"
-                        @click="clearSearch()"
-                        class="absolute right-2 text-[10px] font-extrabold text-slate-400 hover:text-white bg-white/10 hover:bg-white/20 rounded px-1.5 py-0.5 transition-all">
-                    Clear ✕
+                        @click="switchCategory('{{ $key }}')"
+                        :class="activeCategory === '{{ $key }}' ? 'category-btn-active scale-105' : 'category-btn-inactive'"
+                        class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-black transition-all">
+                    {{ $label }}
                 </button>
-            </div>
+            @endforeach
+
+            <a href="{{ route('kampanye.index') }}"
+               class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-bold transition-all">
+                All categories &rarr;
+            </a>
         </div>
 
-        {{-- Category Pills & Counter --}}
-        <div class="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-            <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <div class="hidden md:flex items-center gap-3 shrink-0">
+            <span class="category-stats-text text-xs font-bold text-white">
+                {{ number_format($stats['kampanye']) }}+ kampanye aktif
+            </span>
+        </div>
+    </div>
+</div>
+
+{{-- FLOATING DUPLICATE NAVTAB (Pop out from behind navbar when scrolled past static navtab) --}}
+<div x-show="isSticky"
+     x-transition:enter="transition ease-out duration-300 transform"
+     x-transition:enter-start="-translate-y-full opacity-0"
+     x-transition:enter-end="translate-y-0 opacity-100"
+     x-transition:leave="transition ease-in duration-200 transform"
+     x-transition:leave-start="translate-y-0 opacity-100"
+     x-transition:leave-end="-translate-y-full opacity-0"
+     class="fixed top-[60px] left-0 right-0 z-30 bg-[#13111c]/95 backdrop-blur-md border-b border-white/10 py-2.5 transition-colors"
+     style="display: none;">
+    <div class="w-full max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            
+            {{-- Category Pills --}}
+            <div class="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none">
                 <button type="button"
                         @click="switchCategory('semua')"
                         :class="activeCategory === 'semua' || !activeCategory ? 'category-btn-active scale-105' : 'category-btn-inactive'"
-                        class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-black transition-all shadow-md">
+                        class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-3.5 py-1 text-xs font-black transition-all">
                     Semua
                 </button>
 
@@ -237,26 +256,36 @@
                     <button type="button"
                             @click="switchCategory('{{ $key }}')"
                             :class="activeCategory === '{{ $key }}' ? 'category-btn-active scale-105' : 'category-btn-inactive'"
-                            class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-black transition-all shadow-md">
+                            class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-3.5 py-1 text-xs font-black transition-all">
                         {{ $label }}
                     </button>
                 @endforeach
-
-                <a href="{{ route('kampanye.index') }}"
-                   class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-bold transition-all shadow-md">
-                    All categories &rarr;
-                </a>
             </div>
 
-            <div class="hidden md:flex items-center gap-3 shrink-0">
-                <span class="category-stats-text text-xs font-bold text-white">
-                    {{ number_format($stats['kampanye']) }}+ kampanye aktif
-                </span>
+            {{-- Compact Search Bar --}}
+            <div class="w-full md:w-80 shrink-0">
+                <div class="relative flex items-center">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </span>
+                    <input type="text"
+                           x-model="searchQuery"
+                           @input.debounce.300ms="doSearch()"
+                           placeholder="Cari kampanye / kategori..."
+                           class="w-full rounded-full border border-white/15 bg-[#231f36] py-1.5 pl-9 pr-14 text-xs font-medium text-white placeholder-slate-400 focus:border-[#99ff04] focus:outline-none">
+                    <button type="button"
+                            x-show="searchQuery"
+                            @click="clearSearch()"
+                            class="absolute right-2 text-[10px] font-extrabold text-slate-400 hover:text-white bg-white/10 hover:bg-white/20 rounded px-1.5 py-0.5 transition-all">
+                        Clear ✕
+                    </button>
+                </div>
             </div>
         </div>
-
     </div>
-</section>
+</div>
 
 {{-- MAIN CAMPAIGN GRID SECTION --}}
 <section class="w-full pt-6 pb-16">
