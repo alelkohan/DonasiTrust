@@ -148,10 +148,8 @@ app/
 ├── Services/
 │   ├── AuditLogger         Penulis & pemverifikasi rantai hash
 │   ├── DonationService     Pembuatan donasi + pelunasan idempotent
+│   ├── OtpService          Pengelola OTP email (cooldown, kedaluwarsa, batas coba)
 │   ├── ReceiptVerifier     HMAC-SHA256 kuitansi
-│   ├── Totp                Algoritma TOTP RFC 6238 (tanpa pustaka luar)
-│   ├── TotpGuard           Gerbang dua langkah: sekali pakai, batas laju,
-│   │                       jendela sudo 15 menit, audit
 │   └── *PaymentGateway     Kontrak gateway + implementasi mock/Midtrans
 └── Support/Rupiah          Format & parse rupiah
 ```
@@ -171,17 +169,13 @@ mengubah hasil"*. Jawabannya kami turunkan dari alur uangnya sendiri:
 | Aksi | Perlindungan | Alasan |
 |---|---|---|
 | Donatur berdonasi | Diserahkan ke payment gateway | Autentikasi ada di sisi bank/e-wallet |
-| Pengaju **mengajukan** pencairan | Tidak ada kode | Rekening tujuan sudah terkunci — akun yang dibajak hanya bisa mengalirkan dana ke rekening pemilik aslinya. Kode di sini = friction besar, keamanan nyaris nol |
-| Pengaju **mengganti rekening** | **TOTP wajib** (bila diaktifkan) + notifikasi surel | Inilah satu-satunya jalan dana bisa diarahkan ke pihak lain. Aksinya sekali seumur akun, jadi frictionnya terbayar |
-| Admin **melepas dana** | **TOTP wajib** + jendela 15 menit | Titik tak-bisa-ditarik-kembali. Jendela dipakai supaya antrean pencairan tidak perlu diketik satu per satu |
+| Pengaju **mengajukan** pencairan | **OTP Email wajib** | Memastikan aksi dilakukan secara sadar oleh pemilik akun |
+| Pengaju **mengganti rekening** | **OTP Email wajib** + notifikasi surel | Inilah satu-satunya jalan dana bisa diarahkan ke pihak lain. Aksinya sekali seumur akun, jadi frictionnya terbayar |
+| Admin **melepas dana** | **OTP Email wajib** | Titik tak-bisa-ditarik-kembali. Memastikan bukti transfer dirilis oleh admin pemegang email resmi |
 
 Serangan yang sesungguhnya pada model "rekening terkunci" bukan *"bajak akun lalu cairkan"* — itu
 buntu. Melainkan: **bajak akun → ganti nomor rekening → tunggu admin meloloskan → baru cairkan.**
-Karena itu gerbangnya ada di penggantian rekening, bukan di tiap pengajuan.
-
-Bagi pengaju, dua langkah bersifat **opsional**. Yang mengaktifkannya mendapat lencana di halaman
-kampanyenya — *"Rekening pencairan dikunci verifikasi dua langkah"* — sehingga pilihan itu berubah
-jadi sinyal kepercayaan yang bisa dilihat calon donatur, bukan sekadar pengaturan tersembunyi.
+Karena itu gerbangnya ada di penggantian rekening, bukan hanya di tiap pengajuan.
 
 ---
 
@@ -195,12 +189,9 @@ Yang **sudah** dilakukan:
 - Dokumen identitas disimpan di disk privat (`storage/app/private`), hanya bisa dibuka lewat route
   yang memeriksa izin di tiap permintaan. Tidak ada URL publik yang bisa ditebak.
 - NIK lengkap **tidak** disimpan — hanya 4 digit terakhir.
-- Rate limiting pada login, registrasi, donasi, verifikasi kuitansi, dan unggah identitas.
-- **Verifikasi dua langkah (TOTP, RFC 6238)**, ditulis sendiri tanpa pustaka luar dan diuji
-  terhadap keenam vektor uji resmi RFC 6238 Lampiran B. Kunci disimpan terenkripsi (`APP_KEY`),
-  satu kode hanya berlaku **sekali pakai**, percobaan salah dibatasi 5 kali per 5 menit, dan
-  berhasil maupun gagal keduanya masuk jejak audit ber-rantai. Kode pemulihan sekali pakai
-  disediakan supaya ponsel yang hilang tidak mengunci dana selamanya.
+- **Verifikasi dua langkah (OTP Email)**: Kode 6 digit acak dikirim ke email terdaftar pengguna,
+  berlaku 10 menit, batas 3 kali percobaan salah, cooldown 60 detik antar permintaan, dan setiap
+  pencairan/penggantian rekening diverifikasi serta dicatat ke jejak audit.
 - Rekening tujuan pencairan **tidak bisa ditentukan dari form pengajuan** — disalin dari profil
   yang sudah diverifikasi admin, dan dibekukan pada pengajuan itu.
 - **Menotifikasi pemilik akun** lewat surel setiap kali rekening pencairan diubah. Kalau bukan
@@ -238,10 +229,8 @@ Sesuai urutan build yang disepakati, bagian berikut belum masuk rilis ini:
 - Transfer otomatis lewat API disbursement bank, menggantikan transfer manual + foto bukti
 - Integrasi Midtrans/Xendit sandbox sungguhan
 - Dua langkah saat **login** — sekarang kodenya baru diminta pada aksi berisiko, bukan di pintu masuk
-- OTP WhatsApp sebagai alternatif bagi pengaju non-teknis. Perlu dicatat jujur: WA/SMS **lebih
-  lemah** daripada TOTP (rentan SIM swap dan pembajakan akun WA), jadi posisinya pelengkap
-  kenyamanan — bukan peningkatan keamanan
-- Passkey/WebAuthn, yang justru **lebih kuat** dari TOTP sekaligus lebih mudah dipakai
+- OTP WhatsApp sebagai alternatif selain email
+- Autentikasi biometrik / Passkey (WebAuthn) untuk login cepat tanpa kata sandi
 
 ---
 

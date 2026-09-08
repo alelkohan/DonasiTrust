@@ -23,12 +23,6 @@ use Illuminate\Support\Str;
  */
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Kunci TOTP akun demo. Hanya untuk data contoh — lihat catatan di bawah,
-     * dan jangan pernah memakai kunci yang diketahui publik di produksi.
-     */
-    public const DEMO_TOTP_SECRET = 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP';
-
     public function run(): void
     {
         $audit = app(AuditLogger::class);
@@ -87,22 +81,7 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // Dua langkah untuk akun yang menyentuh uang, supaya alur pencairan bisa
-        // langsung didemokan. Kuncinya SENGAJA sama dan tertulis di README:
-        // penguji tinggal memasukkannya ke aplikasi authenticator, tanpa harus
-        // mendaftar dulu. Di dunia nyata kunci ini tentu tidak boleh diketahui
-        // siapa pun selain pemiliknya.
-        foreach ([$admin, $pengaju] as $pemegangDana) {
-            $pemegangDana->forceFill([
-                'totp_secret' => self::DEMO_TOTP_SECRET,
-                'totp_confirmed_at' => now(),
-                'totp_recovery_codes' => ['DEMO-0001', 'DEMO-0002'],
-            ])->save();
-        }
-
         $audit->record('user.registered', $pengaju, ['role' => 'pengaju'], $pengaju);
-        $audit->record('totp.enabled', $pengaju, ['nama' => $pengaju->name], $pengaju);
-        $audit->record('totp.enabled', $admin, ['nama' => $admin->name], $admin);
         $audit->record('user.verified', $pengaju, ['nama' => $pengaju->name], $admin);
         $audit->record('user.verification_submitted', $pengajuBaru, ['nama' => $pengajuBaru->name], $pengajuBaru);
 
@@ -418,9 +397,6 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->command?->info('Seeder selesai. Login: jokibuat121@gmail.com / password123');
-        $this->command?->info('Kunci TOTP demo (admin & pengaju): '.self::DEMO_TOTP_SECRET);
-        $this->command?->comment('Masukkan kunci itu ke aplikasi authenticator sebagai entri manual '
-            .'untuk mencoba alur pencairan.');
     }
 
     /**

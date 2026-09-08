@@ -204,6 +204,71 @@ class EmailOtpActionsTest extends TestCase
         $this->assertSame(Milestone::STATUS_DISBURSED, $milestone->fresh()->status);
     }
 
+    public function test_admin_rilis_dana_gagal_tanpa_otp_email(): void
+    {
+        Storage::fake('local');
+
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        [$pengaju, $campaign, $milestone] = $this->kampanyeSiapCair();
+
+        $disbursement = Disbursement::create([
+            'reference' => 'PC-2026-TEST02',
+            'campaign_id' => $campaign->id,
+            'milestone_id' => $milestone->id,
+            'requested_by' => $pengaju->id,
+            'amount' => 5_000_000,
+            'purpose' => 'Beli material atap',
+            'payee_bank_name' => 'BRI',
+            'payee_account_number' => '337401004821530',
+            'payee_account_holder' => 'AHMAD FAUZI',
+            'status' => Disbursement::STATUS_APPROVED,
+        ]);
+
+        $response = $this->actingAs($admin)->post(
+            route('admin.pencairan.release', $disbursement),
+            [
+                'proof' => UploadedFile::fake()->create('struk.jpg', 300, 'image/jpeg'),
+            ]
+        );
+
+        $response->assertSessionHasErrors('otp_code');
+        $this->assertSame(Disbursement::STATUS_APPROVED, $disbursement->fresh()->status);
+    }
+
+    public function test_admin_rilis_dana_gagal_dengan_otp_salah(): void
+    {
+        Storage::fake('local');
+
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        [$pengaju, $campaign, $milestone] = $this->kampanyeSiapCair();
+
+        $disbursement = Disbursement::create([
+            'reference' => 'PC-2026-TEST03',
+            'campaign_id' => $campaign->id,
+            'milestone_id' => $milestone->id,
+            'requested_by' => $pengaju->id,
+            'amount' => 5_000_000,
+            'purpose' => 'Beli material atap',
+            'payee_bank_name' => 'BRI',
+            'payee_account_number' => '337401004821530',
+            'payee_account_holder' => 'AHMAD FAUZI',
+            'status' => Disbursement::STATUS_APPROVED,
+        ]);
+
+        $this->bikinOtp($admin, EmailOtp::PURPOSE_DISBURSEMENT_RELEASE, '998877');
+
+        $response = $this->actingAs($admin)->post(
+            route('admin.pencairan.release', $disbursement),
+            [
+                'proof' => UploadedFile::fake()->create('struk.jpg', 300, 'image/jpeg'),
+                'otp_code' => '111111',
+            ]
+        );
+
+        $response->assertSessionHasErrors('otp_code');
+        $this->assertSame(Disbursement::STATUS_APPROVED, $disbursement->fresh()->status);
+    }
+
     public function test_ganti_password_berhasil_dengan_otp_email(): void
     {
         $user = User::factory()->create([

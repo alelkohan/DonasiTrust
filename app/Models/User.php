@@ -43,18 +43,11 @@ class User extends Authenticatable
         'verification_note',
         'verified_at',
         'verified_by',
-        // Catatan: kolom totp_* sengaja TIDAK ada di daftar ini. Kunci dua
-        // langkah tidak boleh bisa ikut terisi lewat mass assignment dari
-        // request; hanya TwoFactorController yang menulisnya secara eksplisit.
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
-        // Kunci TOTP setara kata sandi: siapa pun yang membacanya bisa
-        // membangkitkan kode yang sah kapan saja.
-        'totp_secret',
-        'totp_recovery_codes',
         'identity_document_path',
         'identity_number_last4',
         'identity_number_hash',
@@ -72,13 +65,6 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'verified_at' => 'datetime',
             'password' => 'hashed',
-            // Terenkripsi dengan APP_KEY, bukan di-hash: kunci TOTP harus bisa
-            // dibaca kembali untuk menghitung kode, jadi hash searah tidak bisa
-            // dipakai di sini seperti pada kata sandi.
-            'totp_secret' => 'encrypted',
-            'totp_recovery_codes' => 'encrypted:array',
-            'totp_confirmed_at' => 'datetime',
-            'totp_last_timestep' => 'integer',
         ];
     }
 
@@ -186,36 +172,6 @@ class User extends Authenticatable
         return $this->verification_status === self::VERIFICATION_VERIFIED;
     }
 
-    /**
-     * Dua langkah dianggap aktif hanya bila kuncinya ada DAN sudah dibuktikan
-     * terbaca oleh aplikasi authenticator. Kunci yang dibuat tapi tidak pernah
-     * dikonfirmasi tidak boleh mengunci pemiliknya dari akunnya sendiri.
-     */
-    public function hasTwoFactorEnabled(): bool
-    {
-        return filled($this->totp_secret) && $this->totp_confirmed_at !== null;
-    }
-
-    /**
-     * Versi untuk klaim di halaman PUBLIK.
-     *
-     * Sengaja hanya membaca totp_confirmed_at, supaya halaman publik cukup
-     * memuat satu kolom itu — kunci rahasianya tidak perlu ditarik ke memori
-     * sama sekali hanya untuk menampilkan sebuah lencana.
-     *
-     * Bedanya dengan hasTwoFactorEnabled(): yang itu dipakai gerbang sebelum
-     * menghitung kode, jadi ia ikut memastikan kuncinya benar-benar ada.
-     */
-    public function twoFactorIsConfirmed(): bool
-    {
-        return $this->totp_confirmed_at !== null;
-    }
-
-    /** Sisa kode pemulihan yang belum terpakai. */
-    public function unusedRecoveryCodeCount(): int
-    {
-        return count($this->totp_recovery_codes ?? []);
-    }
 
     /** Hanya pengaju terverifikasi yang boleh mengajukan kampanye. */
     public function canSubmitCampaign(): bool

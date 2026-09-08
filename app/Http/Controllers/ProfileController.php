@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Notifications\PayoutAccountChanged;
 use App\Services\AuditLogger;
 use App\Services\OtpService;
-use App\Services\TotpGuard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -56,7 +55,7 @@ class ProfileController extends Controller
     }
 
     /** Unggah dokumen identitas untuk diverifikasi manual oleh admin. */
-    public function submitVerification(Request $request, AuditLogger $audit, TotpGuard $totp, OtpService $otp)
+    public function submitVerification(Request $request, AuditLogger $audit, OtpService $otp)
     {
         $user = $request->user();
 
@@ -117,8 +116,6 @@ class ProfileController extends Controller
         if ($gantiRekening) {
             if ($request->filled('otp_code')) {
                 $otp->assertValid($user, EmailOtp::PURPOSE_BANK_CHANGE, $request->input('otp_code'));
-            } elseif ($user->hasTwoFactorEnabled() && $request->filled('totp_code')) {
-                $totp->assertValid($user, $request->input('totp_code'), 'profile.payout_account_changed');
             } else {
                 throw ValidationException::withMessages([
                     'otp_code' => 'Kode verifikasi email wajib diisi untuk mengubah rekening tujuan pencairan.',

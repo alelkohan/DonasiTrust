@@ -8,7 +8,6 @@ use App\Models\EmailOtp;
 use App\Models\Milestone;
 use App\Services\AuditLogger;
 use App\Services\OtpService;
-use App\Services\TotpGuard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -99,7 +98,7 @@ class DisbursementController extends Controller
         return back()->with('status', 'Pencairan ditolak.');
     }
 
-    public function release(Request $request, Disbursement $disbursement, AuditLogger $audit, TotpGuard $totp, OtpService $otp)
+    public function release(Request $request, Disbursement $disbursement, AuditLogger $audit, OtpService $otp)
     {
         if ($disbursement->status !== Disbursement::STATUS_APPROVED) {
             return back()->with('error', 'Hanya pencairan yang disetujui yang dapat dirilis.');
@@ -107,20 +106,13 @@ class DisbursementController extends Controller
 
         $request->validate([
             'proof' => 'required|image|max:' . config('donasi.max_upload_kb'),
+            'otp_code' => 'required|string',
+        ], [
+            'otp_code.required' => 'Kode verifikasi email wajib diisi.',
         ]);
 
-        // Verifikasi dua langkah via OTP Email (atau fallback TOTP)
-        if ($request->filled('otp_code')) {
-            $otp->assertValid($request->user(), EmailOtp::PURPOSE_DISBURSEMENT_RELEASE, $request->input('otp_code'));
-            $metode = 'otp_email';
-        } else {
-            $metode = $totp->assertValid(
-                $request->user(),
-                $request->input('totp_code'),
-                'disbursement.release',
-                allowWindow: true,
-            );
-        }
+        $otp->assertValid($request->user(), EmailOtp::PURPOSE_DISBURSEMENT_RELEASE, $request->input('otp_code'));
+        $metode = 'otp_email';
 
         $proofPath = $request->file('proof')->store('pencairan');
 

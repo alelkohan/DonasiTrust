@@ -18,7 +18,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\SecureFileController;
 use App\Http\Controllers\TransparencyController;
-use App\Http\Controllers\TwoFactorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,6 +46,7 @@ Route::get('/donasi/{donation}/status', [DonationController::class, 'status'])->
 Route::post('/donasi/{donation}/simulasi-bayar', [DonationController::class, 'simulatePayment'])
     ->middleware('throttle:20,1')
     ->name('donasi.simulasi');
+Route::post('/donasi/{donation}/batal', [DonationController::class, 'cancel'])->name('donasi.cancel');
 
 Route::get('/kuitansi/{donation}', [ReceiptController::class, 'show'])->name('kuitansi.show');
 Route::get('/verifikasi', [ReceiptController::class, 'form'])->name('verifikasi.form');
@@ -94,15 +94,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/otp/kirim', [\App\Http\Controllers\OtpController::class, 'send'])
         ->middleware('throttle:10,1')->name('otp.send');
 
-    // Verifikasi dua langkah. Throttle-nya rapat karena setiap endpoint di sini
-    // menerima kode enam digit — tanpa batas laju, menebaknya cuma soal waktu.
-    Route::get('/keamanan', [TwoFactorController::class, 'show'])->name('keamanan.index');
-    Route::post('/keamanan/aktifkan', [TwoFactorController::class, 'store'])
-        ->middleware('throttle:10,1')->name('keamanan.aktifkan');
-    Route::delete('/keamanan', [TwoFactorController::class, 'destroy'])
-        ->middleware('throttle:10,1')->name('keamanan.matikan');
-    Route::post('/keamanan/kode-pemulihan', [TwoFactorController::class, 'regenerate'])
-        ->middleware('throttle:10,1')->name('keamanan.pemulihan');
 
     Route::get('/verifikasi-identitas', fn () => view('profile.verification', ['user' => auth()->user()]))
         ->name('verifikasi.identitas');
