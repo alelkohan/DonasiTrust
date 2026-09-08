@@ -260,7 +260,7 @@
 
 {{-- MAIN CAMPAIGN GRID SECTION --}}
 <section class="w-full pt-6 pb-16">
-    <div id="campaign-grid-container" class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 min-h-[300px] transition-all duration-300">
+    <div id="campaign-grid-container" class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 min-h-[300px] transition-all duration-300">
         @include('partials.campaign-grid')
     </div>
 </section>
