@@ -67,9 +67,27 @@ class DonationController extends Controller
     }
 
     /** API Status pembayaran untuk polling otomatis (realtime auto-redirect). */
-    public function status(Donation $donation)
+    public function status(Donation $donation, DonationService $donations)
     {
         $donation->load('campaign');
+
+        if (! $donation->isPaid() && config('donasi.gateway') === 'midtrans') {
+            try {
+                \Midtrans\Config::$serverKey = (string) config('donasi.midtrans.server_key');
+                \Midtrans\Config::$isProduction = (bool) config('donasi.midtrans.is_production', false);
+
+                $orderId = $donation->gateway_payload['order_id'] ?? $donation->reference;
+                $res = \Midtrans\Transaction::status($orderId);
+
+                $status = is_object($res) ? ($res->transaction_status ?? '') : ($res['transaction_status'] ?? '');
+                if (in_array($status, ['settlement', 'capture'], true)) {
+                    $donations->markPaid($donation, ['sync' => (array) $res]);
+                    $donation->refresh();
+                }
+            } catch (\Throwable $e) {
+                // Abaikan jika belum ada transaksi di Midtrans
+            }
+        }
 
         return response()->json([
             'status' => $donation->status,
