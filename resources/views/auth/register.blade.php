@@ -6,7 +6,7 @@
     {{-- Heading --}}
     <div class="mb-6">
         <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white brand-logo-text">
-            Buat akun DonasiTrust
+            Buat akun DonasiTrust ✨
         </h1>
         <p class="mt-2 text-xs sm:text-sm font-medium text-slate-400">
             Sudah punya akun?
