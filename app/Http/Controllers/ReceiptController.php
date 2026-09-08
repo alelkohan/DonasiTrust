@@ -12,6 +12,10 @@ class ReceiptController extends Controller
     {
         $donation->load('campaign');
 
+        if ($donation->isPaid()) {
+            session()->forget('pending_donation_'.$donation->campaign_id);
+        }
+
         return view('public.receipt', [
             'donation' => $donation,
             'shortCode' => $verifier->shortCode($donation),

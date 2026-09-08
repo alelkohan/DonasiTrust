@@ -11,6 +11,7 @@ class Donation extends Model
     public const STATUS_PAID = 'paid';
     public const STATUS_FAILED = 'failed';
     public const STATUS_EXPIRED = 'expired';
+    public const STATUS_CANCELLED = 'cancelled';
 
     protected $fillable = [
         'reference', 'campaign_id', 'user_id', 'donor_name', 'donor_email',
@@ -85,6 +86,7 @@ class Donation extends Model
             self::STATUS_PAID => 'Lunas',
             self::STATUS_FAILED => 'Gagal',
             self::STATUS_EXPIRED => 'Kedaluwarsa',
+            self::STATUS_CANCELLED => 'Dibatalkan',
             default => 'Menunggu pembayaran',
         };
     }

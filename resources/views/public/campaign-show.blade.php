@@ -2,8 +2,18 @@
 @section('title', $campaign->title.' · DonasiTrust')
 @section('description', $campaign->summary)
 
-@section('content')
-<div class="w-full py-8">
+@section('content')<div class="w-full py-8"
+     x-data="{
+         batal: false,
+         bukaBatal() {
+             this.batal = true;
+         },
+         tutupBatal() {
+             this.batal = false;
+         }
+     }"
+     @buka-batal-donasi.window="bukaBatal()"
+     @tutup-batal-donasi.window="tutupBatal()">
 
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
         <nav class="text-xs font-bold text-slate-400" aria-label="Breadcrumb">
@@ -19,13 +29,44 @@
         @endif
     </div>
 
+    @if (!empty($pendingDonation))
+        <div class="mb-6 rounded-3xl border border-amber-400/30 bg-gradient-to-r from-amber-500/15 via-[#1b182a] to-amber-500/10 p-5 sm:p-6 text-white shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-start sm:items-center gap-4">
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-400/20 text-amber-300 shadow-inner">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="rounded bg-amber-400/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-300">
+                            Pembayaran Belum Selesai
+                        </span>
+                        <span class="font-mono text-xs text-slate-400">#{{ $pendingDonation->reference }}</span>
+                    </div>
+                    <p class="mt-1 text-sm font-bold text-white">
+                        Anda memiliki transaksi donasi sebesar <span class="text-[#99ff04] font-black">{{ rupiah($pendingDonation->amount) }}</span> yang menunggu diselesaikan.
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+                <a href="{{ route('donasi.checkout', $pendingDonation) }}"
+                   class="inline-flex items-center gap-2 rounded-full bg-[#99ff04] px-6 py-3 text-xs font-black text-black hover:bg-[#84e000] transition-transform active:scale-95 shadow-lg shadow-[#99ff04]/20 cursor-pointer">
+                    Lanjutkan Pembayaran &rarr;
+                </a>
+            </div>
+        </div>
+    @endif
+
     <div class="grid gap-8 lg:grid-cols-[1.65fr_1fr] lg:items-start">
 
         {{-- Kolom utama --}}
         <div class="min-w-0">
             <div class="rounded-3xl border border-white/10 bg-[#1b182a] overflow-hidden shadow-2xl">
                 <div class="aspect-[16/9] bg-[#12101c] relative overflow-hidden">
-                    <img src="{{ $campaign->coverUrl() }}" alt="{{ $campaign->title }}" class="h-full w-full object-cover">
+                    <img src="{{ $campaign->coverUrl() }}" alt="{{ $campaign->title }}"
+                         onerror="this.onerror=null;this.src='{{ asset('images/no-cover.svg') }}';"
+                         class="h-full w-full object-cover">
                     <div class="absolute inset-0 bg-[#12101c]/30"></div>
                 </div>
 
@@ -58,6 +99,11 @@
                             </p>
                             <p class="text-xs text-slate-400">
                                 Identitas KTP terverifikasi admin
+                            </p>
+                            <p class="mt-1 flex items-center gap-1.5 text-xs font-medium text-emerald-400"
+                               title="Rekening pencairan pengaju ini terverifikasi admin dan dikunci verifikasi email.">
+                                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+                                Rekening pencairan terverifikasi &amp; terkunci
                             </p>
                         </div>
                     </div>
@@ -215,5 +261,70 @@
             @livewire('donation-form', ['campaign' => $campaign])
         </aside>
     </div>
+
+    @if (!empty($pendingDonation))
+        {{-- MODAL KONFIRMASI BATALKAN PEMBAYARAN (Mobile: Bottom Sheet Drawer, Desktop: Centered Glassmorphism Modal) --}}
+        <div x-show="batal" x-cloak
+             class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
+             role="dialog" aria-modal="true"
+             @keydown.escape.window="tutupBatal()">
+
+            {{-- Backdrop blur & darken --}}
+            <div x-show="batal"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-black/80 backdrop-blur-md"
+                 @click="tutupBatal()"
+                 aria-hidden="true"></div>
+
+            {{-- Modal Box --}}
+            <div x-show="batal"
+                 x-transition:enter="transition ease-out duration-300 transform"
+                 x-transition:enter-start="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0"
+                 x-transition:enter-end="translate-y-0 sm:scale-100 sm:opacity-100"
+                 x-transition:leave="transition ease-in duration-200 transform"
+                 x-transition:leave-start="translate-y-0 sm:scale-100 sm:opacity-100"
+                 x-transition:leave-end="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0"
+                 class="relative w-full sm:max-w-md rounded-t-[2.5rem] sm:rounded-3xl border border-white/15 bg-[#1b182a]/95 backdrop-blur-xl p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto"
+                 @click.stop>
+
+                <div class="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/25 sm:hidden"></div>
+
+                <div class="flex items-center gap-3.5">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-500/20 text-rose-400 shadow-inner">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-black text-white">Batalkan Pembayaran?</h3>
+                        <p class="text-xs text-slate-400">Transaksi #{{ $pendingDonation->reference }} akan dibatalkan.</p>
+                    </div>
+                </div>
+
+                <p class="my-4 text-xs leading-relaxed text-slate-300">
+                    Setelah dibatalkan, nomor transaksi ini tidak dapat digunakan lagi dan formulir donasi akan terbuka untuk membuat donasi baru.
+                </p>
+
+                <div class="space-y-2.5">
+                    <form method="POST" action="{{ route('donasi.cancel', $pendingDonation) }}">
+                        @csrf
+                        <button type="submit"
+                                class="flex w-full items-center justify-center gap-2 rounded-full bg-rose-500 py-3.5 px-6 text-sm font-black text-white hover:bg-rose-600 shadow-xl shadow-rose-500/20 transition-transform active:scale-95 cursor-pointer">
+                            Ya, Batalkan Transaksi Ini
+                        </button>
+                    </form>
+                    <button type="button" @click="tutupBatal()"
+                            class="w-full py-2.5 text-xs font-bold text-slate-400 hover:text-white transition-colors cursor-pointer">
+                        Jangan Batalkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
 @endsection

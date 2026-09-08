@@ -51,6 +51,7 @@
     <div class="rounded-3xl border border-white/10 bg-[#1b182a] flex items-center gap-4 p-5 shadow-2xl">
         <span class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#12101c]">
             <img src="{{ $donation->campaign->coverUrl() }}" alt="{{ $donation->campaign->title }}"
+                 onerror="this.onerror=null;this.src='{{ asset('images/no-cover.svg') }}';"
                  class="h-full w-full object-cover">
         </span>
         <div class="min-w-0">
@@ -83,6 +84,21 @@
                 <div class="mt-6 rounded-3xl border border-white/10 bg-white p-4 shadow-xl">
                     <div id="snap-embed-container" class="min-h-[500px] w-full rounded-2xl overflow-hidden bg-white"></div>
                 </div>
+
+                @php
+                    $redirectUrl = $donation->gateway_payload['redirect_url'] ?? null;
+                @endphp
+                @if ($redirectUrl)
+                    <div class="mt-4 text-center">
+                        <p class="text-xs text-slate-400">
+                            Kotak pembayaran tidak muncul?
+                            <a href="{{ $redirectUrl }}" target="_blank" rel="noopener noreferrer"
+                               class="font-bold text-[#99ff04] hover:underline inline-flex items-center gap-1">
+                                Buka Halaman Pembayaran Midtrans &rarr;
+                            </a>
+                        </p>
+                    </div>
+                @endif
             @else
                 <div class="mt-6 rounded-3xl border border-white/10 bg-[#231f36] p-6 text-center">
                     <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Tagihan</p>
@@ -149,6 +165,12 @@
             </dl>
         </div>
     </div>
+
+    <p class="mt-5 text-center text-xs text-slate-400">
+        Menutup halaman ini tidak membatalkan transaksi. Simpan nomor transaksi
+        <span class="font-mono font-bold text-[#99ff04]">{{ $donation->reference }}</span>
+        untuk melanjutkan pembayaran sebelum batas waktu berakhir.
+    </p>
 </div>
 
 @push('head')
@@ -195,6 +217,51 @@
             },
         }));
     });
+
+    @if ($isMidtrans && $snapToken)
+        function initMidtransSnap() {
+            const container = document.getElementById('snap-embed-container');
+            if (!container || container.dataset.initialized) return;
+
+            if (window.snap && typeof window.snap.embed === 'function') {
+                container.dataset.initialized = 'true';
+                window.snap.embed('{{ $snapToken }}', {
+                    embedId: 'snap-embed-container',
+                    onSuccess: function (result) {
+                        fetch('{{ route('donasi.status', $donation->reference) }}')
+                            .then(res => res.json())
+                            .then(data => {
+                                window.location.href = data.redirect_url;
+                            })
+                            .catch(() => {
+                                window.location.href = '{{ route('kuitansi.show', $donation) }}';
+                            });
+                    },
+                    onPending: function (result) {
+                        console.log('Midtrans Pending:', result);
+                    },
+                    onError: function (result) {
+                        console.error('Midtrans Error:', result);
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initMidtransSnap);
+        document.addEventListener('livewire:navigated', initMidtransSnap);
+        window.addEventListener('load', initMidtransSnap);
+
+        let snapAttempts = 0;
+        const checkSnapInterval = setInterval(() => {
+            snapAttempts++;
+            if (window.snap && typeof window.snap.embed === 'function') {
+                clearInterval(checkSnapInterval);
+                initMidtransSnap();
+            } else if (snapAttempts > 30) {
+                clearInterval(checkSnapInterval);
+            }
+        }, 300);
+    @endif
 </script>
 @endpush
 @endsection

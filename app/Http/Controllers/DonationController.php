@@ -30,13 +30,22 @@ class DonationController extends Controller
             'donor_email' => 'email',
         ]);
 
-        if (! auth()->check() && empty($data['donor_email'])) {
-            return back()->withInput()->withErrors([
-                'donor_email' => 'Email diperlukan untuk mengirim kuitansi digital.',
-            ]);
+        $pendingReference = session('pending_donation_'.$campaign->id);
+        if ($pendingReference) {
+            $existing = Donation::where('reference', $pendingReference)
+                ->where('campaign_id', $campaign->id)
+                ->where('status', Donation::STATUS_PENDING)
+                ->first();
+
+            if ($existing && ! $existing->isExpired()) {
+                return redirect()->route('donasi.checkout', $existing)
+                    ->with('error', 'Selesaikan atau batalkan transaksi donasi Anda sebelumnya terlebih dahulu.');
+            }
         }
 
         $donation = $donations->create($campaign, $data);
+
+        session()->put('pending_donation_'.$campaign->id, $donation->reference);
 
         return redirect()->route('donasi.checkout', $donation);
     }
@@ -83,6 +92,7 @@ class DonationController extends Controller
                 if (in_array($status, ['settlement', 'capture'], true)) {
                     $donations->markPaid($donation, ['sync' => (array) $res]);
                     $donation->refresh();
+                    session()->forget('pending_donation_'.$donation->campaign_id);
                 }
             } catch (\Throwable $e) {
                 // Abaikan jika belum ada transaksi di Midtrans
@@ -92,10 +102,7 @@ class DonationController extends Controller
         return response()->json([
             'status' => $donation->status,
             'is_paid' => $donation->isPaid(),
-            'redirect_url' => route('kampanye.transparansi', [
-                'campaign' => $donation->campaign->slug,
-                'paid' => 1,
-            ]),
+            'redirect_url' => route('kuitansi.show', $donation),
         ]);
     }
 
@@ -109,6 +116,7 @@ class DonationController extends Controller
         abort_unless(config('donasi.gateway') === 'mock', 404);
 
         if ($donation->isPaid()) {
+            session()->forget('pending_donation_'.$donation->campaign_id);
             return redirect()->route('kuitansi.show', $donation);
         }
 
@@ -116,14 +124,30 @@ class DonationController extends Controller
         // pembayaran setelah lewat, batas waktu itu cuma hiasan.
         if ($donation->isExpired()) {
             $donation->update(['status' => Donation::STATUS_EXPIRED]);
+            session()->forget('pending_donation_'.$donation->campaign_id);
 
             return back()->with('error',
                 'Sesi pembayaran ini sudah lewat batas waktu. Silakan buat donasi baru.');
         }
 
         $donations->markPaid($donation, ['simulated_at' => now()->toIso8601String()]);
+        session()->forget('pending_donation_'.$donation->campaign_id);
 
         return redirect()->route('kuitansi.show', $donation->fresh())
             ->with('status', 'Pembayaran diterima. Kuitansi digital Anda sudah terbit.');
+    }
+
+    /**
+     * Batalkan transaksi donasi pending.
+     */
+    public function cancel(Donation $donation)
+    {
+        if ($donation->status === Donation::STATUS_PENDING) {
+            $donation->update(['status' => Donation::STATUS_CANCELLED]);
+            session()->forget('pending_donation_'.$donation->campaign_id);
+        }
+
+        return redirect()->route('kampanye.show', $donation->campaign)
+            ->with('status', 'Transaksi pembayaran berhasil dibatalkan. Anda dapat membuat donasi baru sekarang.');
     }
 }

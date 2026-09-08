@@ -49,7 +49,7 @@ class ReceiptVerificationTest extends TestCase
         $this->post('/verifikasi', [
             'reference' => $donation->reference,
             'code' => $code,
-        ])->assertOk()->assertSee('Kuitansi asli dan terdaftar');
+        ])->assertOk()->assertSee('Kuitansi Asli & Valid', false);
     }
 
     public function test_kode_yang_diubah_satu_karakter_ditolak(): void
@@ -61,7 +61,7 @@ class ReceiptVerificationTest extends TestCase
         $this->post('/verifikasi', [
             'reference' => $donation->reference,
             'code' => $rusak,
-        ])->assertOk()->assertSee('Kuitansi tidak cocok');
+        ])->assertOk()->assertSee('Kuitansi Tidak Cocok');
     }
 
     public function test_kode_terikat_pada_nominal_sehingga_nominal_yang_diubah_membatalkan_kuitansi(): void
@@ -83,6 +83,6 @@ class ReceiptVerificationTest extends TestCase
 
         $this->get('/verifikasi?reference='.$donation->reference.'&code='.$code)
             ->assertOk()
-            ->assertSee('Kuitansi asli dan terdaftar');
+            ->assertSee('Kuitansi Asli & Valid', false);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Campaign;
+use App\Models\Donation;
 use App\Services\DonationService;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -29,6 +30,8 @@ class DonationForm extends Component
 
     public bool $isAnonymous = false;
 
+    public bool $showPendingBanner = true;
+
     public function mount(Campaign $campaign): void
     {
         $this->campaign = $campaign;
@@ -44,7 +47,7 @@ class DonationForm extends Component
         return [
             'amount' => ['required'],
             'donorName' => ['nullable', 'string', 'max:120'],
-            'donorEmail' => [auth()->check() ? 'nullable' : 'required', 'email', 'max:255'],
+            'donorEmail' => ['nullable', 'email', 'max:255'],
             'note' => ['nullable', 'string', 'max:500'],
         ];
     }
@@ -91,32 +94,62 @@ class DonationForm extends Component
             : '';
     }
 
-    public function submit(DonationService $donations)
+    #[Computed]
+    public function pendingDonation(): ?Donation
     {
-        if (! $this->isValidAmount) {
-            $this->addError('amount', 'Nominal minimal '
-                .rupiah((int) config('donasi.min_donation')).' dan maksimal '
-                .rupiah((int) config('donasi.max_donation')).'.');
-
+        if (! $this->showPendingBanner) {
             return null;
         }
 
-        if (! auth()->check()) {
-            session([
-                'pending_donation' => [
-                    'campaign_id' => $this->campaign->id,
-                    'amount' => $this->amountValue,
-                    'donor_name' => $this->donorName ?: null,
-                    'donor_email' => $this->donorEmail ?: null,
-                    'message' => $this->note ?: null,
-                    'is_anonymous' => $this->isAnonymous,
-                ],
-                'url.intended' => route('kampanye.show', $this->campaign->slug),
-            ]);
+        $reference = session('pending_donation_'.$this->campaign->id);
 
-            session()->flash('status', 'Silakan masuk atau daftar terlebih dahulu untuk melanjutkan transaksi donasi.');
+        if ($reference) {
+            $donation = Donation::where('reference', $reference)
+                ->where('campaign_id', $this->campaign->id)
+                ->first();
 
-            return $this->redirectRoute('login');
+            if ($donation && $donation->status === Donation::STATUS_PENDING && ! $donation->isExpired()) {
+                return $donation;
+            }
+
+            session()->forget('pending_donation_'.$this->campaign->id);
+        }
+
+        if ($user = auth()->user()) {
+            $userDonation = Donation::where('user_id', $user->id)
+                ->where('campaign_id', $this->campaign->id)
+                ->where('status', Donation::STATUS_PENDING)
+                ->latest()
+                ->first();
+
+            if ($userDonation && ! $userDonation->isExpired()) {
+                return $userDonation;
+            }
+        }
+
+        return null;
+    }
+
+    public function cancelPendingDonation(): void
+    {
+        $donation = $this->pendingDonation;
+
+        if ($donation) {
+            $donation->update(['status' => Donation::STATUS_CANCELLED]);
+        }
+
+        session()->forget('pending_donation_'.$this->campaign->id);
+        $this->showPendingBanner = false;
+        unset($this->pendingDonation);
+        session()->flash('status', 'Transaksi pembayaran berhasil dibatalkan. Anda dapat membuat donasi baru sekarang.');
+    }
+
+    public function submit(DonationService $donations)
+    {
+        if ($this->pendingDonation) {
+            $this->addError('amount', 'Anda masih memiliki transaksi yang belum diselesaikan (#'.$this->pendingDonation->reference.'). Selesaikan atau batalkan transaksi tersebut terlebih dahulu.');
+
+            return null;
         }
 
         $this->validate();
@@ -131,11 +164,13 @@ class DonationForm extends Component
 
         $donation = $donations->create($this->campaign, [
             'amount' => $this->amountValue,
-            'donor_name' => $this->isAnonymous ? 'Anonim' : ($this->donorName ?: auth()->user()->name),
-            'donor_email' => $this->donorEmail ?: auth()->user()->email,
+            'donor_name' => $this->isAnonymous ? 'Anonim' : ($this->donorName ?: (auth()->user()?->name ?: 'Donatur')),
+            'donor_email' => $this->donorEmail ?: auth()->user()?->email,
             'message' => $this->note ?: null,
             'is_anonymous' => $this->isAnonymous,
         ]);
+
+        session()->put('pending_donation_'.$this->campaign->id, $donation->reference);
 
         return $this->redirectRoute('donasi.checkout', ['donation' => $donation->reference]);
     }

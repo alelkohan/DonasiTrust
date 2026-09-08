@@ -98,4 +98,19 @@ class DonationFlowTest extends TestCase
 
         $this->assertSame(Donation::STATUS_PENDING, $donation->fresh()->status);
     }
+
+    public function test_status_endpoint_mengarahkan_ke_halaman_kuitansi(): void
+    {
+        $campaign = $this->campaign();
+        $donation = app(DonationService::class)
+            ->create($campaign, ['amount' => 50_000, 'donor_email' => 'a@b.test']);
+
+        $response = $this->getJson(route('donasi.status', $donation));
+        $response->assertOk()
+            ->assertJson([
+                'status' => Donation::STATUS_PENDING,
+                'is_paid' => false,
+                'redirect_url' => route('kuitansi.show', $donation),
+            ]);
+    }
 }

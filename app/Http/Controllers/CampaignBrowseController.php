@@ -34,18 +34,43 @@ class CampaignBrowseController extends Controller
     {
         abort_unless($campaign->isPublished(), 404);
 
-        // Kolom pengaju dibatasi: halaman ini publik, jadi NIK, rekening, dan
-        // kunci dua langkahnya tidak boleh ikut tertarik. totp_confirmed_at
-        // ditambahkan hanya untuk lencana "rekening dikunci dua langkah" —
-        // tanggal itu sendiri tidak membocorkan apa pun.
-        $campaign->load(['user:id,name,organization,totp_confirmed_at', 'items', 'milestones']);
+        // Kolom pengaju dibatasi: halaman ini publik, jadi NIK dan rekening
+        // tidak boleh ikut tertarik.
+        $campaign->load(['user:id,name,organization', 'items', 'milestones']);
 
         $recentDonations = $campaign->paidDonations()
             ->latest('paid_at')
             ->take(8)
             ->get();
 
-        return view('public.campaign-show', compact('campaign', 'recentDonations'));
+        $pendingReference = session('pending_donation_'.$campaign->id);
+        $pendingDonation = null;
+
+        if ($pendingReference) {
+            $pendingDonation = Donation::where('reference', $pendingReference)
+                ->where('campaign_id', $campaign->id)
+                ->where('status', Donation::STATUS_PENDING)
+                ->first();
+
+            if ($pendingDonation && $pendingDonation->isExpired()) {
+                $pendingDonation = null;
+                session()->forget('pending_donation_'.$campaign->id);
+            }
+        }
+
+        if (! $pendingDonation && auth()->check()) {
+            $pendingDonation = Donation::where('user_id', auth()->id())
+                ->where('campaign_id', $campaign->id)
+                ->where('status', Donation::STATUS_PENDING)
+                ->latest()
+                ->first();
+
+            if ($pendingDonation && $pendingDonation->isExpired()) {
+                $pendingDonation = null;
+            }
+        }
+
+        return view('public.campaign-show', compact('campaign', 'recentDonations', 'pendingDonation'));
     }
 
     /** Halaman transparansi publik: ledger pemasukan, pencairan, dan LPJ. */
