@@ -1,5 +1,5 @@
 <footer class="mt-16 border-t border-white/10 bg-[#0d0b15] text-slate-400 w-full transition-colors duration-300">
-    <div class="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-12">
+    <div class="w-full px-1.5 sm:px-2 lg:px-3 py-12">
         <div class="grid gap-10 md:grid-cols-4">
             
             {{-- Brand Info --}}
