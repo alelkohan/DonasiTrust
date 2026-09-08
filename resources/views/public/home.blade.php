@@ -202,8 +202,8 @@
         <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             <button type="button"
                     @click="switchCategory('semua')"
-                    :class="activeCategory === 'semua' || !activeCategory ? 'category-btn-active scale-105' : 'category-btn-inactive'"
-                    class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-black transition-all">
+                    :class="(activeCategory === 'semua' || !activeCategory) ? 'category-btn-active scale-105' : 'category-btn-inactive'"
+                    class="flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-black transition-all">
                 Semua
             </button>
 
@@ -211,7 +211,7 @@
                 <button type="button"
                         @click="switchCategory('{{ $key }}')"
                         :class="activeCategory === '{{ $key }}' ? 'category-btn-active scale-105' : 'category-btn-inactive'"
-                        class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-black transition-all">
+                        class="flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-black transition-all">
                     {{ $label }}
                 </button>
             @endforeach
@@ -238,7 +238,7 @@
      x-transition:leave="transition ease-in duration-200 transform"
      x-transition:leave-start="translate-y-0 opacity-100"
      x-transition:leave-end="-translate-y-full opacity-0"
-     class="fixed top-[60px] left-0 right-0 z-30 bg-[#13111c]/95 backdrop-blur-md border-b border-white/10 py-2.5 transition-colors"
+     class="navtab-floating-bar fixed top-[60px] left-0 right-0 z-30 backdrop-blur-md py-2.5 transition-colors"
      style="display: none;">
     <div class="w-full max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
@@ -247,8 +247,8 @@
             <div class="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none">
                 <button type="button"
                         @click="switchCategory('semua')"
-                        :class="activeCategory === 'semua' || !activeCategory ? 'category-btn-active scale-105' : 'category-btn-inactive'"
-                        class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-3.5 py-1 text-xs font-black transition-all">
+                        :class="(activeCategory === 'semua' || !activeCategory) ? 'category-btn-active scale-105' : 'category-btn-inactive'"
+                        class="flex shrink-0 items-center justify-center rounded-full border px-3.5 py-1 text-xs font-black transition-all">
                     Semua
                 </button>
 
@@ -256,7 +256,7 @@
                     <button type="button"
                             @click="switchCategory('{{ $key }}')"
                             :class="activeCategory === '{{ $key }}' ? 'category-btn-active scale-105' : 'category-btn-inactive'"
-                            class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-3.5 py-1 text-xs font-black transition-all">
+                            class="flex shrink-0 items-center justify-center rounded-full border px-3.5 py-1 text-xs font-black transition-all">
                         {{ $label }}
                     </button>
                 @endforeach
@@ -274,7 +274,7 @@
                            x-model="searchQuery"
                            @input.debounce.300ms="doSearch()"
                            placeholder="Cari kampanye / kategori..."
-                           class="w-full rounded-full border border-white/15 bg-[#231f36] py-1.5 pl-9 pr-14 text-xs font-medium text-white placeholder-slate-400 focus:border-[#99ff04] focus:outline-none">
+                           class="navtab-search-input w-full rounded-full py-1.5 pl-9 pr-14 text-xs font-medium focus:border-[#99ff04] focus:outline-none">
                     <button type="button"
                             x-show="searchQuery"
                             @click="clearSearch()"
