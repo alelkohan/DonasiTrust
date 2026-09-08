@@ -26,7 +26,7 @@ class AdminMenu
         $antrean = $withBadges ? self::antrean() : [];
 
         $definisi = [
-            'ringkasan' => ['Ringkasan', 'admin.dashboard', null],
+            'ringkasan' => ['Dasbor', 'admin.dashboard', null],
             'kampanye' => ['Review kampanye', 'admin.kampanye.index', 'kampanye'],
             'pencairan' => ['Pencairan dana', 'admin.pencairan.index', 'pencairan'],
             'lpj' => ['Verifikasi LPJ', 'admin.lpj.index', 'lpj'],

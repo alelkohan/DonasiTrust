@@ -12,6 +12,7 @@
         <a href="{{ route('kampanye.show', $campaign) }}" class="block h-full w-full">
             <img src="{{ $campaign->coverUrl() }}" alt="{{ $campaign->title }}"
                  loading="lazy"
+                 onerror="this.onerror=null;this.src='{{ asset('images/no-cover.svg') }}';"
                  class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
             <div class="absolute inset-0 bg-[#12101c]/40 opacity-60 group-hover:opacity-30 transition-opacity"></div>
         </a>
@@ -26,13 +27,13 @@
             </span>
         </div>
 
-        {{-- Top Right Bookmark Button --}}
+        <!-- {{-- Top Right Bookmark Button --}}
         <button type="button" title="Simpan Kampanye"
                 class="absolute top-3 right-3 grid h-8 w-8 place-items-center rounded-full bg-black/50 text-white backdrop-blur-md transition-all hover:bg-black/80 hover:scale-110 active:scale-95">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
             </svg>
-        </button>
+        </button> -->
 
         {{-- Bottom Image Tag --}}
         @if ($days !== null && $days <= 7)

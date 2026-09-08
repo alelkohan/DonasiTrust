@@ -45,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
             if ($user->isAdmin()) {
                 $menu = [
                     [
-                        'label' => 'Ringkasan',
+                        'label' => 'Dasbor',
                         'url' => route('admin.dashboard'),
                         'active' => request()->routeIs('admin.dashboard'),
                     ],
@@ -82,7 +82,7 @@ class AppServiceProvider extends ServiceProvider
             } elseif ($user->isPengaju()) {
                 $menu = [
                     [
-                        'label' => 'Ringkasan',
+                        'label' => 'Dasbor',
                         'url' => route('pengaju.dashboard'),
                         'active' => request()->routeIs('pengaju.dashboard'),
                     ],

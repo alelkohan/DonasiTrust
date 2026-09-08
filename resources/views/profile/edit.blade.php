@@ -13,7 +13,7 @@
     <div class="grid gap-6 lg:grid-cols-2">
         
         {{-- Section 1: Data Diri Form --}}
-        <section class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl backdrop-blur-md">
+        <section class="dt-card p-6">
             <h2 class="text-base font-black text-white flex items-center gap-2">
                 <span class="grid h-7 w-7 place-items-center rounded-lg bg-[#99ff04] text-black text-xs font-black">1</span>
                 <span>Informasi Data Diri</span>
@@ -25,14 +25,14 @@
                 <div>
                     <label for="name" class="block text-xs font-bold text-slate-300 mb-1.5">Nama Lengkap</label>
                     <input id="name" name="name" type="text" required 
-                           class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#99ff04] focus:outline-none transition-all" 
+                           class="dt-input text-sm" 
                            value="{{ old('name', $user->name) }}">
                 </div>
 
                 <div>
                     <label for="email-display" class="block text-xs font-bold text-slate-300 mb-1.5">Alamat Email</label>
                     <input id="email-display" type="email" 
-                           class="w-full rounded-xl border border-white/10 bg-[#12101c] px-4 py-2.5 text-sm text-slate-400 cursor-not-allowed" 
+                           class="dt-input text-sm text-slate-400 cursor-not-allowed opacity-75" 
                            value="{{ $user->email }}" disabled>
                     <p class="mt-1 text-[11px] text-slate-400">Email terkunci demi keamanan — hubungi admin jika perlu perubahan.</p>
                 </div>
@@ -40,7 +40,7 @@
                 <div>
                     <label for="phone" class="block text-xs font-bold text-slate-300 mb-1.5">Nomor WhatsApp</label>
                     <input id="phone" name="phone" type="tel" 
-                           class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#99ff04] focus:outline-none transition-all" 
+                           class="dt-input text-sm" 
                            value="{{ old('phone', $user->phone) }}" placeholder="08xxxxxxxxxx">
                 </div>
 
@@ -48,7 +48,7 @@
                     <div>
                         <label for="organization" class="block text-xs font-bold text-slate-300 mb-1.5">Lembaga / Organisasi</label>
                         <input id="organization" name="organization" type="text" 
-                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#99ff04] focus:outline-none transition-all"
+                               class="dt-input text-sm"
                                value="{{ old('organization', $user->organization) }}"
                                placeholder="Nama lembaga yang akan tampil di halaman kampanye">
                     </div>
@@ -65,7 +65,7 @@
         {{-- Section 2: Kata Sandi & Status Akun --}}
         <div class="space-y-6">
             {{-- Form Ganti Kata Sandi --}}
-            <section class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl backdrop-blur-md">
+            <section class="dt-card p-6">
                 <h2 class="text-base font-black text-white flex items-center gap-2">
                     <span class="grid h-7 w-7 place-items-center rounded-lg bg-[#231f36] text-[#99ff04] text-xs font-black border border-white/10">2</span>
                     <span>{{ $user->password ? 'Perbarui Kata Sandi' : 'Buat Kata Sandi Akun' }}</span>
@@ -79,7 +79,7 @@
                             <label for="current_password" class="block text-xs font-bold text-slate-300 mb-1.5">Kata Sandi Saat Ini</label>
                             <input id="current_password" name="current_password" type="password" required
                                    autocomplete="current-password" 
-                                   class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white focus:border-[#99ff04] focus:outline-none transition-all">
+                                   class="dt-input text-sm">
                             @error('current_password') <p class="mt-1 text-xs font-bold text-rose-400">{{ $message }}</p> @enderror
                         </div>
                     @else
@@ -92,7 +92,7 @@
                         <label for="new_password" class="block text-xs font-bold text-slate-300 mb-1.5">Kata Sandi Baru</label>
                         <input id="new_password" name="password" type="password" required
                                autocomplete="new-password" 
-                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white focus:border-[#99ff04] focus:outline-none transition-all">
+                               class="dt-input text-sm">
                         <p class="mt-1 text-[11px] text-slate-400">Minimal 8 karakter, kombinasi huruf dan angka.</p>
                         @error('password') <p class="mt-1 text-xs font-bold text-rose-400">{{ $message }}</p> @enderror
                     </div>
@@ -101,7 +101,7 @@
                         <label for="password_confirmation" class="block text-xs font-bold text-slate-300 mb-1.5">Ulangi Kata Sandi Baru</label>
                         <input id="password_confirmation" name="password_confirmation" type="password" required
                                autocomplete="new-password" 
-                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white focus:border-[#99ff04] focus:outline-none transition-all">
+                               class="dt-input text-sm">
                     </div>
 
                     <div class="rounded-2xl border border-white/10 bg-[#12101c] p-4">
@@ -109,14 +109,15 @@
                     </div>
 
                     <div class="pt-2">
-                        <button type="submit" class="w-full rounded-full border border-white/20 bg-[#231f36] px-6 py-2.5 text-xs font-extrabold text-white hover:border-[#99ff04] hover:text-[#99ff04] transition-all">
+                        <button type="submit" class="dt-btn-secondary w-full text-xs">
                             {{ $user->password ? 'Perbarui Kata Sandi' : 'Simpan Kata Sandi' }}
                         </button>
+                    </div>
                 </form>
             </section>
 
             {{-- Ringkasan Status Akun --}}
-            <section class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl backdrop-blur-md">
+            <section class="dt-card p-6">
                 <h2 class="text-base font-black text-white">Status &amp; Keamanan Akun</h2>
                 
                 <dl class="mt-4 space-y-3.5 text-xs border-t border-white/10 pt-4">
@@ -143,37 +144,18 @@
                     </div>
 
                     <div class="flex justify-between items-center">
-                        <dt class="text-slate-400">Verifikasi Dua Langkah (2FA)</dt>
-                        <dd>
-                            @if ($user->hasTwoFactorEnabled())
-                                <span class="rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-black text-emerald-400 border border-emerald-500/30">
-                                    ✓ Aktif
-                                </span>
-                            @else
-                                <span class="rounded-full bg-amber-500/15 px-3 py-1 text-[11px] font-black text-amber-300 border border-amber-500/30">
-                                    Belum Aktif
-                                </span>
-                            @endif
-                        </dd>
-                    </div>
-
-                    <div class="flex justify-between items-center">
                         <dt class="text-slate-400">Tanggal Bergabung</dt>
                         <dd class="font-bold text-white">{{ $user->created_at->translatedFormat('d F Y') }}</dd>
                     </div>
                 </dl>
 
-                <div class="mt-6 space-y-2">
-                    <a href="{{ route('keamanan.index') }}" class="flex w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-[#231f36] py-2.5 text-xs font-extrabold text-white hover:border-[#99ff04] hover:text-[#99ff04] transition-all">
-                        <span>{{ $user->hasTwoFactorEnabled() ? 'Kelola Keamanan 2FA' : 'Aktifkan Verifikasi Dua Langkah' }}</span>
-                    </a>
-
-                    @if (! $user->isVerified() && ! $user->isAdmin())
+                @if (! $user->isVerified() && ! $user->isAdmin())
+                    <div class="mt-6">
                         <a href="{{ route('verifikasi.identitas') }}" class="flex w-full items-center justify-center gap-2 rounded-full bg-[#99ff04] py-2.5 text-xs font-black text-black hover:bg-[#84e000] shadow-md shadow-[#99ff04]/20 transition-all">
                             <span>Verifikasi Identitas Sekarang &rarr;</span>
                         </a>
-                    @endif
-                </div>
+                    </div>
+                @endif
             </section>
 
         </div>

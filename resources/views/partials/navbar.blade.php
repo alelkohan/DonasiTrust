@@ -112,12 +112,65 @@
                     Masuk
                 </a>
             @else
-                <a href="{{ $u->homeRoute() }}" class="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-bold text-white flex items-center gap-2">
+                <a href="{{ $u->homeRoute() }}" class="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-bold text-white flex items-center gap-2 hover:bg-white/20 transition-all">
                     <span class="grid h-5 w-5 place-items-center rounded-full bg-[#99ff04] text-[10px] font-black text-black">
                         {{ Str::upper(Str::substr($u->name, 0, 1)) }}
                     </span>
                     Dasbor
                 </a>
+
+                {{-- User Profile & Logout Dropdown --}}
+                <div class="relative" x-data="{ userMenu: false }" @keydown.escape="userMenu = false">
+                    <button type="button" @click="userMenu = !userMenu" :aria-expanded="userMenu.toString()"
+                            title="Menu Pengguna"
+                            class="grid h-9 w-9 place-items-center rounded-full border border-white/15 bg-[#231f36] text-slate-200 hover:border-[#99ff04] hover:text-white transition-all shadow-md cursor-pointer select-none">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </button>
+
+                    <div x-show="userMenu" x-cloak @click.outside="userMenu = false"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
+                         class="absolute right-0 mt-2 w-64 origin-top-right rounded-2xl border border-white/15 bg-[#1b182a] p-2 text-white shadow-2xl backdrop-blur-xl z-50">
+                        <div class="px-3 py-2.5 border-b border-white/10">
+                            <p class="truncate text-xs font-black text-white">{{ $u->name }}</p>
+                            <p class="truncate text-[11px] text-slate-400">{{ $u->email }}</p>
+                            <span class="mt-1.5 inline-block rounded-md bg-[#99ff04]/10 border border-[#99ff04]/20 px-2 py-0.5 text-[10px] font-black text-[#99ff04] uppercase">
+                                {{ $u->roleLabel() }}
+                            </span>
+                        </div>
+                        <div class="py-1.5 flex flex-col gap-0.5">
+                            <a href="{{ $u->homeRoute() }}" class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
+                                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                                <span>Dasbor Saya</span>
+                            </a>
+                            <a href="{{ route('profil.edit') }}" class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
+                                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                <span>Profil Saya</span>
+                            </a>
+                            @if (! $u->isAdmin())
+                                <a href="{{ route('verifikasi.identitas') }}" class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
+                                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                    <span>Verifikasi Identitas</span>
+                                </a>
+                            @endif
+                        </div>
+                        <div class="border-t border-white/10 pt-1.5">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer text-left">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                    <span>Keluar Akun</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             @endguest
         </div>
 
@@ -193,6 +246,17 @@
                 <a href="{{ $u->homeRoute() }}" class="w-full flex items-center justify-center gap-2 rounded-xl bg-[#99ff04] py-2.5 text-xs font-black text-black">
                     <span>Ke Dasbor ({{ $u->name }})</span>
                 </a>
+                <a href="{{ route('profil.edit') }}" class="w-full flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-[#231f36] py-2.5 text-xs font-extrabold text-white hover:bg-white/10 transition-all">
+                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <span>Profil Saya</span>
+                </a>
+                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                    @csrf
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 py-2.5 text-xs font-extrabold text-rose-400 hover:bg-rose-500/20 transition-all cursor-pointer">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        <span>Keluar Akun</span>
+                    </button>
+                </form>
             @endguest
         </div>
     </div>

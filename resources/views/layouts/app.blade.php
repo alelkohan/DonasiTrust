@@ -32,6 +32,22 @@
         applySavedTheme();
         document.addEventListener('livewire:navigated', applySavedTheme);
         document.addEventListener('DOMContentLoaded', applySavedTheme);
+
+        function registerModalDonasiStore() {
+            if (window.Alpine && !window.Alpine.store('modalDonasi')) {
+                window.Alpine.store('modalDonasi', {
+                    konfirmasi: false,
+                    batal: false,
+                    bukaKonfirmasi() { this.konfirmasi = true; },
+                    tutupKonfirmasi() { this.konfirmasi = false; },
+                    bukaBatal() { this.batal = true; },
+                    tutupBatal() { this.batal = false; }
+                });
+            }
+        }
+        document.addEventListener('alpine:init', registerModalDonasiStore);
+        document.addEventListener('DOMContentLoaded', registerModalDonasiStore);
+        document.addEventListener('livewire:navigated', registerModalDonasiStore);
     </script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])

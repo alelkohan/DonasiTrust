@@ -4,7 +4,7 @@
 @php($menu = \App\Support\AdminMenu::items('kampanye'))
 
 @section('panel')
-    <h1 class="text-2xl font-extrabold tracking-tight text-ink-900">Review kampanye</h1>
+    <h1 class="text-2xl font-black tracking-tight text-white">Review kampanye</h1>
 
     <nav class="mt-5 flex flex-wrap gap-2" aria-label="Filter status">
         @foreach ([
@@ -15,9 +15,9 @@
         ] as $key => $label)
             @php($active = (request('status') ?: 'pending') === $key)
             <a href="{{ route('admin.kampanye.index', ['status' => $key]) }}" @class([
-                'rounded-xl px-3.5 py-2 text-sm font-medium transition-colors',
-                'bg-brand-600 text-white' => $active,
-                'border border-ink-200 bg-white text-ink-600 hover:bg-ink-50' => ! $active,
+                'rounded-xl px-3.5 py-2 text-xs transition-all',
+                'bg-[#99ff04] text-black font-black shadow-lg shadow-[#99ff04]/20' => $active,
+                'border border-white/10 bg-[#1b182a] text-slate-300 hover:bg-[#231f36] hover:text-white font-bold' => ! $active,
             ])>{{ $label }}</a>
         @endforeach
     </nav>
@@ -41,29 +41,29 @@
                     @foreach ($campaigns as $campaign)
                         <tr>
                             <td>
-                                <p class="font-semibold text-ink-900">{{ Str::limit($campaign->title, 55) }}</p>
-                                <p class="mt-0.5 text-xs text-ink-500">{{ $campaign->categoryLabel() }}</p>
+                                <p class="font-bold text-white">{{ Str::limit($campaign->title, 55) }}</p>
+                                <p class="mt-0.5 text-xs text-slate-400">{{ $campaign->categoryLabel() }}</p>
                             </td>
                             <td>
-                                <p class="text-ink-800">{{ $campaign->user->name }}</p>
+                                <p class="font-semibold text-slate-200">{{ $campaign->user->name }}</p>
                                 @if ($campaign->user->organization)
-                                    <p class="mt-0.5 text-xs text-ink-500">{{ $campaign->user->organization }}</p>
+                                    <p class="mt-0.5 text-xs text-slate-400">{{ $campaign->user->organization }}</p>
                                 @endif
                             </td>
-                            <td class="text-right font-semibold whitespace-nowrap tabular-nums">{{ rupiah($campaign->target_amount) }}</td>
+                            <td class="text-right font-black text-white whitespace-nowrap tabular-nums">{{ rupiah($campaign->target_amount) }}</td>
                             <td>
                                 <x-badge :tone="match($campaign->status) {
                                     'approved', 'completed' => 'success',
                                     'pending' => 'warning',
                                     'rejected' => 'danger',
                                     default => 'neutral',
-                                }">{{ $campaign->statusLabel() }}</x-badge>
+                                  }">{{ $campaign->statusLabel() }}</x-badge>
                             </td>
-                            <td class="whitespace-nowrap text-ink-600">
+                            <td class="whitespace-nowrap text-xs font-medium text-slate-400">
                                 {{ $campaign->submitted_at?->translatedFormat('d M Y') ?? '—' }}
                             </td>
                             <td class="text-right">
-                                <a href="{{ route('admin.kampanye.show', $campaign) }}" class="dt-link text-sm whitespace-nowrap">Tinjau &rarr;</a>
+                                <a href="{{ route('admin.kampanye.show', $campaign) }}" class="dt-link text-xs whitespace-nowrap">Tinjau &rarr;</a>
                             </td>
                         </tr>
                     @endforeach

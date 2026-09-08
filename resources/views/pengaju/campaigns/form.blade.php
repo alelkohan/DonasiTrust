@@ -3,7 +3,7 @@
 
 @php
     $menu = [
-        ['label' => 'Ringkasan', 'url' => route('pengaju.dashboard')],
+        ['label' => 'Dasbor', 'url' => route('pengaju.dashboard')],
         ['label' => 'Kampanye saya', 'url' => route('pengaju.kampanye.index'), 'active' => true],
         ['label' => 'Profil saya', 'url' => route('profil.edit')],
     ];
@@ -34,12 +34,12 @@
     @csrf
     @if ($campaign->exists) @method('PUT') @endif
 
-    <header class="flex flex-wrap items-end justify-between gap-4">
+    <header class="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-5">
         <div>
-            <h1 class="text-2xl font-extrabold tracking-tight text-ink-900">
+            <h1 class="text-2xl font-black tracking-tight text-white">
                 {{ $campaign->exists ? 'Ubah kampanye' : 'Kampanye baru' }}
             </h1>
-            <p class="mt-1 text-sm text-ink-600">
+            <p class="mt-1 text-sm font-medium text-slate-400">
                 Target dana, total RAB, dan total tahapan wajib sama persis. Sistem menolak jika tidak seimbang.
             </p>
         </div>
@@ -48,7 +48,7 @@
 
     {{-- 1. Informasi dasar --}}
     <section class="dt-card mt-6 p-5 sm:p-6">
-        <h2 class="text-lg font-bold text-ink-900">1. Informasi dasar</h2>
+        <h2 class="text-lg font-black text-white">1. Informasi dasar</h2>
 
         <div class="mt-5 space-y-4">
             <div>
@@ -71,7 +71,7 @@
                 </div>
 
                 <div>
-                    <label for="deadline" class="dt-label">Batas waktu <span class="font-normal text-ink-400">(opsional)</span></label>
+                    <label for="deadline" class="dt-label">Batas waktu <span class="font-normal text-slate-400">(opsional)</span></label>
                     <input id="deadline" name="deadline" type="date" class="dt-input"
                            value="{{ old('deadline', $campaign->deadline?->format('Y-m-d')) }}"
                            min="{{ now()->addDay()->format('Y-m-d') }}">
@@ -97,7 +97,7 @@
             <div>
                 <label for="cover" class="dt-label">Foto sampul</label>
                 <input id="cover" name="cover" type="file" accept="image/*"
-                       class="dt-input file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-brand-700">
+                       class="dt-input file:mr-3 file:rounded-lg file:border-0 file:bg-[#99ff04] file:px-3 file:py-1.5 file:text-xs file:font-black file:text-black hover:file:opacity-90">
                 <p class="dt-hint">
                     Rasio 16:9, maksimal {{ round(config('donasi.max_upload_kb') / 1024, 1) }} MB.
                     @if ($campaign->cover_path) Sudah ada sampul — unggah baru untuk mengganti. @endif
@@ -109,21 +109,21 @@
 
     {{-- 2. Target & RAB --}}
     <section class="dt-card mt-6 p-5 sm:p-6">
-        <h2 class="text-lg font-bold text-ink-900">2. Target dana &amp; rincian anggaran</h2>
-        <p class="mt-1 text-sm text-ink-600">
+        <h2 class="text-lg font-black text-white">2. Target dana &amp; rincian anggaran</h2>
+        <p class="mt-1 text-sm font-medium text-slate-400">
             RAB inilah yang nanti dibandingkan dengan nota yang Anda unggah. Buat sedetail mungkin.
         </p>
 
         <div class="mt-5">
-            <label for="target_amount" class="dt-label">Target dana <span class="font-normal text-ink-500">(dihitung otomatis dari Total RAB)</span></label>
+            <label for="target_amount" class="dt-label">Target dana <span class="font-normal text-slate-400">(dihitung otomatis dari Total RAB)</span></label>
             <div class="relative max-w-xs">
-                <span class="absolute inset-y-0 left-0 grid w-11 place-items-center text-sm font-semibold text-ink-500" aria-hidden="true">Rp</span>
+                <span class="absolute inset-y-0 left-0 grid w-11 place-items-center text-sm font-semibold text-slate-400" aria-hidden="true">Rp</span>
                 <input id="target_amount" name="target_amount" type="number" readonly
-                       class="dt-input pl-11 font-bold tabular-nums bg-ink-50 cursor-not-allowed text-ink-600" 
+                       class="dt-input pl-11 font-bold tabular-nums bg-[#231f36] cursor-not-allowed text-white" 
                        :value="totalItems">
             </div>
             <p class="dt-hint" x-show="target > 0" x-cloak>
-                Terbaca: <span class="font-semibold text-ink-700" x-text="format(target)"></span>
+                Terbaca: <span class="font-bold text-white" x-text="format(target)"></span>
             </p>
             @error('target_amount') <p class="dt-error">{{ $message }}</p> @enderror
         </div>
@@ -159,11 +159,11 @@
                                 <input type="number" required min="0" step="500" class="dt-input w-36 tabular-nums"
                                        :name="`items[${i}][unit_price]`" x-model.number="item.unit_price">
                             </td>
-                            <td class="text-right font-semibold whitespace-nowrap tabular-nums"
+                            <td class="text-right font-semibold whitespace-nowrap tabular-nums text-white"
                                 x-text="format(item.quantity * item.unit_price)"></td>
                             <td class="text-right">
                                 <button type="button" x-show="items.length > 1" @click="items.splice(i, 1)"
-                                        class="rounded-lg p-1.5 text-ink-400 hover:bg-rose-50 hover:text-rose-600">
+                                        class="rounded-lg p-1.5 text-slate-400 hover:bg-rose-500/20 hover:text-rose-400 transition-colors">
                                     <span class="sr-only">Hapus baris</span>
                                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>
                                 </button>
@@ -181,16 +181,16 @@
         </button>
 
         <div class="mt-5 rounded-xl border p-4 transition-colors"
-             :class="totalItems === target && target > 0 ? 'border-brand-200 bg-brand-50' : 'border-amber-200 bg-amber-50'">
+             :class="totalItems === target && target > 0 ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-amber-500/30 bg-amber-500/10'">
             <div class="flex flex-wrap items-baseline justify-between gap-2">
-                <span class="text-sm font-semibold" :class="totalItems === target && target > 0 ? 'text-brand-900' : 'text-amber-900'">
+                <span class="text-sm font-bold" :class="totalItems === target && target > 0 ? 'text-emerald-300' : 'text-amber-300'">
                     Total RAB
                 </span>
-                <span class="text-lg font-extrabold tabular-nums"
-                      :class="totalItems === target && target > 0 ? 'text-brand-800' : 'text-amber-800'"
+                <span class="text-lg font-black tabular-nums"
+                      :class="totalItems === target && target > 0 ? 'text-emerald-400' : 'text-amber-400'"
                       x-text="format(totalItems)"></span>
             </div>
-            <p class="mt-1 text-xs" :class="totalItems === target && target > 0 ? 'text-brand-900/75' : 'text-amber-900/80'"
+            <p class="mt-1 text-xs font-medium" :class="totalItems === target && target > 0 ? 'text-emerald-300/80' : 'text-amber-300/80'"
                x-text="totalItems === target && target > 0
                    ? 'Seimbang dengan target dana.'
                    : `Selisih ${format(Math.abs(target - totalItems))} dari target dana.`"></p>
@@ -201,27 +201,27 @@
 
     {{-- 3. Tahapan pencairan --}}
     <section class="dt-card mt-6 p-5 sm:p-6">
-        <h2 class="text-lg font-bold text-ink-900">3. Tahapan pencairan</h2>
-        <p class="mt-1 text-sm text-ink-600">
+        <h2 class="text-lg font-black text-white">3. Tahapan pencairan</h2>
+        <p class="mt-1 text-sm font-medium text-slate-400">
             Anda tidak menerima dana sekaligus. Tahap 2 baru terbuka setelah nota tahap 1 diverifikasi admin.
         </p>
 
         @if ($campaign->exists && $campaign->milestones->where('status', '!=', 'locked')->isNotEmpty())
-            <div class="mt-4 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+            <div class="mt-4 rounded-xl border border-sky-500/30 bg-sky-500/10 px-4 py-3 text-sm font-medium text-sky-300">
                 Sebagian tahap sudah berjalan, jadi susunan tahapan dikunci dan tidak bisa diubah lagi.
             </div>
         @endif
 
         <div class="mt-5 space-y-3">
             <template x-for="(m, i) in milestones" :key="i">
-                <div class="rounded-xl border border-ink-200 p-4">
+                <div class="rounded-xl border border-white/10 bg-[#231f36]/60 p-4">
                     <div class="flex items-center gap-3">
-                        <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-ink-100 text-xs font-bold text-ink-600"
+                        <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#99ff04] text-xs font-black text-black"
                               x-text="i + 1"></span>
                         <input type="text" required maxlength="150" class="dt-input flex-1"
                                :name="`milestones[${i}][title]`" x-model="m.title" placeholder="Pembelian material">
                         <button type="button" x-show="milestones.length > 1" @click="milestones.splice(i, 1)"
-                                class="rounded-lg p-1.5 text-ink-400 hover:bg-rose-50 hover:text-rose-600">
+                                class="rounded-lg p-1.5 text-slate-400 hover:bg-rose-500/20 hover:text-rose-400 transition-colors">
                             <span class="sr-only">Hapus tahap</span>
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>
                         </button>
@@ -233,7 +233,7 @@
                                   placeholder="Apa yang dikerjakan di tahap ini?"></textarea>
                         <div>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-0 grid w-11 place-items-center text-sm font-semibold text-ink-500" aria-hidden="true">Rp</span>
+                                <span class="absolute inset-y-0 left-0 grid w-11 place-items-center text-sm font-semibold text-slate-400" aria-hidden="true">Rp</span>
                                 <input type="number" required min="1" class="dt-input pl-11 font-semibold tabular-nums"
                                        :name="`milestones[${i}][amount]`" x-model.number="m.amount">
                             </div>
@@ -251,16 +251,16 @@
         </button>
 
         <div class="mt-5 rounded-xl border p-4 transition-colors"
-             :class="totalMilestones === target && target > 0 ? 'border-brand-200 bg-brand-50' : 'border-amber-200 bg-amber-50'">
+             :class="totalMilestones === target && target > 0 ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-amber-500/30 bg-amber-500/10'">
             <div class="flex flex-wrap items-baseline justify-between gap-2">
-                <span class="text-sm font-semibold" :class="totalMilestones === target && target > 0 ? 'text-brand-900' : 'text-amber-900'">
+                <span class="text-sm font-bold" :class="totalMilestones === target && target > 0 ? 'text-emerald-300' : 'text-amber-300'">
                     Total tahapan
                 </span>
-                <span class="text-lg font-extrabold tabular-nums"
-                      :class="totalMilestones === target && target > 0 ? 'text-brand-800' : 'text-amber-800'"
+                <span class="text-lg font-black tabular-nums"
+                      :class="totalMilestones === target && target > 0 ? 'text-emerald-400' : 'text-amber-400'"
                       x-text="format(totalMilestones)"></span>
             </div>
-            <p class="mt-1 text-xs" :class="totalMilestones === target && target > 0 ? 'text-brand-900/75' : 'text-amber-900/80'"
+            <p class="mt-1 text-xs font-medium" :class="totalMilestones === target && target > 0 ? 'text-emerald-300/80' : 'text-amber-300/80'"
                x-text="totalMilestones === target && target > 0
                    ? 'Seimbang dengan target dana.'
                    : `Selisih ${format(Math.abs(target - totalMilestones))} dari target dana.`"></p>
@@ -273,7 +273,7 @@
         <button type="submit" class="dt-btn-primary px-6 py-3 text-base">
             {{ $campaign->exists ? 'Simpan perubahan' : 'Simpan sebagai draf' }}
         </button>
-        <p class="text-sm text-ink-500">
+        <p class="text-sm text-slate-400">
             Draf belum tayang. Ajukan untuk review dari halaman &ldquo;Kampanye saya&rdquo;.
         </p>
     </div>

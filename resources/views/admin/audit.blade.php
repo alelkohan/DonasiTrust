@@ -4,22 +4,22 @@
 @php($menu = \App\Support\AdminMenu::items('audit'))
 
 @section('panel')
-    <h1 class="text-2xl font-extrabold tracking-tight text-ink-900">Jejak audit</h1>
-    <p class="mt-1.5 max-w-2xl text-sm text-ink-600">
+    <h1 class="text-2xl font-black tracking-tight text-white">Jejak audit</h1>
+    <p class="mt-1.5 max-w-2xl text-sm font-medium text-slate-400">
         Setiap entri menyimpan hash entri sebelumnya. Mengubah satu catatan lama akan membuat
         seluruh rantai sesudahnya gagal diverifikasi — jadi manipulasi diam-diam bisa terdeteksi.
     </p>
 
     <section @class([
-        'mt-6 rounded-2xl border p-5',
-        'border-brand-200 bg-brand-50' => $chainStatus['valid'],
-        'border-rose-300 bg-rose-50' => ! $chainStatus['valid'],
+        'mt-6 rounded-2xl border p-5 transition-all',
+        'border-emerald-500/30 bg-emerald-500/10' => $chainStatus['valid'],
+        'border-rose-500/30 bg-rose-500/10' => ! $chainStatus['valid'],
     ])>
         <div class="flex items-start gap-3.5">
             <span @class([
-                'grid h-10 w-10 shrink-0 place-items-center rounded-xl text-white',
-                'bg-brand-600' => $chainStatus['valid'],
-                'bg-rose-600' => ! $chainStatus['valid'],
+                'grid h-10 w-10 shrink-0 place-items-center rounded-xl font-bold',
+                'bg-[#99ff04] text-black shadow-lg shadow-[#99ff04]/20' => $chainStatus['valid'],
+                'bg-rose-500 text-white shadow-lg shadow-rose-500/20' => ! $chainStatus['valid'],
             ]) aria-hidden="true">
                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
                     @if ($chainStatus['valid'])
@@ -30,10 +30,10 @@
                 </svg>
             </span>
             <div>
-                <h2 @class(['font-bold', 'text-brand-900' => $chainStatus['valid'], 'text-rose-900' => ! $chainStatus['valid']])>
+                <h2 @class(['font-bold', 'text-white' => $chainStatus['valid'], 'text-rose-300' => ! $chainStatus['valid']])>
                     {{ $chainStatus['valid'] ? 'Rantai utuh' : 'Rantai terputus' }}
                 </h2>
-                <p class="mt-1 text-sm {{ $chainStatus['valid'] ? 'text-brand-900/80' : 'text-rose-900/80' }}">
+                <p class="mt-1 text-sm {{ $chainStatus['valid'] ? 'text-slate-300' : 'text-rose-200' }}">
                     {{ number_format($chainStatus['checked'], 0, ',', '.') }} entri dihitung ulang hash-nya barusan.
                     @unless ($chainStatus['valid'])
                         Masalah pertama di entri #{{ $chainStatus['broken_at'] }} — {{ $chainStatus['reason'] }}
@@ -54,9 +54,9 @@
                     @endforeach
                 </select>
             </div>
-            <button type="submit" class="dt-btn-secondary">Terapkan</button>
+            <button type="submit" class="dt-btn-secondary text-xs">Terapkan</button>
             @if (request('action'))
-                <a href="{{ route('admin.audit.index') }}" class="dt-link text-sm">Reset</a>
+                <a href="{{ route('admin.audit.index') }}" class="dt-link text-xs">Reset</a>
             @endif
         </form>
     @endif
@@ -78,32 +78,32 @@
                 <tbody>
                     @foreach ($logs as $log)
                         <tr>
-                            <td class="font-mono text-xs text-ink-400">{{ $log->id }}</td>
+                            <td class="font-mono text-xs text-slate-500">{{ $log->id }}</td>
                             <td>
-                                <p class="font-semibold text-ink-900">{{ $log->actionLabel() }}</p>
-                                <p class="mt-0.5 font-mono text-xs text-ink-400">{{ $log->action }}</p>
+                                <p class="font-bold text-white">{{ $log->actionLabel() }}</p>
+                                <p class="mt-0.5 font-mono text-xs text-[#99ff04]">{{ $log->action }}</p>
                                 @if ($log->metadata)
-                                    <ul class="mt-1.5 space-y-0.5 text-xs text-ink-600">
+                                    <ul class="mt-1.5 space-y-0.5 text-xs text-slate-300">
                                         @foreach ($log->metadata as $key => $value)
                                             @continue(is_array($value) || is_null($value))
-                                            <li><span class="text-ink-400">{{ $key }}:</span> {{ Str::limit((string) $value, 60) }}</li>
+                                            <li><span class="text-slate-500">{{ $key }}:</span> {{ Str::limit((string) $value, 60) }}</li>
                                         @endforeach
                                     </ul>
                                 @endif
                             </td>
                             <td class="whitespace-nowrap">
-                                <p class="text-ink-800">{{ $log->actor_label ?: 'Sistem' }}</p>
+                                <p class="font-semibold text-slate-200">{{ $log->actor_label ?: 'Sistem' }}</p>
                                 @if ($log->ip_address)
-                                    <p class="mt-0.5 font-mono text-xs text-ink-400">{{ $log->ip_address }}</p>
+                                    <p class="mt-0.5 font-mono text-xs text-slate-500">{{ $log->ip_address }}</p>
                                 @endif
                             </td>
-                            <td class="whitespace-nowrap text-ink-600">
+                            <td class="whitespace-nowrap text-xs text-slate-300">
                                 {{ $log->created_at?->translatedFormat('d M Y') }}
-                                <span class="block text-xs text-ink-400">{{ $log->created_at?->format('H:i:s') }}</span>
+                                <span class="block text-[11px] text-slate-500">{{ $log->created_at?->format('H:i:s') }}</span>
                             </td>
                             <td>
-                                <p class="font-mono text-xs break-all text-ink-700">{{ substr($log->current_hash, 0, 24) }}…</p>
-                                <p class="mt-0.5 font-mono text-xs break-all text-ink-400">
+                                <p class="font-mono text-xs break-all text-slate-300">{{ substr($log->current_hash, 0, 24) }}…</p>
+                                <p class="mt-0.5 font-mono text-xs break-all text-slate-500">
                                     prev: {{ $log->previous_hash ? substr($log->previous_hash, 0, 16).'…' : 'genesis' }}
                                 </p>
                             </td>

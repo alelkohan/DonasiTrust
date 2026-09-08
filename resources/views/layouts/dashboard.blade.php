@@ -25,6 +25,17 @@
                         </a>
                     </li>
                 @endforeach
+
+                {{-- Tombol Logout di Dasbor --}}
+                <li class="shrink-0 lg:pt-3 lg:border-t lg:border-white/10 lg:mt-2">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="flex w-full items-center justify-between gap-2.5 rounded-2xl px-4 py-3 text-xs font-extrabold whitespace-nowrap text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 transition-all cursor-pointer">
+                            <span>Keluar Akun</span>
+                            <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        </button>
+                    </form>
+                </li>
             </ul>
         </nav>
 

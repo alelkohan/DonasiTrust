@@ -86,7 +86,7 @@
 
 /* Comprehensive Global Light Mode Overrides */
 html.theme-light {
-  /* Surfaces & Backgrounds */
+  /* Surfaces & Backgrounds - Exact & Wildcard matches for arbitrary opacities */
   .bg-\[\#12101c\],
   .bg-\[\#1b182a\],
   .bg-\[\#231f36\],
@@ -94,8 +94,25 @@ html.theme-light {
   .bg-\[\#0d0b15\],
   .bg-\[\#0e0c16\],
   .bg-\[\#221e35\],
-  .bg-\[\#2a253e\] {
+  .bg-\[\#2a253e\],
+  [class*="bg-[#1b182a]"],
+  [class*="bg-[#12101c]"] {
     background-color: #ffffff !important;
+  }
+
+  /* Translucent nested sub-surfaces become clean slate-50 surfaces with light borders */
+  .dt-surface,
+  [class*="bg-[#231f36]"],
+  [class*="bg-[#12101c]/"],
+  [class*="bg-[#1b182a]/"] {
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+  }
+
+  /* Verified bank account container on verification page */
+  .verified-bank-box {
+    background-color: #ffffff !important;
+    border-color: #a7f3d0 !important;
   }
 
   header,
@@ -128,6 +145,99 @@ html.theme-light {
 
   .text-slate-500 {
     color: #475569 !important;
+  }
+
+  /* Status Text Color Overrides for High AAA Contrast on Light Backgrounds */
+  .text-amber-200,
+  .text-amber-300,
+  .text-amber-400 {
+    color: #92400e !important; /* amber-800 */
+  }
+
+  .text-emerald-200,
+  .text-emerald-300,
+  .text-emerald-400 {
+    color: #065f46 !important; /* emerald-800 */
+  }
+
+  .text-sky-200,
+  .text-sky-300,
+  .text-sky-400 {
+    color: #0369a1 !important; /* sky-700 */
+  }
+
+  .text-rose-200,
+  .text-rose-300,
+  .text-rose-400 {
+    color: #be123c !important; /* rose-700 */
+  }
+
+  .text-\[\#99ff04\] {
+    color: #065f46 !important; /* Rich Dark Forest Emerald with AAA contrast on white/slate-50 */
+  }
+
+  /* Preserve black text on bright neon lime elements */
+  .text-black,
+  [class*="bg-[#99ff04]"] .text-black,
+  [class*="bg-[#99ff04]"].text-black,
+  .dt-btn-primary,
+  .vgen-btn-primary {
+    color: #000000 !important;
+  }
+
+  /* Status Alert Box Backgrounds in Light Mode */
+  [class*="bg-amber-500/10"],
+  [class*="bg-amber-500/15"] {
+    background-color: #fef3c7 !important; /* amber-100 */
+    border-color: #fcd34d !important; /* amber-300 */
+  }
+
+  [class*="bg-emerald-500/10"],
+  [class*="bg-emerald-500/15"] {
+    background-color: #d1fae5 !important; /* emerald-100 */
+    border-color: #6ee7b7 !important; /* emerald-300 */
+  }
+
+  [class*="bg-rose-500/10"],
+  [class*="bg-rose-500/15"] {
+    background-color: #ffe4e6 !important; /* rose-100 */
+    border-color: #fecdd3 !important; /* rose-200 */
+  }
+
+  [class*="bg-sky-500/10"],
+  [class*="bg-sky-500/15"] {
+    background-color: #e0f2fe !important; /* sky-100 */
+    border-color: #bae6fd !important; /* sky-200 */
+  }
+
+  /* Dashboard Nav Sidebar in Light Mode */
+  nav[aria-label="Navigasi dasbor"] a:not([aria-current="page"]) {
+    background-color: #ffffff !important;
+    color: #334155 !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  }
+
+  nav[aria-label="Navigasi dasbor"] a:not([aria-current="page"]):hover {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+  }
+
+  nav[aria-label="Navigasi dasbor"] a[aria-current="page"] {
+    background-color: #99ff04 !important;
+    color: #000000 !important;
+    box-shadow: 0 4px 14px rgba(153, 255, 4, 0.35) !important;
+  }
+
+  nav[aria-label="Navigasi dasbor"] button[type="submit"] {
+    background-color: #fff1f2 !important;
+    color: #e11d48 !important;
+    border-color: #fecdd3 !important;
+  }
+
+  nav[aria-label="Navigasi dasbor"] button[type="submit"]:hover {
+    background-color: #ffe4e6 !important;
+    color: #be123c !important;
   }
 
   /* Borders */
@@ -334,6 +444,66 @@ html.theme-light {
 
   html.theme-light .dt-input {
     @apply w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 focus:outline-none;
+  }
+
+  .dt-btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-rose-600 px-4 py-2 text-xs font-black text-white hover:bg-rose-500 active:scale-95 disabled:opacity-50;
+  }
+
+  html.theme-light .dt-btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-rose-600 px-4 py-2 text-xs font-black text-white hover:bg-rose-700 active:scale-95 disabled:opacity-50;
+  }
+
+  .dt-table {
+    @apply w-full text-left text-sm text-slate-300;
+  }
+
+  .dt-table thead th {
+    @apply border-b border-white/10 bg-[#231f36]/40 px-5 py-3.5 text-[11px] font-black uppercase tracking-wider text-slate-400;
+  }
+
+  .dt-table tbody td {
+    @apply border-b border-white/10 px-5 py-4 align-top text-slate-300;
+  }
+
+  .dt-table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .dt-table tbody tr {
+    @apply transition-colors hover:bg-white/[0.02];
+  }
+
+  html.theme-light .dt-table {
+    @apply text-slate-700;
+  }
+
+  html.theme-light .dt-table thead th {
+    @apply border-b border-slate-200 bg-slate-50 text-slate-600;
+  }
+
+  html.theme-light .dt-table tbody td {
+    @apply border-b border-slate-100 text-slate-800;
+  }
+
+  html.theme-light .dt-table tbody tr:hover {
+    @apply bg-slate-50/70;
+  }
+
+  .dt-link {
+    @apply font-bold text-[#99ff04] underline-offset-2 hover:underline inline-flex items-center gap-1 transition-colors;
+  }
+
+  html.theme-light .dt-link {
+    @apply text-emerald-700 hover:text-emerald-800;
+  }
+
+  .dt-label {
+    @apply mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400;
+  }
+
+  html.theme-light .dt-label {
+    @apply text-slate-700;
   }
 
   .scrollbar-none::-webkit-scrollbar {

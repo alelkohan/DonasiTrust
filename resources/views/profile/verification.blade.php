@@ -26,7 +26,7 @@
                     </p>
 
                     @if ($user->hasPayoutAccount())
-                        <div class="mt-4 rounded-2xl border border-white/10 bg-[#12101c]/80 p-4 text-xs">
+                        <div class="verified-bank-box mt-4 rounded-2xl border border-white/10 bg-[#12101c]/80 p-4 text-xs">
                             <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Rekening Pencairan Terdaftar</span>
                             <div class="mt-1 font-mono font-bold text-[#99ff04] text-sm">{{ $user->maskedPayoutAccount() }}</div>
                         </div>
@@ -40,7 +40,7 @@
                         @endif
 
                         @if ($user->hasPayoutAccount())
-                            <button type="button" @click="ubahRekening = true" class="rounded-full border border-white/20 bg-[#231f36] px-4 py-2 text-xs font-extrabold text-white hover:border-[#99ff04] hover:text-[#99ff04]">
+                            <button type="button" @click="ubahRekening = true" class="dt-btn-secondary text-xs">
                                 Ubah Rekening Pencairan
                             </button>
                         @endif
@@ -59,7 +59,7 @@
                     <li>Admin akan mencocokkan nama pemilik rekening baru dengan dokumen KTP Anda yang tersimpan.</li>
                     <li>Perubahan memerlukan validasi Kode OTP Email demi keamanan.</li>
                 </ul>
-                <button type="button" @click="ubahRekening = false" class="mt-4 rounded-full border border-white/20 bg-[#231f36] px-4 py-1.5 text-xs font-bold text-white hover:border-amber-300">
+                <button type="button" @click="ubahRekening = false" class="dt-btn-secondary mt-4 text-xs">
                     Batal, Kembali
                 </button>
             </div>
@@ -90,7 +90,7 @@
             
             {{-- Form Verifikasi Identitas --}}
             <form method="POST" action="{{ route('verifikasi.identitas.store') }}" enctype="multipart/form-data"
-                  class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl backdrop-blur-md space-y-5">
+                  class="dt-card p-6 space-y-5">
                 @csrf
 
                 <div>
@@ -98,7 +98,7 @@
                         Lembaga / Organisasi <span class="font-normal text-slate-400">(Opsional)</span>
                     </label>
                     <input id="organization" name="organization" type="text" 
-                           class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#99ff04] focus:outline-none transition-all"
+                           class="dt-input text-sm"
                            value="{{ old('organization', $user->organization) }}"
                            placeholder="Kosongkan jika atas nama pribadi">
                 </div>
@@ -120,7 +120,7 @@
                         <label for="identity_number" class="block text-xs font-bold text-slate-300 mb-1.5">Nomor NIK (16 Digit)</label>
                         <input id="identity_number" name="identity_number" type="text" inputmode="numeric"
                                maxlength="16" required 
-                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm font-mono text-white placeholder-slate-500 focus:border-[#99ff04] focus:outline-none transition-all"
+                               class="dt-input font-mono text-sm"
                                value="{{ old('identity_number') }}" placeholder="3374xxxxxxxxxxxx">
                         <p class="mt-1 text-[11px] text-slate-400">
                             Hanya 4 digit terakhir NIK yang disimpan di basis data demi privasi.
@@ -131,13 +131,13 @@
                         <label for="identity_document" class="block text-xs font-bold text-slate-300 mb-1.5">Foto / Scan Dokumen KTP</label>
                         <input id="identity_document" name="identity_document" type="file" required
                                accept=".jpg,.jpeg,.png,.pdf"
-                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-[#99ff04] file:px-3 file:py-1 file:text-xs file:font-black file:text-black">
+                               class="dt-input text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-[#99ff04] file:px-3 file:py-1 file:text-xs file:font-black file:text-black">
                         <p class="mt-1 text-[11px] text-slate-400">Format JPG, PNG, atau PDF (Maks. {{ round(config('donasi.max_upload_kb') / 1024, 1) }} MB).</p>
                     </div>
                 @endif
 
                 {{-- Rekening Pencairan --}}
-                <div class="rounded-2xl border border-white/10 bg-[#12101c]/80 p-5 space-y-4">
+                <div class="rounded-2xl border border-white/10 bg-[#231f36]/60 p-5 space-y-4">
                     <div>
                         <h3 class="text-sm font-black text-white">Rekening Tujuan Pencairan</h3>
                         <p class="mt-1 text-xs text-slate-400 leading-relaxed">
@@ -148,7 +148,7 @@
                     <div>
                         <label for="bank_name" class="block text-xs font-bold text-slate-300 mb-1.5">Nama Bank</label>
                         <input id="bank_name" name="bank_name" type="text" required maxlength="60"
-                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white focus:border-[#99ff04] focus:outline-none transition-all" 
+                               class="dt-input text-sm" 
                                value="{{ old('bank_name', $user->bank_name) }}"
                                placeholder="BCA / BRI / Mandiri / BSI / Bank Jago">
                     </div>
@@ -157,7 +157,7 @@
                         <label for="bank_account_number" class="block text-xs font-bold text-slate-300 mb-1.5">Nomor Rekening</label>
                         <input id="bank_account_number" name="bank_account_number" type="text"
                                inputmode="numeric" required maxlength="40"
-                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm font-mono text-white focus:border-[#99ff04] focus:outline-none transition-all"
+                               class="dt-input font-mono text-sm"
                                value="{{ old('bank_account_number', $user->bank_account_number) }}"
                                placeholder="1234567890">
                     </div>
@@ -166,26 +166,17 @@
                         <label for="bank_account_holder" class="block text-xs font-bold text-slate-300 mb-1.5">Nama Pemilik Rekening</label>
                         <input id="bank_account_holder" name="bank_account_holder" type="text"
                                required maxlength="120" 
-                               class="w-full rounded-xl border border-white/15 bg-[#231f36] px-4 py-2.5 text-sm text-white focus:border-[#99ff04] focus:outline-none transition-all"
+                               class="dt-input text-sm"
                                value="{{ old('bank_account_holder', $user->bank_account_holder) }}"
                                placeholder="Sesuai buku tabungan & KTP">
                         <p class="mt-1 text-[11px] text-slate-400">Harus sesuai dengan nama pada dokumen KTP yang diunggah.</p>
                     </div>
                 </div>
 
-                {{-- Verification OTP / TOTP Security Step --}}
+                {{-- Verification Email OTP Security Step --}}
                 @if ($user->hasPayoutAccount())
                     <div class="rounded-2xl border border-[#99ff04]/30 bg-[#99ff04]/10 p-5 space-y-4">
                         <x-otp-input purpose="bank_change" label="Kode Verifikasi Email (Wajib jika mengubah rekening)" />
-                        
-                        @if ($user->hasTwoFactorEnabled())
-                            <div class="pt-3 border-t border-white/10">
-                                <label for="totp_code" class="block text-xs font-bold text-[#99ff04] mb-1.5">Atau gunakan Kode Aplikasi Authenticator (TOTP)</label>
-                                <input id="totp_code" name="totp_code" inputmode="numeric" maxlength="9"
-                                       autocomplete="one-time-code" placeholder="000000"
-                                       class="w-36 rounded-xl border border-white/20 bg-[#12101c] px-3 py-2 text-center font-mono text-base font-black text-white tracking-widest">
-                            </div>
-                        @endif
                     </div>
                 @endif
 
@@ -195,7 +186,7 @@
             </form>
 
             {{-- Privacy Info Aside --}}
-            <aside class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl backdrop-blur-md">
+            <aside class="dt-card p-6">
                 <h2 class="text-sm font-black text-white">Standar Keamanan Privasi Dokumen</h2>
                 <ul class="mt-4 space-y-3.5 text-xs text-slate-300">
                     <li class="flex gap-2.5">
@@ -219,3 +210,4 @@
 
 </div>
 @endsection
+

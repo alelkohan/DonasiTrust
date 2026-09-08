@@ -4,8 +4,8 @@
 @php($menu = \App\Support\AdminMenu::items('pengguna'))
 
 @section('panel')
-    <h1 class="text-2xl font-extrabold tracking-tight text-ink-900">Verifikasi pengguna</h1>
-    <p class="mt-1.5 text-sm text-ink-600">
+    <h1 class="text-2xl font-black tracking-tight text-white">Verifikasi pengguna</h1>
+    <p class="mt-1.5 text-sm font-medium text-slate-400">
         Verifikasi dilakukan manual. Tidak ada pemeriksaan otomatis ke basis data kependudukan —
         cocokkan nama dan 4 digit terakhir NIK dengan dokumen yang diunggah.
     </p>
@@ -19,9 +19,9 @@
         ] as $key => $label)
             @php($active = (request('status') ?: 'pending') === $key)
             <a href="{{ route('admin.pengguna.index', ['status' => $key]) }}" @class([
-                'rounded-xl px-3.5 py-2 text-sm font-medium transition-colors',
-                'bg-brand-600 text-white' => $active,
-                'border border-ink-200 bg-white text-ink-600 hover:bg-ink-50' => ! $active,
+                'rounded-xl px-3.5 py-2 text-xs transition-all',
+                'bg-[#99ff04] text-black font-black shadow-lg shadow-[#99ff04]/20' => $active,
+                'border border-white/10 bg-[#1b182a] text-slate-300 hover:bg-[#231f36] hover:text-white font-bold' => ! $active,
             ])>{{ $label }}</a>
         @endforeach
     </nav>
@@ -44,11 +44,11 @@
                     @foreach ($users as $user)
                         <tr>
                             <td>
-                                <p class="font-semibold text-ink-900">{{ $user->name }}</p>
-                                <p class="mt-0.5 text-xs break-all text-ink-500">{{ $user->email }}</p>
+                                <p class="font-bold text-white">{{ $user->name }}</p>
+                                <p class="mt-0.5 text-xs break-all text-slate-400">{{ $user->email }}</p>
                             </td>
-                            <td class="whitespace-nowrap text-ink-700">{{ $user->roleLabel() }}</td>
-                            <td class="text-ink-700">{{ $user->organization ?: '—' }}</td>
+                            <td class="whitespace-nowrap text-xs font-semibold text-slate-300">{{ $user->roleLabel() }}</td>
+                            <td class="text-xs font-medium text-slate-300">{{ $user->organization ?: '—' }}</td>
                             <td>
                                 <x-badge :tone="match($user->verification_status) {
                                     'verified' => 'success',
@@ -58,7 +58,7 @@
                                 }">{{ $user->verificationLabel() }}</x-badge>
                             </td>
                             <td class="text-right">
-                                <a href="{{ route('admin.pengguna.show', $user) }}" class="dt-link text-sm whitespace-nowrap">Tinjau &rarr;</a>
+                                <a href="{{ route('admin.pengguna.show', $user) }}" class="dt-link text-xs whitespace-nowrap">Tinjau &rarr;</a>
                             </td>
                         </tr>
                     @endforeach

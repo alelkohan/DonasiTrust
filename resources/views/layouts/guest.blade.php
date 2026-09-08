@@ -95,6 +95,8 @@
                             $img = $cmp->coverUrl();
                         } elseif (!empty($img) && !Str::startsWith($img, 'http')) {
                             $img = asset('storage/' . $img);
+                        } elseif (empty($img)) {
+                            $img = asset('images/no-cover.svg');
                         }
                         $title = $cmp->title ?? $cmp->judul ?? '';
                         $summary = $cmp->summary ?? 'Program donasi terverifikasi dengan audit transparansi real-time.';
@@ -110,9 +112,9 @@
                     <article class="hero-marquee-card flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#1b182a] shadow-xl w-64 shrink-0">
                         <div class="relative aspect-[16/9] overflow-hidden bg-[#12101c]">
                             @if (!empty($img))
-                                <img src="{{ $img }}" alt="{{ $title }}" class="h-full w-full object-cover">
+                                <img src="{{ $img }}" alt="{{ $title }}" onerror="this.onerror=null;this.src='{{ asset('images/no-cover.svg') }}';" class="h-full w-full object-cover">
                             @else
-                                <div class="h-full w-full bg-slate-800"></div>
+                                <img src="{{ asset('images/no-cover.svg') }}" alt="{{ $title }}" class="h-full w-full object-cover">
                             @endif
                             <div class="absolute inset-0 bg-[#12101c]/30"></div>
                             <div class="absolute top-2 left-2 flex items-center gap-1">
@@ -155,6 +157,8 @@
                             $img = $cmp->coverUrl();
                         } elseif (!empty($img) && !Str::startsWith($img, 'http')) {
                             $img = asset('storage/' . $img);
+                        } elseif (empty($img)) {
+                            $img = asset('images/no-cover.svg');
                         }
                         $title = $cmp->title ?? $cmp->judul ?? '';
                         $summary = $cmp->summary ?? 'Program donasi terverifikasi dengan audit transparansi real-time.';
@@ -170,9 +174,9 @@
                     <article class="hero-marquee-card flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#1b182a] shadow-xl w-64 shrink-0">
                         <div class="relative aspect-[16/9] overflow-hidden bg-[#12101c]">
                             @if (!empty($img))
-                                <img src="{{ $img }}" alt="{{ $title }}" class="h-full w-full object-cover">
+                                <img src="{{ $img }}" alt="{{ $title }}" onerror="this.onerror=null;this.src='{{ asset('images/no-cover.svg') }}';" class="h-full w-full object-cover">
                             @else
-                                <div class="h-full w-full bg-slate-800"></div>
+                                <img src="{{ asset('images/no-cover.svg') }}" alt="{{ $title }}" class="h-full w-full object-cover">
                             @endif
                             <div class="absolute inset-0 bg-[#12101c]/30"></div>
                             <div class="absolute top-2 left-2 flex items-center gap-1">
@@ -272,6 +276,8 @@
                             $img = $cmp->coverUrl();
                         } elseif (!empty($img) && !Str::startsWith($img, 'http')) {
                             $img = asset('storage/' . $img);
+                        } elseif (empty($img)) {
+                            $img = asset('images/no-cover.svg');
                         }
                         $title = $cmp->title ?? $cmp->judul ?? '';
                         $summary = $cmp->summary ?? 'Program donasi terverifikasi dengan audit transparansi real-time.';
@@ -288,9 +294,9 @@
                         {{-- Cover Image --}}
                         <div class="relative aspect-[16/9] overflow-hidden bg-[#12101c]">
                             @if (!empty($img))
-                                <img src="{{ $img }}" alt="{{ $title }}" class="h-full w-full object-cover">
+                                <img src="{{ $img }}" alt="{{ $title }}" onerror="this.onerror=null;this.src='{{ asset('images/no-cover.svg') }}';" class="h-full w-full object-cover">
                             @else
-                                <div class="h-full w-full bg-slate-800"></div>
+                                <img src="{{ asset('images/no-cover.svg') }}" alt="{{ $title }}" class="h-full w-full object-cover">
                             @endif
                             <div class="absolute inset-0 bg-[#12101c]/30"></div>
                             <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
@@ -336,6 +342,8 @@
                             $img = $cmp->coverUrl();
                         } elseif (!empty($img) && !Str::startsWith($img, 'http')) {
                             $img = asset('storage/' . $img);
+                        } elseif (empty($img)) {
+                            $img = asset('images/no-cover.svg');
                         }
                         $title = $cmp->title ?? $cmp->judul ?? '';
                         $summary = $cmp->summary ?? 'Program donasi terverifikasi dengan audit transparansi real-time.';
@@ -352,9 +360,9 @@
                         {{-- Cover Image --}}
                         <div class="relative aspect-[16/9] overflow-hidden bg-[#12101c]">
                             @if (!empty($img))
-                                <img src="{{ $img }}" alt="{{ $title }}" class="h-full w-full object-cover">
+                                <img src="{{ $img }}" alt="{{ $title }}" onerror="this.onerror=null;this.src='{{ asset('images/no-cover.svg') }}';" class="h-full w-full object-cover">
                             @else
-                                <div class="h-full w-full bg-slate-800"></div>
+                                <img src="{{ asset('images/no-cover.svg') }}" alt="{{ $title }}" class="h-full w-full object-cover">
                             @endif
                             <div class="absolute inset-0 bg-[#12101c]/30"></div>
                             <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
@@ -514,7 +522,6 @@
 
     document.addEventListener('DOMContentLoaded', updateGuestThemeUI);
 </script>
->>>>>>> Stashed changes
 @livewireScripts
 </body>
 </html>
