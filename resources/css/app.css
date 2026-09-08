@@ -553,6 +553,29 @@ html.theme-light #static-navtab {
   border-bottom-color: rgba(0, 0, 0, 0.1) !important;
 }
 
+/* Mobile Navigation Drawer Theme Support */
+.mobile-nav-drawer {
+  background-color: rgba(19, 17, 28, 0.98);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+html.theme-light .mobile-nav-drawer {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html.theme-light .mobile-nav-drawer a:not(.bg-\[\#99ff04\]) {
+  color: #334155 !important;
+}
+
+html.theme-light .mobile-nav-drawer a:not(.bg-\[\#99ff04\]):hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+
 
 
 

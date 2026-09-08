@@ -159,24 +159,24 @@
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 -translate-y-3"
          @click.away="open = false"
-         class="md:hidden border-t border-b border-white/10 bg-[#13111c]/98 backdrop-blur-xl px-4 py-4 space-y-3"
+         class="mobile-nav-drawer md:hidden border-t border-b px-4 py-4 space-y-3"
          style="display: none;">
         
         <div class="flex flex-col gap-1.5">
             <a href="{{ route('kampanye.index') }}" 
                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition-all {{ request()->routeIs('kampanye.*') ? 'bg-[#99ff04]/10 text-[#99ff04]' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-                <span>🔍 Eksplor Kampanye</span>
+                <span>Eksplor Kampanye</span>
             </a>
 
             <a href="{{ route('transparansi') }}" 
                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition-all {{ request()->routeIs('transparansi*') ? 'bg-[#99ff04]/10 text-[#99ff04]' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-                <span>📋 Audit Ledger HMAC</span>
+                <span>Audit Ledger HMAC</span>
             </a>
 
             @if(Route::has('verifikasi.form'))
                 <a href="{{ route('verifikasi.form') }}" 
                    class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition-all {{ request()->routeIs('verifikasi.*') ? 'bg-[#99ff04]/10 text-[#99ff04]' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-                    <span>🛡️ Verifikasi Kuitansi</span>
+                    <span>Verifikasi Kuitansi</span>
                 </a>
             @endif
         </div>
