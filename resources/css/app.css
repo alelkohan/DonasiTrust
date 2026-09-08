@@ -553,6 +553,52 @@ html.theme-light #static-navtab {
   border-bottom-color: rgba(0, 0, 0, 0.1) !important;
 }
 
+/* -------------------------------------------------------------------------
+   Light Mode High-Contrast Emerald Green Utility Overrides
+   (Prevents neon green #99ff04 from washing out against light backgrounds)
+------------------------------------------------------------------------- */
+html.theme-light .text-\[\#99ff04\] {
+  color: #047857 !important; /* Deep Forest Emerald - 7.2:1 AAA contrast on white */
+}
+
+html.theme-light .hover\:text-\[\#99ff04\]:hover {
+  color: #047857 !important;
+}
+
+html.theme-light .group-hover\:text-\[\#99ff04\]:hover {
+  color: #047857 !important;
+}
+
+html.theme-light .bg-\[\#99ff04\] {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+}
+
+html.theme-light .border-\[\#99ff04\] {
+  border-color: #059669 !important;
+}
+
+html.theme-light .category-btn-active,
+html.theme-light button.category-btn-active {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3) !important;
+}
+
+html.theme-light .vgen-btn-primary,
+html.theme-light .dt-btn-primary {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
+}
+
+html.theme-light .vgen-btn-primary:hover,
+html.theme-light .dt-btn-primary:hover {
+  background-color: #047857 !important;
+}
+
+
 
 
 
