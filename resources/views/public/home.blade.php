@@ -191,7 +191,7 @@
 </section>
 
 {{-- STICKY CATEGORY BAR (Search Bar merges inside when scrolled down past the hero section) --}}
-<section class="sticky top-[60px] z-30 bg-[#12101c]/95 backdrop-blur-md py-3 border-b border-white/10 shadow-2xl w-full -mx-1.5 px-1.5 sm:-mx-2 sm:px-2 lg:-mx-3 lg:px-3">
+<section class="sticky top-[60px] z-30 bg-[#12101c]/95 backdrop-blur-md py-3 border-b border-white/10 shadow-2xl w-full -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
     <div class="flex flex-col gap-2.5">
         
         {{-- Search Input (Appears ONLY when sticky on scroll) --}}
@@ -260,7 +260,7 @@
 
 {{-- MAIN CAMPAIGN GRID SECTION --}}
 <section class="w-full pt-6 pb-16">
-    <div id="campaign-grid-container" class="w-full transition-all duration-300">
+    <div id="campaign-grid-container" class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 min-h-[300px] transition-all duration-300">
         @include('partials.campaign-grid')
     </div>
 </section>

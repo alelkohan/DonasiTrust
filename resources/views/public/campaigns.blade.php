@@ -60,7 +60,7 @@
     </div>
 
     {{-- Sticky Header & Inline Filter Controls --}}
-    <div class="sticky top-14 sm:top-[60px] z-30 -mx-1.5 px-1.5 sm:-mx-2 sm:px-2 lg:-mx-3 lg:px-3 py-3 bg-[#12101c]/95 backdrop-blur-md border-b border-white/10 flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6 transition-all">
+    <div class="sticky top-14 sm:top-[60px] z-30 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 py-3 bg-[#12101c]/95 backdrop-blur-md border-b border-white/10 flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6 transition-all">
         <div>
             <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
                 <span>Kampanye Aktif</span>
