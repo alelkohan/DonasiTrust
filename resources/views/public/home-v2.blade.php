@@ -87,8 +87,8 @@
             </div>
 
             <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.1]">
-                Niat baikmu.<br>
-                <span class="text-[#99ff04]">Bukti nyatanya.</span>
+                Niat baikmu,<br>
+                <span>Bukti nyatanya.</span>
             </h1>
 
             <p class="text-base sm:text-lg font-medium text-slate-300 leading-relaxed max-w-xl">

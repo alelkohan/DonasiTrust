@@ -34,23 +34,28 @@
             Math.max(y, window.innerHeight - y)
         );
 
+        document.documentElement.classList.add('is-theme-switching');
+
         const transition = document.startViewTransition(() => {
             doToggle();
         });
 
         transition.ready.then(() => {
-            const clipPath = [
-                `circle(0px at ${x}px ${y}px)`,
-                `circle(${endRadius}px at ${x}px ${y}px)`
-            ];
-            document.documentElement.animate(
-                { clipPath: clipPath },
+            const animation = document.documentElement.animate(
+                [
+                    { clipPath: `circle(0px at ${x}px ${y}px)` },
+                    { clipPath: `circle(${endRadius}px at ${x}px ${y}px)` }
+                ],
                 {
-                    duration: 500,
-                    easing: 'ease-in-out',
+                    duration: 450,
+                    easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
                     pseudoElement: '::view-transition-new(root)'
                 }
             );
+
+            animation.finished.finally(() => {
+                document.documentElement.classList.remove('is-theme-switching');
+            });
         });
     }
 }" class="sticky top-0 z-40 h-[60px] border-b border-white/10 bg-[#13111c]/95 text-white backdrop-blur-md transition-colors duration-300">
