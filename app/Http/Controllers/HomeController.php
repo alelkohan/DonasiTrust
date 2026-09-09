@@ -106,6 +106,14 @@ class HomeController extends Controller
 
         $categories = Campaign::CATEGORIES;
 
-        return view('public.home', compact('campaigns', 'heroCampaigns', 'stats', 'categories'));
+        // Versioning logic for A/B comparison (v=1 vs v=2)
+        if ($request->has('v')) {
+            session(['dt_home_version' => $request->input('v')]);
+        }
+        $version = session('dt_home_version', '1');
+
+        $viewName = ($version === '2') ? 'public.home-v2' : 'public.home';
+
+        return view($viewName, compact('campaigns', 'heroCampaigns', 'stats', 'categories', 'version'));
     }
 }

@@ -360,6 +360,16 @@
     </div>
 </section>
 
+{{-- Floating Version Comparison Switcher --}}
+<div class="fixed bottom-6 right-6 z-50 flex items-center gap-1.5 rounded-full border border-white/20 bg-[#1b182a]/95 p-1.5 shadow-2xl backdrop-blur-xl">
+    <a href="{{ url('/?v=1') }}" class="rounded-full px-3.5 py-1.5 text-xs font-black transition-all bg-[#99ff04] text-black shadow-md">
+        Versi 1 (Lama)
+    </a>
+    <a href="{{ url('/?v=2') }}" class="rounded-full px-3.5 py-1.5 text-xs font-black transition-all text-slate-300 hover:text-white hover:bg-white/10">
+        Versi 2 (Redesain Baru) ↗
+    </a>
+</div>
+
 </div>
 
 @endsection
