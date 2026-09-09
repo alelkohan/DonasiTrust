@@ -1,5 +1,5 @@
 @if (session('status') || session('warning') || session('error') || $errors->any())
-    <div class="mx-auto mt-5 max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto mt-5 max-w-7xl px-4 sm:px-6 lg:px-8 print:hidden">
         @if (session('status'))
             <div role="status" class="flex items-start gap-3 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-900">
                 <svg class="mt-0.5 h-4.5 w-4.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></svg>

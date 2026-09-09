@@ -5,7 +5,7 @@
 <div class="w-full max-w-2xl mx-auto py-8">
 
     @if ($donation->isPaid())
-        <div class="mb-6 flex items-center gap-3.5 rounded-3xl border border-[#99ff04]/30 bg-[#99ff04]/10 p-5 shadow-2xl">
+        <div class="mb-6 flex items-center gap-3.5 rounded-3xl border border-[#99ff04]/30 bg-[#99ff04]/10 p-5 shadow-2xl print:hidden">
             <span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#99ff04] text-black font-black" aria-hidden="true">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m5 12 4.5 4.5L19 7.5"/></svg>
             </span>
@@ -15,7 +15,7 @@
             </div>
         </div>
     @else
-        <div class="mb-6 rounded-3xl border border-amber-500/30 bg-amber-500/10 p-5 text-xs text-amber-300 shadow-2xl">
+        <div class="mb-6 rounded-3xl border border-amber-500/30 bg-amber-500/10 p-5 text-xs text-amber-300 shadow-2xl print:hidden">
             Transaksi belum lunas. Kuitansi baru dinyatakan sah setelah pembayaran diterima.
             <a href="{{ route('donasi.checkout', $donation) }}" class="font-bold underline ml-1 text-amber-200">Lanjutkan Pembayaran</a>
         </div>
@@ -73,7 +73,7 @@
                     Kode acak terenkripsi ini menjamin kuitansi Anda 100% asli, aman, dan dapat diverifikasi langsung di platform.
                 </p>
                 <a href="{{ route('verifikasi.form', ['reference' => $donation->reference, 'code' => $shortCode]) }}"
-                   class="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-black text-[#99ff04] hover:bg-white/20 transition-all">
+                   class="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-black text-[#99ff04] hover:bg-white/20 transition-all print:hidden">
                     <svg class="h-4 w-4 text-[#99ff04]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 12 4.5 4.5L19 7.5"/></svg>
                     Verifikasi Keaslian Kuitansi Ini (1-Klik) &rarr;
                 </a>

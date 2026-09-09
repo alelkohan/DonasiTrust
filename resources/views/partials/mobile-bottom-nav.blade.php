@@ -8,7 +8,7 @@
 @endphp
 
 {{-- Floating Pill Style Bottom Navigation for Mobile --}}
-<nav class="fixed bottom-3 inset-x-4 z-50 max-w-md mx-auto rounded-full border border-white/15 bg-[#13111c]/90 text-slate-300 shadow-lg shadow-black/40 backdrop-blur-xl md:hidden transition-all duration-300 mobile-pill-nav" aria-label="Navigasi Bawah Mobile">
+<nav class="fixed bottom-3 inset-x-4 z-50 max-w-md mx-auto rounded-full border border-white/15 bg-[#13111c]/90 text-slate-300 shadow-lg shadow-black/40 backdrop-blur-xl md:hidden transition-all duration-300 mobile-pill-nav print:hidden" aria-label="Navigasi Bawah Mobile">
     <div class="flex h-13 items-center justify-around px-2">
 
         {{-- 1. Beranda --}}

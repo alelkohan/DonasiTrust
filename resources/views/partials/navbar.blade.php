@@ -58,7 +58,7 @@
             });
         });
     }
-}" class="sticky top-0 z-40 h-[60px] border-b border-white/10 bg-[#13111c]/95 text-white backdrop-blur-md transition-colors duration-300">
+}" class="sticky top-0 z-40 h-[60px] border-b border-white/10 bg-[#13111c]/95 text-white backdrop-blur-md transition-colors duration-300 print:hidden">
     <nav class="w-full h-full max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-3" aria-label="Navigasi utama">
 
         {{-- Brand Logo --}}

@@ -1,4 +1,4 @@
-<footer class="mt-16 border-t border-white/10 bg-[#0d0b15] text-slate-400 w-full transition-colors duration-300">
+<footer class="mt-16 border-t border-white/10 bg-[#0d0b15] text-slate-400 w-full transition-colors duration-300 print:hidden">
     <div class="w-full max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="grid gap-10 md:grid-cols-4">
             
