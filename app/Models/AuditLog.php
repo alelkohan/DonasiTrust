@@ -42,7 +42,7 @@ class AuditLog extends Model
             'auditable_id' => $this->auditable_id,
             'metadata' => $this->metadata,
             'ip_address' => $this->ip_address,
-            'created_at' => optional($this->created_at)->toIso8601String(),
+            'created_at' => optional($this->created_at)->setMicrosecond(0)?->toIso8601String(),
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 

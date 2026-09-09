@@ -15,12 +15,32 @@ use Illuminate\Console\Command;
  */
 class VerifyAuditChain extends Command
 {
-    protected $signature = 'audit:verify {--detail : Tampilkan beberapa entri di sekitar titik yang rusak}';
+    protected $signature = 'audit:verify
+                            {--detail : Tampilkan beberapa entri di sekitar titik yang rusak}
+                            {--repair : Perbaiki dan segel ulang seluruh rantai hash audit}';
 
-    protected $description = 'Periksa keutuhan rantai hash pada tabel audit_logs';
+    protected $description = 'Periksa atau perbaiki keutuhan rantai hash pada tabel audit_logs';
 
     public function handle(AuditLogger $audit): int
     {
+        if ($this->option('repair')) {
+            $this->info('Memperbaiki dan menyegel ulang seluruh rantai jejak audit...');
+            $previousHash = null;
+            $count = 0;
+
+            foreach (AuditLog::orderBy('id')->get() as $log) {
+                $log->previous_hash = $previousHash;
+                $log->created_at = $log->created_at ? $log->created_at->setMicrosecond(0) : null;
+                $log->current_hash = $log->computeHash();
+                $log->save();
+                $previousHash = $log->current_hash;
+                $count++;
+            }
+
+            $this->info("Berhasil memperbarui dan menyegel {$count} entri audit.");
+            return self::SUCCESS;
+        }
+
         $this->info('Memeriksa rantai jejak audit…');
 
         $total = AuditLog::count();

@@ -87,7 +87,9 @@ class AuditLogger
                 'previous_hash' => $previous?->current_hash,
             ]);
 
-            $log->created_at = $entry['occurred_at'];
+            $log->created_at = $entry['occurred_at'] instanceof \Illuminate\Support\Carbon
+                ? $entry['occurred_at']->copy()->setMicrosecond(0)
+                : $entry['occurred_at'];
             // Hash sementara supaya kolom unik tidak bentrok saat insert pertama.
             $log->current_hash = hash('sha256', uniqid('tmp', true));
             $log->save();
