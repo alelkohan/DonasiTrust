@@ -76,218 +76,229 @@
 {{-- -------------------------------------------------------------------------
    SECTION 1: HERO SECTION (Split Layout - Text Left, Live Tracking Demo Right)
 ------------------------------------------------------------------------- --}}
-<section class="relative bg-[#12101c] pt-8 pb-12 text-white w-full">
-    <div class="grid gap-12 lg:grid-cols-12 lg:items-center">
-        
-        {{-- Left Hero Content --}}
-        <div class="lg:col-span-6 space-y-6">
-            <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1 text-xs font-black uppercase tracking-widest text-slate-300 backdrop-blur-md">
-                <span class="h-2 w-2 rounded-full bg-[#99ff04] animate-pulse"></span>
-                Kebaikan yang bisa ditelusuri
-            </div>
+{{-- -------------------------------------------------------------------------
+   SECTION 1: HERO SECTION (3D Curved Arch Ribbon Marquee Showcase)
+------------------------------------------------------------------------- --}}
+@php
+    $heroCardList = $campaigns->map(function($c) {
+        return [
+            'id' => $c->id,
+            'title' => $c->title,
+            'cover' => $c->coverUrl(),
+            'category' => $c->categoryLabel(),
+            'collected' => rupiah($c->collected_amount),
+            'target' => rupiah_ringkas($c->target_amount),
+            'percent' => $c->progressPercent(),
+            'url' => route('kampanye.show', $c),
+            'organization' => $c->user->organization ?: $c->user->name,
+        ];
+    })->values()->toArray();
 
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.1]">
-                Niat baikmu,<br>
-                <span>Bukti nyatanya.</span>
-            </h1>
+    // Fallback sample data if array is small
+    if (count($heroCardList) < 4) {
+        $heroCardList = array_merge($heroCardList, [
+            [
+                'id' => 901,
+                'title' => 'Air Bersih untuk Dusun Ngroto',
+                'cover' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+                'category' => 'Lingkungan',
+                'collected' => 'Rp7.150.000',
+                'target' => 'target Rp32jt',
+                'percent' => 22,
+                'url' => '#',
+                'organization' => 'Yayasan Sumber Kehidupan',
+            ],
+            [
+                'id' => 902,
+                'title' => 'Perbaiki Atap Madrasah Al-Hikmah',
+                'cover' => 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+                'category' => 'Pendidikan',
+                'collected' => 'Rp39.410.000',
+                'target' => 'target Rp48,5jt',
+                'percent' => 81,
+                'url' => '#',
+                'organization' => 'Yayasan Pendidikan Umat',
+            ],
+            [
+                'id' => 903,
+                'title' => 'Perlengkapan Sekolah 60 Anak',
+                'cover' => 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80',
+                'category' => 'Kemanusiaan',
+                'collected' => 'Rp12.600.000',
+                'target' => 'target Rp21jt',
+                'percent' => 60,
+                'url' => '#',
+                'organization' => 'Komunitas Anak Negeri',
+            ],
+            [
+                'id' => 904,
+                'title' => 'Bantuan Alat Bantu Dengar Digital',
+                'cover' => 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80',
+                'category' => 'Kesehatan',
+                'collected' => 'Rp32.963.665',
+                'target' => 'target Rp40jt',
+                'percent' => 82,
+                'url' => '#',
+                'organization' => 'Komunitas Konservasi',
+            ]
+        ]);
+    }
 
-            <p class="text-base sm:text-lg font-medium text-slate-300 leading-relaxed max-w-xl">
-                Pantau donasimu dari dana terkumpul, pencairan bertahap, hingga bukti penggunaan secara transparan dan akuntabel.
-            </p>
+    // Duplicate array for seamless infinite marquee loop
+    $heroCardListDouble = array_merge($heroCardList, $heroCardList);
+@endphp
 
-            {{-- Action Buttons --}}
-            <div class="flex flex-wrap items-center gap-4 pt-2">
-                <a href="#kampanye-section" class="inline-flex items-center gap-2 rounded-full bg-[#99ff04] px-7 py-3.5 text-sm font-black text-black transition-transform hover:scale-105 hover:bg-[#84e000] active:scale-95 shadow-xl shadow-[#99ff04]/20">
-                    Jelajahi Kampanye
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-                </a>
-                <a href="{{ route('transparansi') }}" class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-[#231f36] px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-white/15">
-                    Lihat Cara Kerja
-                </a>
-            </div>
+<section class="relative bg-[#12101c] pt-10 pb-16 text-white w-full overflow-hidden border-b border-white/10"
+         x-data="{
+             isHovered: false,
+             isDragging: false,
+             startX: 0,
+             scrollPos: 0,
+             speed: 0.8,
+             animFrame: null,
+             initMarquee() {
+                 const step = () => {
+                     if (!this.isHovered && !this.isDragging) {
+                         this.scrollPos += this.speed;
+                         const track = this.$refs.track;
+                         if (track && this.scrollPos >= (track.scrollWidth / 2)) {
+                             this.scrollPos = 0;
+                         }
+                     }
+                     this.animFrame = requestAnimationFrame(step);
+                 };
+                 this.animFrame = requestAnimationFrame(step);
+             },
+             startDrag(e) {
+                 this.isDragging = true;
+                 this.startX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+             },
+             onDrag(e) {
+                 if (!this.isDragging) return;
+                 const currentX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+                 const delta = (this.startX - currentX) * 1.5;
+                 this.scrollPos += delta;
+                 this.startX = currentX;
+                 
+                 const track = this.$refs.track;
+                 if (track) {
+                     if (this.scrollPos < 0) this.scrollPos = track.scrollWidth / 2;
+                     if (this.scrollPos >= track.scrollWidth / 2) this.scrollPos = 0;
+                 }
+             },
+             endDrag() {
+                 this.isDragging = false;
+             }
+         }"
+         x-init="initMarquee()">
 
-            {{-- Feature Badges --}}
-            <div class="flex flex-wrap items-center gap-6 pt-4 text-xs font-extrabold text-slate-300">
-                <div class="flex items-center gap-2">
-                    <span class="grid h-5 w-5 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04]">
-                        ✓
-                    </span>
-                    Pencairan bertahap
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="grid h-5 w-5 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04]">
-                        ✓
-                    </span>
-                    Bukti bisa diperiksa
-                </div>
-            </div>
+    {{-- Top Centered Headline & Action Buttons --}}
+    <div class="text-center max-w-4xl mx-auto px-4 space-y-5 pb-10">
+        <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-slate-300 backdrop-blur-md">
+            <span class="h-2.5 w-2.5 rounded-full bg-[#99ff04] animate-pulse"></span>
+            Kebaikan Yang Bisa Ditelusuri
         </div>
 
-        {{-- Right Hero: Option 2 Interactive Stacked Campaign Cards Showcase --}}
-        <div class="lg:col-span-6 relative pt-4 pb-8" x-data="{
-            heroIndex: 0,
-            totalCards: 3,
-            next() {
-                this.heroIndex = (this.heroIndex + 1) % this.totalCards;
-            },
-            prev() {
-                this.heroIndex = (this.heroIndex - 1 + this.totalCards) % this.totalCards;
-            }
-        }">
-            {{-- Stack Control Bar Header --}}
-            <div class="flex items-center justify-between mb-4 px-2">
-                <div class="flex items-center gap-2">
-                    <span class="grid h-6 w-6 place-items-center rounded-full bg-[#99ff04] text-black font-black text-xs shadow-md">
-                        ★
-                    </span>
-                    <span class="text-xs font-black uppercase tracking-wider text-slate-300">
-                        Kampanye Pilihan Mendesak
-                    </span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                    <button type="button" @click="prev()" title="Sebelumnya" 
-                            class="grid h-8 w-8 place-items-center rounded-full border border-white/15 bg-[#231f36] text-slate-300 hover:border-[#99ff04] hover:text-white transition-all active:scale-95">
-                        ←
-                    </button>
-                    <span class="text-xs font-mono font-bold text-slate-400 px-1">
-                        <span x-text="heroIndex + 1">1</span>/3
-                    </span>
-                    <button type="button" @click="next()" title="Berikutnya" 
-                            class="grid h-8 w-8 place-items-center rounded-full border border-white/15 bg-[#231f36] text-slate-300 hover:border-[#99ff04] hover:text-white transition-all active:scale-95">
-                        →
-                    </button>
-                </div>
-            </div>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
+            Niat baikmu,<br>
+            <span class="text-[#99ff04]">Bukti nyatanya.</span>
+        </h1>
 
-            {{-- 3D Stack Deck Container --}}
-            <div class="relative h-[370px] sm:h-[400px] w-full cursor-pointer select-none" @click="next()">
-                
-                {{-- Stack Card 1 --}}
-                <div class="absolute inset-0 rounded-3xl border border-white/15 bg-[#1b182a] p-5 shadow-2xl transition-all duration-500 ease-out"
-                     :class="{
-                        'z-30 opacity-100 translate-y-0 scale-100 pointer-events-auto border-[#99ff04]/40': heroIndex === 0,
-                        'z-20 opacity-80 translate-y-4 translate-x-4 scale-95 pointer-events-none': heroIndex === 1,
-                        'z-10 opacity-50 translate-y-8 translate-x-8 scale-90 pointer-events-none': heroIndex === 2
-                     }">
-                    <div class="flex flex-col h-full justify-between">
-                        <div class="relative h-44 sm:h-48 w-full overflow-hidden rounded-2xl bg-slate-800">
-                            <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80" 
-                                 alt="Air Bersih Dusun Ngroto" class="h-full w-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#1b182a] via-transparent to-transparent opacity-80"></div>
-                            <span class="absolute top-3 left-3 rounded-full bg-black/70 border border-white/10 px-3 py-1 text-[10px] font-black uppercase text-white backdrop-blur-md">
-                                Lingkungan · Tahap 1 dari 3
-                            </span>
+        <p class="text-base sm:text-lg font-medium text-slate-300 leading-relaxed max-w-2xl mx-auto">
+            Pantau donasimu dari dana terkumpul, pencairan bertahap, hingga bukti penggunaan secara transparan dan akuntabel.
+        </p>
+
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+            <a href="#kampanye-section" class="inline-flex items-center gap-2 rounded-full bg-[#99ff04] px-8 py-3.5 text-sm font-black text-black transition-transform hover:scale-105 hover:bg-[#84e000] active:scale-95 shadow-xl shadow-[#99ff04]/20">
+                Jelajahi Kampanye ↗
+            </a>
+            <a href="{{ route('transparansi') }}" class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-[#231f36] px-7 py-3.5 text-sm font-bold text-white transition-all hover:bg-white/15">
+                Lihat Cara Kerja
+            </a>
+        </div>
+    </div>
+
+    {{-- 3D Arch Ribbon Infinity Marquee Container --}}
+    <div class="relative w-full py-6 select-none"
+         style="perspective: 1200px; -webkit-perspective: 1200px;"
+         @mouseenter="isHovered = true"
+         @mouseleave="isHovered = false; endDrag()"
+         @mousedown="startDrag($event)"
+         @mousemove="onDrag($event)"
+         @mouseup="endDrag()"
+         @touchstart="startDrag($event)"
+         @touchmove="onDrag($event)"
+         @touchend="endDrag()">
+        
+        {{-- Side Gradient Fades --}}
+        <div class="pointer-events-none absolute left-0 top-0 bottom-0 z-20 w-16 sm:w-32 bg-gradient-to-r from-[#12101c] to-transparent"></div>
+        <div class="pointer-events-none absolute right-0 top-0 bottom-0 z-20 w-16 sm:w-32 bg-gradient-to-l from-[#12101c] to-transparent"></div>
+
+        {{-- Marquee Track --}}
+        <div class="flex gap-4 sm:gap-6 items-center transition-transform ease-linear duration-75 cursor-grab active:cursor-grabbing py-8"
+             x-ref="track"
+             :style="`transform: translateX(-${scrollPos}px);`">
+            
+            @foreach ($heroCardListDouble as $idx => $card)
+                <div class="hero-3d-card group relative shrink-0 w-44 sm:w-56 h-72 sm:h-80 rounded-3xl overflow-hidden border border-white/15 bg-[#1b182a] shadow-2xl transition-all duration-300 hover:scale-125 hover:z-50 hover:shadow-[0_20px_50px_rgba(153,255,4,0.3)] hover:border-[#99ff04]">
+                    
+                    {{-- Cover Photo --}}
+                    <img src="{{ $card['cover'] }}" 
+                         alt="{{ $card['title'] }}" 
+                         class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    
+                    {{-- Gradient Overlay --}}
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#12101c] via-[#12101c]/50 to-transparent"></div>
+
+                    {{-- Top Category Pill --}}
+                    <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+                        <span class="rounded-full bg-black/70 backdrop-blur-md border border-white/10 px-2.5 py-0.5 text-[10px] font-black uppercase text-white tracking-wider">
+                            {{ $card['category'] }}
+                        </span>
+                        <span class="rounded-full bg-[#99ff04] px-2 py-0.5 text-[10px] font-black text-black uppercase">
+                            Open
+                        </span>
+                    </div>
+
+                    {{-- Bottom Card Body Content --}}
+                    <div class="absolute bottom-0 inset-x-0 p-4 space-y-2.5">
+                        <h3 class="text-xs sm:text-sm font-black text-white leading-tight line-clamp-2 group-hover:text-[#99ff04] transition-colors">
+                            {{ $card['title'] }}
+                        </h3>
+
+                        {{-- Progress Bar & Stats --}}
+                        <div class="space-y-1 pt-1">
+                            <div class="h-1.5 w-full rounded-full bg-[#2a253e] overflow-hidden">
+                                <div class="h-full rounded-full bg-[#99ff04] transition-all duration-500"
+                                     style="width: {{ $card['percent'] }}%"></div>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="font-black text-white">{{ $card['collected'] }}</span>
+                                <span class="text-[#99ff04] font-bold">{{ $card['percent'] }}%</span>
+                            </div>
                         </div>
-                        <div class="space-y-3 pt-2">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-base font-black text-white">Air Bersih untuk Dusun Ngroto</h3>
-                                    <p class="text-xs text-slate-400">Kendal, Jawa Tengah · Yayasan Sumber Kehidupan</p>
-                                </div>
-                                <span class="rounded bg-[#99ff04]/20 border border-[#99ff04]/40 px-2.5 py-1 text-[11px] font-black text-[#99ff04]">
-                                    22%
-                                </span>
-                            </div>
-                            <div class="space-y-1">
-                                <div class="h-2 w-full rounded-full bg-[#2a253e] overflow-hidden">
-                                    <div class="h-full rounded-full bg-[#99ff04] w-[22%]"></div>
-                                </div>
-                                <div class="flex justify-between text-xs pt-0.5">
-                                    <span class="font-black text-white">Rp7.150.000 <span class="text-[10px] text-slate-400 font-normal">terkumpul</span></span>
-                                    <span class="text-slate-400 font-medium">Target Rp32.000.000</span>
-                                </div>
-                            </div>
+
+                        {{-- Action Link on Hover --}}
+                        <div class="pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <a href="{{ $card['url'] }}" 
+                               class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-[#99ff04] py-1.5 text-[11px] font-black text-black shadow-md hover:bg-[#84e000]">
+                                Lihat Kampanye ↗
+                            </a>
                         </div>
                     </div>
+
                 </div>
+            @endforeach
 
-                {{-- Stack Card 2 --}}
-                <div class="absolute inset-0 rounded-3xl border border-white/15 bg-[#1b182a] p-5 shadow-2xl transition-all duration-500 ease-out"
-                     :class="{
-                        'z-30 opacity-100 translate-y-0 scale-100 pointer-events-auto border-[#99ff04]/40': heroIndex === 1,
-                        'z-20 opacity-80 translate-y-4 translate-x-4 scale-95 pointer-events-none': heroIndex === 2,
-                        'z-10 opacity-50 translate-y-8 translate-x-8 scale-90 pointer-events-none': heroIndex === 0
-                     }">
-                    <div class="flex flex-col h-full justify-between">
-                        <div class="relative h-44 sm:h-48 w-full overflow-hidden rounded-2xl bg-slate-800">
-                            <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80" 
-                                 alt="Perbaiki Atap Madrasah Al-Hikmah" class="h-full w-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#1b182a] via-transparent to-transparent opacity-80"></div>
-                            <span class="absolute top-3 left-3 rounded-full bg-black/70 border border-white/10 px-3 py-1 text-[10px] font-black uppercase text-white backdrop-blur-md">
-                                Pendidikan · Tahap 2 dari 3
-                            </span>
-                        </div>
-                        <div class="space-y-3 pt-2">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-base font-black text-white">Perbaiki Atap Madrasah Al-Hikmah</h3>
-                                    <p class="text-xs text-slate-400">Demak, Jawa Tengah · Yayasan Pendidikan Umat</p>
-                                </div>
-                                <span class="rounded bg-[#99ff04]/20 border border-[#99ff04]/40 px-2.5 py-1 text-[11px] font-black text-[#99ff04]">
-                                    81%
-                                </span>
-                            </div>
-                            <div class="space-y-1">
-                                <div class="h-2 w-full rounded-full bg-[#2a253e] overflow-hidden">
-                                    <div class="h-full rounded-full bg-[#99ff04] w-[81%]"></div>
-                                </div>
-                                <div class="flex justify-between text-xs pt-0.5">
-                                    <span class="font-black text-white">Rp39.410.000 <span class="text-[10px] text-slate-400 font-normal">terkumpul</span></span>
-                                    <span class="text-slate-400 font-medium">Target Rp48.500.000</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Stack Card 3 --}}
-                <div class="absolute inset-0 rounded-3xl border border-white/15 bg-[#1b182a] p-5 shadow-2xl transition-all duration-500 ease-out"
-                     :class="{
-                        'z-30 opacity-100 translate-y-0 scale-100 pointer-events-auto border-[#99ff04]/40': heroIndex === 2,
-                        'z-20 opacity-80 translate-y-4 translate-x-4 scale-95 pointer-events-none': heroIndex === 0,
-                        'z-10 opacity-50 translate-y-8 translate-x-8 scale-90 pointer-events-none': heroIndex === 1
-                     }">
-                    <div class="flex flex-col h-full justify-between">
-                        <div class="relative h-44 sm:h-48 w-full overflow-hidden rounded-2xl bg-slate-800">
-                            <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80" 
-                                 alt="Perlengkapan Sekolah 60 Anak" class="h-full w-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#1b182a] via-transparent to-transparent opacity-80"></div>
-                            <span class="absolute top-3 left-3 rounded-full bg-black/70 border border-white/10 px-3 py-1 text-[10px] font-black uppercase text-white backdrop-blur-md">
-                                Kemanusiaan · Tahap 1 dari 2
-                            </span>
-                        </div>
-                        <div class="space-y-3 pt-2">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-base font-black text-white">Perlengkapan Sekolah untuk 60 Anak</h3>
-                                    <p class="text-xs text-slate-400">Semarang, Jawa Tengah · Komunitas Anak Negeri</p>
-                                </div>
-                                <span class="rounded bg-[#99ff04]/20 border border-[#99ff04]/40 px-2.5 py-1 text-[11px] font-black text-[#99ff04]">
-                                    60%
-                                </span>
-                            </div>
-                            <div class="space-y-1">
-                                <div class="h-2 w-full rounded-full bg-[#2a253e] overflow-hidden">
-                                    <div class="h-full rounded-full bg-[#99ff04] w-[60%]"></div>
-                                </div>
-                                <div class="flex justify-between text-xs pt-0.5">
-                                    <span class="font-black text-white">Rp12.600.000 <span class="text-[10px] text-slate-400 font-normal">terkumpul</span></span>
-                                    <span class="text-slate-400 font-medium">Target Rp21.000.000</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            {{-- Click Hint Footnote --}}
-            <p class="mt-3 text-center text-[11px] font-medium text-slate-400">
-                Klik kartu atau panah untuk berganti kampanye unggulan.
-            </p>
         </div>
 
     </div>
+
+    {{-- Interactive Drag / Hover Indicator Footnote --}}
+    <div class="text-center pt-2 text-xs font-medium text-slate-400">
+        Geser ke kanan/kiri atau arahkan kursor ke kartu untuk melihat detail kampanye.
+    </div>
+
 </section>
 
 {{-- -------------------------------------------------------------------------
