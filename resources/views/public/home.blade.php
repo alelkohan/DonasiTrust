@@ -134,7 +134,7 @@
     
     {{-- Animated Background Sliding Cards Marquee (Shifted Right on Desktop for Text Legibility) --}}
     @if ($heroCampaigns->isNotEmpty())
-        <div class="hero-marquee-container absolute inset-0 lg:left-[18%] lg:-right-[8%] z-0 overflow-hidden pointer-events-none opacity-25 select-none flex justify-center lg:justify-end gap-6 p-4" style="transform: rotate(-22deg) scale(1.45);">
+        <div class="hero-marquee-container absolute inset-0 lg:left-[8%] lg:right-0 z-0 overflow-hidden pointer-events-none opacity-25 select-none flex justify-center lg:justify-end gap-6 p-4" style="transform: rotate(-22deg) scale(1.45);">
             
             {{-- Column 1: Scrolls Up --}}
             <div class="flex flex-col gap-6 animate-hero-marquee-up w-72 shrink-0">
