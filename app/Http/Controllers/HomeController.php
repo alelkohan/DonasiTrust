@@ -108,8 +108,6 @@ class HomeController extends Controller
 
         $categories = Campaign::CATEGORIES;
 
-        $viewName = ($request->input('v') == '2' || $request->has('v2') || $request->has('v-2')) ? 'public.home-v2' : 'public.home';
-
-        return view($viewName, compact('campaigns', 'heroCampaigns', 'stats', 'categories'));
+        return view('public.home', compact('campaigns', 'heroCampaigns', 'stats', 'categories'));
     }
 }

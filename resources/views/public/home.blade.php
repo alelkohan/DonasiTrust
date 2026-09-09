@@ -132,9 +132,9 @@
 ------------------------------------------------------------------------- --}}
 <section class="hero-section-v2 relative bg-[#12101c] text-white overflow-hidden transition-colors duration-300" style="padding-top: 80px; padding-bottom: 70px;">
     
-    {{-- Animated Background Sliding Cards Marquee --}}
+    {{-- Animated Background Sliding Cards Marquee (Shifted Right on Desktop for Text Legibility) --}}
     @if ($heroCampaigns->isNotEmpty())
-        <div class="hero-marquee-container absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-25 select-none flex justify-center gap-6 p-4" style="transform: rotate(-22deg) scale(1.45);">
+        <div class="hero-marquee-container absolute inset-0 lg:left-[28%] lg:-right-[12%] z-0 overflow-hidden pointer-events-none opacity-25 select-none flex justify-center lg:justify-end gap-6 p-4" style="transform: rotate(-22deg) scale(1.45);">
             
             {{-- Column 1: Scrolls Up --}}
             <div class="flex flex-col gap-6 animate-hero-marquee-up w-72 shrink-0">

@@ -27,10 +27,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', HomeController::class)->name('home');
-Route::get('/v2', function (Illuminate\Http\Request $request, HomeController $controller) {
-    $request->merge(['v' => '2']);
-    return $controller($request);
-})->name('home.v2');
 
 Route::get('/kampanye', [CampaignBrowseController::class, 'index'])->name('kampanye.index');
 Route::get('/kampanye/{campaign}', [CampaignBrowseController::class, 'show'])->name('kampanye.show');

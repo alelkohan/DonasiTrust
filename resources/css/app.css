@@ -854,3 +854,14 @@ html.theme-light .hero-section-v2 .text-slate-400 {
 html.theme-light .hero-section-v2 .text-slate-300 {
   color: #334155 !important;
 }
+
+/* -------------------------------------------------------------------------
+   Hero Marquee Left-to-Right Fade Mask (Text Readability Optimization)
+------------------------------------------------------------------------- */
+.hero-marquee-overlay-v2 {
+  background: linear-gradient(to right, rgba(18, 16, 28, 0.96) 0%, rgba(18, 16, 28, 0.8) 35%, rgba(18, 16, 28, 0.25) 65%, rgba(18, 16, 28, 0) 100%);
+}
+
+html.theme-light .hero-marquee-overlay-v2 {
+  background: linear-gradient(to right, rgba(248, 250, 252, 0.98) 0%, rgba(248, 250, 252, 0.82) 35%, rgba(248, 250, 252, 0.3) 65%, rgba(248, 250, 252, 0) 100%) !important;
+}
