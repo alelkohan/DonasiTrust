@@ -77,7 +77,7 @@
    SECTION 1: HERO SECTION (Split Layout - Text Left, Live Tracking Demo Right)
 ------------------------------------------------------------------------- --}}
 {{-- -------------------------------------------------------------------------
-   SECTION 1: HERO SECTION (3D Curved Arch Ribbon Marquee Showcase)
+   SECTION 1: HERO SECTION (3D Coverflow Infinity Marquee Showcase)
 ------------------------------------------------------------------------- --}}
 @php
     $heroCardList = $campaigns->map(function($c) {
@@ -95,7 +95,7 @@
     })->values()->toArray();
 
     // Fallback sample data if array is small
-    if (count($heroCardList) < 4) {
+    if (count($heroCardList) < 5) {
         $heroCardList = array_merge($heroCardList, [
             [
                 'id' => 901,
@@ -152,10 +152,53 @@
          x-data="{
              isHovered: false,
              isDragging: false,
+             hoveredIndex: -1,
              startX: 0,
              scrollPos: 0,
-             speed: 0.8,
+             speed: 0.75,
              animFrame: null,
+
+             updateCoverflow() {
+                 const track = this.$refs.track;
+                 const container = this.$refs.container;
+                 if (!track || !container) return;
+
+                 const containerWidth = container.clientWidth || window.innerWidth;
+                 const containerCenterX = containerWidth / 2;
+                 const cards = track.children;
+                 const cardWidth = 244; // 224px width + 20px gap
+
+                 for (let i = 0; i < cards.length; i++) {
+                     const card = cards[i];
+                     if (i === this.hoveredIndex) {
+                         card.style.transform = 'perspective(1200px) rotateY(0deg) scale(1.18) translateZ(80px)';
+                         card.style.opacity = '1';
+                         card.style.zIndex = '999';
+                         card.style.borderColor = '#99ff04';
+                         card.style.boxShadow = '0 20px 40px rgba(153, 255, 4, 0.35)';
+                         continue;
+                     }
+
+                     const cardCenterX = (i * cardWidth) - this.scrollPos + (cardWidth / 2);
+                     const distRatio = (cardCenterX - containerCenterX) / (containerWidth / 2);
+                     const clampedDist = Math.max(-1.4, Math.min(1.4, distRatio));
+                     const absDist = Math.abs(clampedDist);
+
+                     // Coverflow geometry: Largest flat in center, shrinking & fanning out towards edges
+                     const scale = Math.max(0.72, 1.04 - absDist * 0.24);
+                     const rotateY = clampedDist < 0 ? Math.min(26, absDist * 26) : Math.max(-26, -absDist * 26);
+                     const translateZ = -absDist * 90;
+                     const opacity = Math.max(0.6, 1 - absDist * 0.32);
+                     const zIndex = Math.round(100 - absDist * 50);
+
+                     card.style.transform = `perspective(1200px) rotateY(${rotateY}deg) scale(${scale}) translateZ(${translateZ}px)`;
+                     card.style.opacity = opacity.toString();
+                     card.style.zIndex = zIndex.toString();
+                     card.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                     card.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.5)';
+                 }
+             },
+
              initMarquee() {
                  const step = () => {
                      if (!this.isHovered && !this.isDragging) {
@@ -165,18 +208,21 @@
                              this.scrollPos = 0;
                          }
                      }
+                     this.updateCoverflow();
                      this.animFrame = requestAnimationFrame(step);
                  };
                  this.animFrame = requestAnimationFrame(step);
              },
+
              startDrag(e) {
                  this.isDragging = true;
                  this.startX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
              },
+
              onDrag(e) {
                  if (!this.isDragging) return;
                  const currentX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-                 const delta = (this.startX - currentX) * 1.5;
+                 const delta = (this.startX - currentX) * 1.4;
                  this.scrollPos += delta;
                  this.startX = currentX;
                  
@@ -186,6 +232,7 @@
                      if (this.scrollPos >= track.scrollWidth / 2) this.scrollPos = 0;
                  }
              },
+
              endDrag() {
                  this.isDragging = false;
              }
@@ -193,7 +240,7 @@
          x-init="initMarquee()">
 
     {{-- Top Centered Headline & Action Buttons --}}
-    <div class="text-center max-w-4xl mx-auto px-4 space-y-5 pb-10">
+    <div class="text-center max-w-4xl mx-auto px-4 space-y-5 pb-8">
         <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-slate-300 backdrop-blur-md">
             <span class="h-2.5 w-2.5 rounded-full bg-[#99ff04] animate-pulse"></span>
             Kebaikan Yang Bisa Ditelusuri
@@ -218,11 +265,12 @@
         </div>
     </div>
 
-    {{-- 3D Arch Ribbon Infinity Marquee Container --}}
+    {{-- 3D Coverflow Marquee Track Container --}}
     <div class="relative w-full py-6 select-none"
+         x-ref="container"
          style="perspective: 1200px; -webkit-perspective: 1200px;"
          @mouseenter="isHovered = true"
-         @mouseleave="isHovered = false; endDrag()"
+         @mouseleave="isHovered = false; hoveredIndex = -1; endDrag()"
          @mousedown="startDrag($event)"
          @mousemove="onDrag($event)"
          @mouseup="endDrag()"
@@ -230,17 +278,19 @@
          @touchmove="onDrag($event)"
          @touchend="endDrag()">
         
-        {{-- Side Gradient Fades --}}
-        <div class="pointer-events-none absolute left-0 top-0 bottom-0 z-20 w-16 sm:w-32 bg-gradient-to-r from-[#12101c] to-transparent"></div>
-        <div class="pointer-events-none absolute right-0 top-0 bottom-0 z-20 w-16 sm:w-32 bg-gradient-to-l from-[#12101c] to-transparent"></div>
+        {{-- Side Gradient Fades (Mask-image Effect) --}}
+        <div class="pointer-events-none absolute left-0 top-0 bottom-0 z-30 w-24 sm:w-44 bg-gradient-to-r from-[#12101c] via-[#12101c]/80 to-transparent"></div>
+        <div class="pointer-events-none absolute right-0 top-0 bottom-0 z-30 w-24 sm:w-44 bg-gradient-to-l from-[#12101c] via-[#12101c]/80 to-transparent"></div>
 
         {{-- Marquee Track --}}
-        <div class="flex gap-4 sm:gap-6 items-center transition-transform ease-linear duration-75 cursor-grab active:cursor-grabbing py-8"
+        <div class="flex gap-5 items-center py-10 transition-transform ease-linear duration-75 cursor-grab active:cursor-grabbing"
              x-ref="track"
              :style="`transform: translateX(-${scrollPos}px);`">
             
             @foreach ($heroCardListDouble as $idx => $card)
-                <div class="hero-3d-card group relative shrink-0 w-44 sm:w-56 h-72 sm:h-80 rounded-3xl overflow-hidden border border-white/15 bg-[#1b182a] shadow-2xl transition-all duration-300 hover:scale-125 hover:z-50 hover:shadow-[0_20px_50px_rgba(153,255,4,0.3)] hover:border-[#99ff04]">
+                <div class="hero-3d-card-coverflow group relative shrink-0 w-56 h-80 rounded-3xl overflow-hidden border bg-[#1b182a]"
+                     @mouseenter="hoveredIndex = {{ $idx }}"
+                     @mouseleave="hoveredIndex = -1">
                     
                     {{-- Cover Photo --}}
                     <img src="{{ $card['cover'] }}" 
@@ -248,15 +298,15 @@
                          class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110">
                     
                     {{-- Gradient Overlay --}}
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#12101c] via-[#12101c]/50 to-transparent"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#12101c] via-[#12101c]/60 to-transparent"></div>
 
-                    {{-- Top Category Pill --}}
+                    {{-- Top Category Pill & OPEN status --}}
                     <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                        <span class="rounded-full bg-black/70 backdrop-blur-md border border-white/10 px-2.5 py-0.5 text-[10px] font-black uppercase text-white tracking-wider">
+                        <span class="rounded-full bg-black/75 backdrop-blur-md border border-white/10 px-2.5 py-0.5 text-[10px] font-black uppercase text-white tracking-wider">
                             {{ $card['category'] }}
                         </span>
-                        <span class="rounded-full bg-[#99ff04] px-2 py-0.5 text-[10px] font-black text-black uppercase">
-                            Open
+                        <span class="rounded-full bg-[#99ff04] px-2 py-0.5 text-[10px] font-black text-black uppercase tracking-wider">
+                            OPEN
                         </span>
                     </div>
 
@@ -295,7 +345,7 @@
     </div>
 
     {{-- Interactive Drag / Hover Indicator Footnote --}}
-    <div class="text-center pt-2 text-xs font-medium text-slate-400">
+    <div class="text-center text-xs font-medium text-slate-400">
         Geser ke kanan/kiri atau arahkan kursor ke kartu untuk melihat detail kampanye.
     </div>
 
