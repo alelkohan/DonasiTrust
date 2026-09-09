@@ -107,6 +107,37 @@
                             </p>
                         </div>
                     </div>
+
+                    {{-- MOBILE QUICK ACTION (Hanya Tampil di Mode HP/Tablet) --}}
+                    <div class="mt-6 border-t border-white/10 pt-5 lg:hidden" x-data="{ copied: false }">
+                        <div class="rounded-2xl bg-[#231f36] p-4 border border-white/5 mb-4">
+                            <div class="flex items-baseline justify-between gap-2">
+                                <p class="text-xl font-black text-white tabular-nums">{{ rupiah($campaign->collected_amount) }}</p>
+                                <p class="text-xs font-black text-[#99ff04] tabular-nums">{{ $campaign->progressPercent() }}%</p>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-0.5">terkumpul dari target {{ rupiah($campaign->target_amount) }} &middot; {{ number_format($totalDonorsCount, 0, ',', '.') }} donatur</p>
+                            <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-[#12101c]">
+                                <div class="h-full rounded-full bg-[#99ff04] transition-all duration-500" style="width: {{ min(100, $campaign->progressPercent()) }}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button"
+                                    @click="document.getElementById('form-donasi')?.scrollIntoView({ behavior: 'smooth' })"
+                                    class="flex items-center justify-center gap-2 rounded-2xl bg-[#99ff04] py-3.5 px-4 text-xs font-black text-black hover:bg-[#84e000] active:scale-95 transition-all shadow-lg shadow-[#99ff04]/20 cursor-pointer">
+                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                <span>Donasi Sekarang</span>
+                            </button>
+
+                            <button type="button"
+                                    @click="if (navigator.share) { navigator.share({ title: '{{ e($campaign->title) }}', text: 'Bantu kampanye ini di DonasiTrust:', url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); copied = true; setTimeout(() => copied = false, 3000); }"
+                                    class="flex items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 py-3.5 px-4 text-xs font-bold text-white hover:bg-white/20 active:scale-95 transition-all cursor-pointer">
+                                <svg x-show="!copied" class="h-4 w-4 text-[#99ff04]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                                <svg x-show="copied" class="h-4 w-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span x-text="copied ? 'Tersalin!' : 'Bagikan'"></span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -378,7 +409,9 @@
                 </button>
             </div>
 
-            @livewire('donation-form', ['campaign' => $campaign])
+            <div id="form-donasi" class="scroll-mt-24">
+                @livewire('donation-form', ['campaign' => $campaign])
+            </div>
         </aside>
     </div>
 
