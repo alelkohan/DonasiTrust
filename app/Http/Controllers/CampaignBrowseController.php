@@ -83,8 +83,16 @@ class CampaignBrowseController extends Controller
             }
         }
 
+        $recommendations = Campaign::published()
+            ->whereKeyNot($campaign->id)
+            ->with('user:id,name,organization', 'paidDonations')
+            ->orderByRaw('CASE WHEN category = ? THEN 0 ELSE 1 END', [$campaign->category])
+            ->latest('submitted_at')
+            ->take(3)
+            ->get();
+
         return view('public.campaign-show', compact(
-            'campaign', 'recentDonations', 'pendingDonation', 'totalDonorsCount', 'disbursements', 'expenses'
+            'campaign', 'recentDonations', 'pendingDonation', 'totalDonorsCount', 'disbursements', 'expenses', 'recommendations'
         ));
     }
 

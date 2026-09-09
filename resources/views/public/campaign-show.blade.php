@@ -414,6 +414,38 @@
         </aside>
     </div>
 
+    {{-- REKOMENDASI KAMPANYE DONASI LAINNYA --}}
+    @if (isset($recommendations) && $recommendations->isNotEmpty())
+        <section class="mt-16 border-t border-white/10 pt-12">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <span class="inline-block rounded bg-[#99ff04] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-black mb-2">
+                        REKOMENDASI DONASI
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-black text-white">Bantu Kampanye Lainnya</h2>
+                    <p class="mt-1 text-xs text-slate-400">Uluran tangan Anda sangat berarti bagi mereka yang membutuhkan.</p>
+                </div>
+                <a href="{{ route('kampanye.index') }}" class="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-[#99ff04] hover:underline">
+                    <span>Lihat Semua Kampanye</span>
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach ($recommendations as $rec)
+                    <x-campaign-card :campaign="$rec" />
+                @endforeach
+            </div>
+
+            <div class="mt-8 text-center sm:hidden">
+                <a href="{{ route('kampanye.index') }}" class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#1b182a] px-6 py-3 text-xs font-bold text-[#99ff04] hover:bg-white/5 transition-colors">
+                    <span>Lihat Semua Kampanye</span>
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+        </section>
+    @endif
+
     @if (!empty($pendingDonation))
         {{-- MODAL KONFIRMASI BATALKAN PEMBAYARAN (Mobile: Bottom Sheet Drawer, Desktop: Centered Glassmorphism Modal) --}}
         <div x-show="batal" x-cloak
