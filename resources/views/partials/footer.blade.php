@@ -16,7 +16,7 @@
                     </span>
                 </div>
                 <p class="mt-4 max-w-md text-xs sm:text-sm leading-relaxed text-slate-400">
-                    Platform donasi transparan berbasis bukti digital. Dana dicairkan bertahap berdasarkan tahapan RAB, setiap pengeluaran wajib dilengkapi bukti nota fisik, dan tersambung dalam jejak audit kriptografi HMAC yang dapat diverifikasi publik secara teruka.
+                    Platform donasi transparan berbasis bukti digital. Dana dicairkan bertahap berdasarkan kemajuan proyek, setiap pengeluaran wajib dilengkapi bukti nota resmi, dan tersambung dalam jejak audit digital terverifikasi yang aman serta terbuka untuk publik.
                 </p>
             </div>
 
@@ -25,8 +25,8 @@
                 <h2 class="text-xs font-black uppercase tracking-wider text-white">Jelajahi</h2>
                 <ul class="mt-4 space-y-2.5 text-xs font-bold">
                     <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('kampanye.index') }}">Semua Kampanye</a></li>
-                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('transparansi') }}">Public Ledger Audit</a></li>
-                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('verifikasi.form') }}">Verifikasi Kuitansi HMAC</a></li>
+                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('transparansi') }}">Jejak Audit Donasi</a></li>
+                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('verifikasi.form') }}">Cek Keaslian Kuitansi</a></li>
                 </ul>
             </div>
 

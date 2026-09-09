@@ -24,11 +24,11 @@
 
     <header class="max-w-3xl mb-8">
         <span class="inline-block rounded bg-[#99ff04] px-3 py-1 text-xs font-black uppercase tracking-wider text-black mb-3">
-            HMAC Public Ledger
+            Jejak Transparansi Publik
         </span>
-        <h1 class="text-3xl font-black tracking-tight text-white sm:text-4xl">Ledger Publik DonasiTrust</h1>
+        <h1 class="text-3xl font-black tracking-tight text-white sm:text-4xl">Riwayat Transparansi DonasiTrust</h1>
         <p class="mt-2 text-sm text-slate-300 leading-relaxed">
-            Data di halaman ini tersinkronisasi langsung dari basis data transaksi, pencairan, dan kuitansi nota — tanpa intervensi penyuntingan manual.
+            Data di halaman ini tersinkronisasi langsung dari catatan resmi transaksi, pencairan dana, dan bukti penggunaan — terbuka dan aman.
         </p>
     </header>
 
@@ -151,14 +151,14 @@
             </span>
             <div>
                 <h2 @class(['font-black text-base', 'text-[#99ff04]' => $chainStatus['valid'], 'text-rose-400' => ! $chainStatus['valid']])>
-                    {{ $chainStatus['valid'] ? 'Rantai Jejak Audit HMAC Utuh' : 'Rantai Jejak Audit Terputus' }}
+                    {{ $chainStatus['valid'] ? 'Sistem Transparansi Digital Terverifikasi Utuh' : 'Peringatan Keamanan Catatan' }}
                 </h2>
                 <p class="mt-1 text-xs leading-relaxed text-slate-300">
-                    {{ number_format($chainStatus['checked'], 0, ',', '.') }} entri transaksi diverifikasi ulang saat halaman dimuat.
+                    {{ number_format($chainStatus['checked'], 0, ',', '.') }} catatan transaksi diperiksa otomatis.
                     @if ($chainStatus['valid'])
-                        Seluruh entri tersambung secara valid dengan hash kriptografi entri sebelumnya.
+                        Setiap transaksi tersambung secara terenkripsi dan tidak dapat diubah secara sepihak.
                     @else
-                        Ketidakcocokan ditemukan pada entri #{{ $chainStatus['broken_at'] }}. {{ $chainStatus['reason'] }}
+                        Ketidakcocokan ditemukan pada catatan #{{ $chainStatus['broken_at'] }}. {{ $chainStatus['reason'] }}
                     @endif
                 </p>
             </div>

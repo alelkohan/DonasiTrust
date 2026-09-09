@@ -456,7 +456,7 @@
             </p>
             <div class="pt-2">
                 <a href="{{ route('transparansi') }}" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-xs font-black text-white hover:bg-white/20 transition-all">
-                    Buka Jejak Audit ↗
+                    Lihat Riwayat Transparansi ↗
                 </a>
             </div>
         </div>
@@ -465,7 +465,7 @@
         <div data-aos="fade-left" data-aos-duration="750" data-aos-delay="150" class="lg:col-span-7">
             <div class="rounded-3xl border border-white/15 bg-[#1b182a] p-6 shadow-2xl space-y-4">
                 <div class="flex items-center justify-between border-b border-white/10 pb-3">
-                    <span class="text-xs font-black text-white uppercase tracking-wider">Contoh riwayat kampanye</span>
+                    <span class="text-xs font-black text-white uppercase tracking-wider">Contoh riwayat penyaluran</span>
                     <span class="text-[10px] font-bold text-slate-400">Status Terbaru</span>
                 </div>
 
@@ -500,7 +500,7 @@
 
                 <div class="pt-2 flex items-center gap-2 text-[11px] text-slate-400 border-t border-white/10">
                     <span class="text-[#99ff04]">ⓘ</span>
-                    Perubahan catatan dapat terdeteksi melalui pemeriksaan jejak audit.
+                    Seluruh riwayat penyaluran terbuka dan terverifikasi aman.
                 </div>
             </div>
         </div>

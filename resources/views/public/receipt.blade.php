@@ -29,7 +29,7 @@
                 </span>
                 <div>
                     <p class="font-black tracking-tight text-white">DonasiTrust</p>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase">Kuitansi Digital HMAC</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Kuitansi Digital Resmi</p>
                 </div>
             </div>
             <span class="rounded bg-[#99ff04] px-2.5 py-1 text-[10px] font-black uppercase text-black">
@@ -67,10 +67,10 @@
             </div>
 
             <div class="mt-6 rounded-2xl border border-white/10 bg-[#231f36] p-5">
-                <p class="text-[10px] font-black tracking-wider text-slate-400 uppercase">Kode Verifikasi HMAC-SHA256</p>
+                <p class="text-[10px] font-black tracking-wider text-slate-400 uppercase">Kode Verifikasi Keaslian Kuitansi</p>
                 <p class="mt-1.5 font-mono text-lg font-black tracking-wider break-all text-white">{{ $shortCode }}</p>
                 <p class="mt-2 text-xs leading-relaxed text-slate-300">
-                    Kode ini dihitung otomatis dengan algoritma kriptografi HMAC-SHA256 untuk membuktikan kuitansi belum pernah dimanipulasi.
+                    Kode acak terenkripsi ini menjamin kuitansi Anda 100% asli, aman, dan dapat diverifikasi langsung di platform.
                 </p>
                 <a href="{{ route('verifikasi.form', ['reference' => $donation->reference, 'code' => $shortCode]) }}"
                    class="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-black text-[#99ff04] hover:bg-white/20 transition-all">

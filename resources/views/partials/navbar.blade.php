@@ -80,7 +80,7 @@
                 Eksplor Kampanye
             </a>
             <a href="{{ route('transparansi') }}" class="nav-link-item px-3 py-1.5 text-xs font-bold transition-colors {{ request()->routeIs('transparansi*') ? 'is-active text-[#99ff04]' : 'text-slate-300 hover:text-white' }}">
-                Audit Ledger HMAC
+                Audit & Transparansi
             </a>
             @if(Route::has('verifikasi.form'))
                 <a href="{{ route('verifikasi.form') }}" class="nav-link-item px-3 py-1.5 text-xs font-bold transition-colors {{ request()->routeIs('verifikasi.*') ? 'is-active text-[#99ff04]' : 'text-slate-300 hover:text-white' }}">

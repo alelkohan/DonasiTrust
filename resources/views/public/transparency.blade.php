@@ -12,7 +12,7 @@
 <div class="w-full py-8">
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
         <nav class="text-xs font-bold text-slate-400" aria-label="Breadcrumb">
-            <a href="{{ route('transparansi') }}" class="hover:text-[#99ff04] transition-colors">Ledger Publik</a>
+            <a href="{{ route('transparansi') }}" class="hover:text-[#99ff04] transition-colors">Jejak Audit</a>
             <span class="mx-2 text-slate-600" aria-hidden="true">/</span>
             <a href="{{ route('kampanye.show', $campaign) }}" class="hover:text-white transition-colors text-slate-200">{{ Str::limit($campaign->title, 40) }}</a>
         </nav>
@@ -26,7 +26,7 @@
 
     <header class="max-w-3xl mb-8">
         <span class="inline-block rounded bg-cyan-400 px-3 py-1 text-xs font-black uppercase tracking-wider text-black mb-3">
-            Real-time Audit Trail
+            Jejak Penyaluran Real-Time
         </span>
         <h1 class="text-3xl font-black tracking-tight text-white sm:text-4xl">Ke mana dana kampanye ini pergi</h1>
         <p class="mt-2 text-base text-slate-300">{{ $campaign->title }}</p>
@@ -212,10 +212,9 @@
     </section>
 
     <div class="rounded-3xl border border-white/10 bg-[#1b182a] p-6">
-        <h2 class="text-sm font-extrabold text-white">Batasan Verifikasi Otomatis Perangkat Lunak</h2>
+        <h2 class="text-sm font-extrabold text-white">Jaminan Keamanan & Verifikasi Transparansi</h2>
         <p class="mt-2 text-xs leading-relaxed text-slate-300">
-            Sistem memastikan setiap angka konsisten dengan tabel transaksi dan setiap perubahan tercatat
-            dalam rantai hash HMAC-SHA256. Keaslian fisik kertas kuitansi di lapangan dikonfirmasi manual oleh admin.
+            Sistem kami memastikan setiap rupiah yang disalurkan selalu cocok dengan catatan transaksi. Catatan ini terkunci secara digital dan tidak dapat diubah, serta bukti pengeluaran fisik divalidasi oleh tim independen.
         </p>
     </div>
 </div>
