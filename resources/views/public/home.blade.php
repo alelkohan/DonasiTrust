@@ -137,7 +137,7 @@
 ------------------------------------------------------------------------- --}}
 <div class="sticky top-0 z-0 w-full overflow-hidden" style="perspective: 1200px; -webkit-perspective: 1200px;">
     <section class="hero-section-v2 relative bg-[#12101c] text-white overflow-hidden transition-all duration-75 ease-out origin-center"
-             style="padding-top: 80px; padding-bottom: 90px;"
+             style="padding-top: 110px; padding-bottom: 120px;"
              :style="`
                  transform: perspective(1200px) scale(${1 - heroScrollProgress * 0.12}) translateZ(${-heroScrollProgress * 150}px) translateY(${heroScrollProgress * 40}px);
                  filter: blur(${heroScrollProgress * 14}px);
@@ -362,6 +362,36 @@
             </div>
 
         </div>
+        {{-- -------------------------------------------------------------------------
+           SECTION 2: 3-STEP VALUE PROPOSITION BAR (01 / 02 / 03)
+        ------------------------------------------------------------------------- --}}
+        <section class="pt-12 pb-4 w-full">
+            <div class="grid gap-6 md:grid-cols-3">
+                <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                    <span class="text-2xl font-black text-slate-500 font-mono">01</span>
+                    <div>
+                        <h3 class="text-sm font-black text-white">Dana dicairkan bertahap</h3>
+                        <p class="mt-1 text-xs text-slate-400 leading-relaxed">Dana disalurkan sesuai progres di lapangan secara terkontrol.</p>
+                    </div>
+                </div>
+        
+                <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                    <span class="text-2xl font-black text-slate-500 font-mono">02</span>
+                    <div>
+                        <h3 class="text-sm font-black text-white">Bukti penggunaan diperiksa</h3>
+                        <p class="mt-1 text-xs text-slate-400 leading-relaxed">Setiap pencairan dilengkapi bukti kuitansi yang relevan & valid.</p>
+                    </div>
+                </div>
+        
+                <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                    <span class="text-2xl font-black text-slate-500 font-mono">03</span>
+                    <div>
+                        <h3 class="text-sm font-black text-white">Riwayat dapat ditelusuri</h3>
+                        <p class="mt-1 text-xs text-slate-400 leading-relaxed">Seluruh catatan tersimpan dan dapat dilihat oleh publik secara transparan.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
     </div>
 </section>
@@ -372,38 +402,6 @@
 ------------------------------------------------------------------------- --}}
 <div class="hero-sheet-container relative z-20 bg-[#12101c] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] border-t border-white/10 shadow-[0_-25px_60px_rgba(0,0,0,0.8)] -mt-10 pt-4 pb-16 transition-colors duration-300">
     <div class="max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8">
-
-{{-- -------------------------------------------------------------------------
-   SECTION 2: 3-STEP VALUE PROPOSITION BAR (01 / 02 / 03)
-------------------------------------------------------------------------- --}}
-<section class="py-10 w-full">
-    <div class="grid gap-6 md:grid-cols-3">
-        <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-            <span class="text-2xl font-black text-slate-500 font-mono">01</span>
-            <div>
-                <h3 class="text-sm font-black text-white">Dana dicairkan bertahap</h3>
-                <p class="mt-1 text-xs text-slate-400 leading-relaxed">Dana disalurkan sesuai progres di lapangan secara terkontrol.</p>
-            </div>
-        </div>
-
-        <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-            <span class="text-2xl font-black text-slate-500 font-mono">02</span>
-            <div>
-                <h3 class="text-sm font-black text-white">Bukti penggunaan diperiksa</h3>
-                <p class="mt-1 text-xs text-slate-400 leading-relaxed">Setiap pencairan dilengkapi bukti kuitansi yang relevan & valid.</p>
-            </div>
-        </div>
-
-        <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-            <span class="text-2xl font-black text-slate-500 font-mono">03</span>
-            <div>
-                <h3 class="text-sm font-black text-white">Riwayat dapat ditelusuri</h3>
-                <p class="mt-1 text-xs text-slate-400 leading-relaxed">Seluruh catatan tersimpan dan dapat dilihat oleh publik secara transparan.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
 {{-- -------------------------------------------------------------------------
    SECTION 3: MAIN CAMPAIGN EXPLORATION SECTION (3 Columns Grid)
 ------------------------------------------------------------------------- --}}
