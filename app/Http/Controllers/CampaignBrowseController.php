@@ -40,8 +40,10 @@ class CampaignBrowseController extends Controller
 
         $recentDonations = $campaign->paidDonations()
             ->latest('paid_at')
-            ->take(8)
+            ->take(3)
             ->get();
+
+        $totalDonorsCount = $campaign->paidDonations()->count();
 
         $pendingReference = session('pending_donation_'.$campaign->id);
         $pendingDonation = null;
@@ -70,7 +72,33 @@ class CampaignBrowseController extends Controller
             }
         }
 
-        return view('public.campaign-show', compact('campaign', 'recentDonations', 'pendingDonation'));
+        return view('public.campaign-show', compact('campaign', 'recentDonations', 'pendingDonation', 'totalDonorsCount'));
+    }
+
+    /** Endpoint JSON donatur ter-paginasi untuk modal 'Lihat Semua Donatur' */
+    public function donors(Campaign $campaign, Request $request)
+    {
+        abort_unless($campaign->isPublished(), 404);
+
+        $donors = $campaign->paidDonations()
+            ->latest('paid_at')
+            ->paginate(5);
+
+        return response()->json([
+            'data' => collect($donors->items())->map(function ($donation) {
+                return [
+                    'id' => $donation->id,
+                    'name' => $donation->displayName(),
+                    'amount_formatted' => rupiah($donation->amount),
+                    'message' => $donation->message,
+                    'time_ago' => $donation->paid_at?->diffForHumans() ?? '—',
+                    'initials' => strtoupper(substr($donation->displayName(), 0, 2)),
+                ];
+            }),
+            'current_page' => $donors->currentPage(),
+            'has_more' => $donors->hasMorePages(),
+            'total' => $donors->total(),
+        ]);
     }
 
     /** Halaman transparansi publik: ledger pemasukan, pencairan, dan LPJ. */

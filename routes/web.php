@@ -30,6 +30,7 @@ Route::get('/', HomeController::class)->name('home');
 
 Route::get('/kampanye', [CampaignBrowseController::class, 'index'])->name('kampanye.index');
 Route::get('/kampanye/{campaign}', [CampaignBrowseController::class, 'show'])->name('kampanye.show');
+Route::get('/kampanye/{campaign}/donatur', [CampaignBrowseController::class, 'donors'])->name('kampanye.donors');
 Route::get('/kampanye/{campaign}/transparansi', [CampaignBrowseController::class, 'transparency'])
     ->name('kampanye.transparansi');
 

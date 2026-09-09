@@ -194,11 +194,52 @@
                 </div>
             </div>
 
-            {{-- Donatur Terbaru --}}
-            <div class="rounded-3xl border border-white/10 bg-[#1b182a] mt-6 p-6 sm:p-8 shadow-2xl">
-                <h2 class="text-lg font-black text-white">Donatur Terbaru</h2>
+            {{-- Donatur Terbaru + Modal Donatur --}}
+            <div x-data="{
+                openModal: false,
+                donors: [],
+                page: 1,
+                hasMore: true,
+                loading: false,
+                total: {{ $totalDonorsCount }},
+                async fetchDonors() {
+                    if (this.loading || !this.hasMore) return;
+                    this.loading = true;
+                    try {
+                        const res = await fetch('{{ route('kampanye.donors', $campaign) }}?page=' + this.page);
+                        const data = await res.json();
+                        this.donors = [...this.donors, ...data.data];
+                        this.hasMore = data.has_more;
+                        this.total = data.total;
+                        this.page++;
+                    } catch (e) {
+                        console.error('Gagal memuat donatur:', e);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                open() {
+                    this.openModal = true;
+                    if (this.donors.length === 0) {
+                        this.fetchDonors();
+                    }
+                }
+            }" class="rounded-3xl border border-white/10 bg-[#1b182a] mt-6 p-6 sm:p-8 shadow-2xl">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-lg font-black text-white">Donatur Terbaru</h2>
+                        <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5 font-medium">
+                            <span class="inline-flex items-center gap-1 font-bold text-[#99ff04] bg-[#99ff04]/10 px-2 py-0.5 rounded-md border border-[#99ff04]/20">
+                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                {{ number_format($totalDonorsCount, 0, ',', '.') }} Donatur
+                            </span>
+                            telah berdonasi
+                        </p>
+                    </div>
+                </div>
+
                 @if ($recentDonations->isEmpty())
-                    <p class="mt-3 text-xs text-slate-400">Belum ada donasi masuk. Jadilah yang pertama membantu kampanye ini.</p>
+                    <p class="mt-4 text-xs text-slate-400">Belum ada donasi masuk. Jadilah yang pertama membantu kampanye ini.</p>
                 @else
                     <ul class="mt-4 divide-y divide-white/5">
                         @foreach ($recentDonations as $donation)
@@ -219,7 +260,86 @@
                             </li>
                         @endforeach
                     </ul>
+
+                    @if ($totalDonorsCount > 0)
+                        <button type="button" @click="open()" class="mt-5 w-full rounded-2xl border border-white/15 bg-[#231f36] py-3 px-4 text-center text-xs font-black text-[#99ff04] hover:bg-[#99ff04] hover:text-black transition-all shadow-md flex items-center justify-center gap-2 group">
+                            <span>Lihat Semua Donatur ({{ number_format($totalDonorsCount, 0, ',', '.') }})</span>
+                            <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                        </button>
+                    @endif
                 @endif
+
+                {{-- Modal Semua Donatur --}}
+                <div x-show="openModal"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+                     style="display: none;">
+                    {{-- Backdrop --}}
+                    <div @click="openModal = false" class="fixed inset-0 bg-black/80 backdrop-blur-md"></div>
+
+                    {{-- Modal Box --}}
+                    <div class="relative w-full max-w-lg overflow-hidden rounded-3xl border border-[#99ff04]/30 bg-[#1b182a] p-6 shadow-2xl z-10 flex flex-col max-h-[85vh]">
+                        {{-- Header --}}
+                        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                            <div>
+                                <h3 class="text-base font-black text-white">Semua Donatur Kampanye</h3>
+                                <p class="text-xs text-slate-400 mt-0.5">
+                                    Total <span class="font-bold text-[#99ff04]">{{ number_format($totalDonorsCount, 0, ',', '.') }} orang</span> telah berdonasi
+                                </p>
+                            </div>
+                            <button type="button" @click="openModal = false" class="grid h-8 w-8 place-items-center rounded-xl bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white transition-colors">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                            </button>
+                        </div>
+
+                        {{-- Body: Scrollable Donors List --}}
+                        <div class="flex-1 overflow-y-auto py-4 space-y-3 pr-1 custom-scrollbar">
+                            <template x-for="d in donors" :key="d.id">
+                                <div class="flex items-start gap-3 rounded-2xl border border-white/5 bg-[#231f36] p-3.5">
+                                    <span class="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-[#1b182a] text-xs font-black text-[#99ff04] border border-white/10" x-text="d.initials"></span>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex flex-wrap items-baseline justify-between gap-2">
+                                            <p class="text-xs font-bold text-white" x-text="d.name"></p>
+                                            <p class="text-xs font-black text-[#99ff04] tabular-nums" x-text="d.amount_formatted"></p>
+                                        </div>
+                                        <template x-if="d.message">
+                                            <p class="mt-1 text-xs text-slate-300 italic" x-text="'&ldquo;' + d.message + '&rdquo;'"></p>
+                                        </template>
+                                        <p class="mt-1 text-[10px] text-slate-500" x-text="d.time_ago"></p>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template x-if="loading">
+                                <div class="py-4 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
+                                    <svg class="h-4 w-4 animate-spin text-[#99ff04]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" class="opacity-25"/><path d="M12 2a10 10 0 0 1 10 10" class="opacity-75"/></svg>
+                                    <span>Memuat donatur...</span>
+                                </div>
+                            </template>
+                        </div>
+
+                        {{-- Footer: Load More / Status --}}
+                        <div class="border-t border-white/10 pt-4 text-center">
+                            <template x-if="hasMore">
+                                <button type="button" @click="fetchDonors()" :disabled="loading" class="w-full rounded-2xl bg-[#99ff04] py-3 px-4 text-xs font-black text-black hover:bg-[#84e000] disabled:opacity-50 transition-all shadow-lg flex items-center justify-center gap-2">
+                                    <span>Lihat Lainnya</span>
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+                                </button>
+                            </template>
+                            <template x-if="!hasMore && donors.length > 0">
+                                <p class="text-xs text-slate-400 flex items-center justify-center gap-1.5 py-1">
+                                    <svg class="h-4 w-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 12 4.5 4.5L19 7.5"/></svg>
+                                    <span>Semua {{ number_format($totalDonorsCount, 0, ',', '.') }} donatur telah ditampilkan</span>
+                                </p>
+                            </template>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
