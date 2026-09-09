@@ -132,9 +132,9 @@
 ------------------------------------------------------------------------- --}}
 <section class="hero-section-v2 relative bg-[#12101c] text-white overflow-hidden transition-colors duration-300" style="padding-top: 80px; padding-bottom: 70px;">
     
-    {{-- Animated Background Sliding Cards Marquee (Shifted Right on Desktop for Text Legibility) --}}
+    {{-- Animated Background Sliding Cards Marquee --}}
     @if ($heroCampaigns->isNotEmpty())
-        <div class="hero-marquee-container absolute inset-0 lg:left-[8%] lg:right-0 z-0 overflow-hidden pointer-events-none opacity-25 select-none flex justify-center lg:justify-end gap-6 p-4" style="transform: rotate(-22deg) scale(1.45);">
+        <div class="hero-marquee-container absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-25 select-none flex justify-center gap-6 p-4" style="transform: rotate(-22deg) scale(1.45);">
             
             {{-- Column 1: Scrolls Up --}}
             <div class="flex flex-col gap-6 animate-hero-marquee-up w-72 shrink-0">
@@ -295,11 +295,8 @@
         </div>
     @endif
 
-    {{-- Gradient Blur Overlay Mask (Adaptive Theme Fade from Bottom to Top) --}}
+    {{-- Gradient Blur Overlay Mask (Adaptive Theme Fade) --}}
     <div class="hero-marquee-overlay-v2 absolute inset-0 z-1 backdrop-blur-[2px] pointer-events-none transition-colors duration-300"></div>
-    
-    {{-- Ambient Glow Backdrop --}}
-    <div class="pointer-events-none absolute left-1/3 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[600px] rounded-full bg-gradient-to-tr from-[#99ff04]/15 via-emerald-500/10 to-purple-600/10 blur-[130px] opacity-70 z-2"></div>
 
     <div class="relative z-10 w-full">
         
