@@ -60,6 +60,23 @@
                 </div>
             </div>
         </div>
+    @elseif ($campaign->isTargetReached())
+        <div class="rounded-3xl border border-[#99ff04]/30 bg-[#99ff04]/10 p-6 text-center shadow-xl">
+            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#99ff04] text-black mb-3">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-black text-white">Target Donasi 100% Terpenuhi!</h3>
+            <p class="mt-1.5 text-xs text-slate-300 leading-relaxed max-w-md mx-auto">
+                Alhamdulillah, target dana untuk kampanye ini telah terkumpul sepenuhnya. Terima kasih yang mendalam kepada seluruh donatur atas kedermawanannya.
+            </p>
+            <div class="mt-4 pt-4 border-t border-white/10 flex justify-center gap-3">
+                <a href="{{ route('kampanye.index') }}" class="rounded-full bg-[#99ff04] px-5 py-2.5 text-xs font-black text-black hover:bg-[#84e000] transition-colors shadow-lg">
+                    Bantu Kampanye Lainnya &rarr;
+                </a>
+            </div>
+        </div>
     @else
         <h2 class="text-lg font-bold text-ink-900 dark:text-white">Donasi sekarang</h2>
         <p class="mt-1 text-sm text-ink-600 dark:text-slate-300">
@@ -72,6 +89,7 @@
                   cepat: {{ Illuminate\Support\Js::from($quickAmounts) }},
                   min: {{ (int) config('donasi.min_donation') }},
                   max: {{ (int) config('donasi.max_donation') }},
+                  sisaTarget: {{ (int) $campaign->remainingTarget() }},
               })">
 
             <div>
@@ -154,6 +172,9 @@
                 <div class="flex items-center justify-between">
                     <span class="text-ink-600">Total donasi</span>
                     <span class="text-lg font-bold text-ink-900 tabular-nums" x-text="penuh(nominal)"></span>
+                </div>
+                <div x-show="nominal > sisaTarget && sisaTarget > 0" x-cloak class="mt-2.5 rounded-lg border border-amber-500/40 bg-amber-500/10 p-2.5 text-xs text-amber-300 leading-relaxed">
+                    <strong>Catatan Transparansi:</strong> Nominal donasi Anda melebihi sisa kebutuhan target (<span x-text="penuh(sisaTarget)"></span>). Kelebihan dana akan tetap dicatat secara transparan di ledger untuk cadangan operasional/lanjutan.
                 </div>
                 <p class="mt-1 text-xs text-ink-500">
                     Kuitansi diverifikasi dengan HMAC SHA-256 dan dicatat di ledger publik.
@@ -274,6 +295,7 @@
         cepat: awal.cepat,
         min: awal.min,
         max: awal.max,
+        sisaTarget: awal.sisaTarget || 0,
         bukaModalKonfirmasi: false,
         // true bila pengguna memakai kolom isian sendiri, bukan tombol cepat
         manual: awal.nominal > 0 && ! awal.cepat.includes(awal.nominal),

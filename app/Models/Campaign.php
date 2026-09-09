@@ -112,6 +112,18 @@ class Campaign extends Model
         return min(100, round($this->collected_amount / $this->target_amount * 100, 1));
     }
 
+    /** Cek apakah target donasi sudah 100% atau lebih terpenuhi. */
+    public function isTargetReached(): bool
+    {
+        return $this->target_amount > 0 && $this->collected_amount >= $this->target_amount;
+    }
+
+    /** Sisa kebutuhan dana untuk mencapai target 100%. */
+    public function remainingTarget(): int
+    {
+        return max(0, $this->target_amount - $this->collected_amount);
+    }
+
     /** Saldo yang terkumpul tapi belum dicairkan. */
     public function remainingBalance(): int
     {
