@@ -75,7 +75,7 @@
             <label for="reference" class="block text-xs font-extrabold text-slate-300 mb-1.5">Nomor Transaksi</label>
             <input id="reference" name="reference" type="text" required
                    class="w-full rounded-2xl border border-white/15 bg-[#231f36] px-4 py-3 font-mono text-sm text-white placeholder-slate-400 focus:border-[#99ff04] focus:outline-none"
-                   placeholder="DT-2026-000042" value="{{ old('reference', $prefill_ref ?? '') }}">
+                   placeholder="DT-2026-X8K9M2P4" value="{{ old('reference', $prefill_ref ?? '') }}">
         </div>
 
         <div>

@@ -38,9 +38,12 @@ class DonationService
 
             $donation->save();
 
-            // Referensi dikunci ke id sebenarnya supaya tidak pernah duplikat
-            // walau ada dua permintaan bersamaan.
-            $donation->reference = $donation->buildReference();
+            // Referensi dikunci ke kode acak unik ber-entropi tinggi yang tidak pernah duplikat
+            do {
+                $ref = $donation->buildReference();
+            } while (Donation::where('reference', $ref)->exists());
+
+            $donation->reference = $ref;
             $donation->verification_code = $this->receipts->for($donation);
             $donation->save();
 

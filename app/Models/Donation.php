@@ -91,9 +91,9 @@ class Donation extends Model
         };
     }
 
-    /** DT-2026-000001 — berurutan dari id, mudah dibaca manusia di kuitansi. */
+    /** DT-2026-X8K9M2P4 — kode acak unik 8 karakter ber-entropi tinggi yang aman dari tebakan IDOR. */
     public function buildReference(): string
     {
-        return sprintf('DT-%s-%06d', ($this->created_at ?? now())->year, $this->id);
+        return sprintf('DT-%s-%s', ($this->created_at ?? now())->year, \Illuminate\Support\Str::upper(\Illuminate\Support\Str::random(8)));
     }
 }
