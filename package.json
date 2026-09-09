@@ -17,7 +17,9 @@
     },
     "dependencies": {
         "@alpinejs/collapse": "^3.16.3",
+        "@types/aos": "^3.0.8",
         "alpinejs": "^3.16.3",
+        "aos": "^2.3.4",
         "qrcode": "^1.5.4"
     }
 }

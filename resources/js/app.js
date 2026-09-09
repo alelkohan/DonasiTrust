@@ -1,6 +1,24 @@
 import './bootstrap';
 
 import QRCode from 'qrcode';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
+const initAos = () => {
+    AOS.init({
+        duration: 750,
+        easing: 'ease-out-cubic',
+        once: true,
+        offset: 60,
+    });
+};
+
+document.addEventListener('DOMContentLoaded', initAos);
+document.addEventListener('livewire:navigated', () => {
+    setTimeout(() => {
+        AOS.refresh();
+    }, 100);
+});
 
 /*
 | Alpine SENGAJA tidak diimpor di sini.

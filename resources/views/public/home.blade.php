@@ -318,23 +318,23 @@
         <div class="max-w-2xl space-y-6">
             
             {{-- Small Subtitle Tag --}}
-            <div class="text-xs font-extrabold tracking-widest text-slate-400 uppercase">
+            <div data-aos="fade-down" data-aos-duration="600" class="text-xs font-extrabold tracking-widest text-slate-400 uppercase">
                 KEBAIKAN YANG BISA DITELUSURI
             </div>
 
             {{-- Main Title --}}
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12]">
+            <h1 data-aos="fade-up" data-aos-duration="700" data-aos-delay="100" class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12]">
                 Niat baikmu.<br>
                 <span>Bukti nyatanya.</span>
             </h1>
 
             {{-- Subtitle Paragraph --}}
-            <p class="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
+            <p data-aos="fade-up" data-aos-duration="700" data-aos-delay="200" class="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
                 Pantau donasimu dari dana terkumpul, pencairan bertahap, hingga bukti penggunaan.
             </p>
 
             {{-- CTA Buttons --}}
-            <div class="pt-2 flex flex-wrap items-center gap-3.5">
+            <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="300" class="pt-2 flex flex-wrap items-center gap-3.5">
                 <a href="#kampanye-section" class="inline-flex items-center gap-2 rounded-xl bg-[#99ff04] px-6 py-3.5 text-sm font-black text-black shadow-lg shadow-[#99ff04]/20 hover:bg-[#84e000] hover:scale-[1.02] transition-all">
                     <span>Jelajahi Kampanye</span>
                     <svg class="h-4 w-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
@@ -345,7 +345,7 @@
             </div>
 
             {{-- Trust Indicators / Checklist --}}
-            <div class="pt-2 flex flex-wrap items-center gap-6 text-xs sm:text-sm font-semibold text-slate-300">
+            <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="400" class="pt-2 flex flex-wrap items-center gap-6 text-xs sm:text-sm font-semibold text-slate-300">
                 <div class="flex items-center gap-2">
                     <span class="grid h-5 w-5 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04] font-black text-xs">
                         ✓
@@ -356,10 +356,11 @@
                     <span class="grid h-5 w-5 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04] font-black text-xs">
                         ✓
                     </span>
+                    <span>Bukti bisa diperiksa</span>
+                </div>
             </div>
 
         </div>
-
     </div>
 </section>
 </div>
@@ -367,46 +368,16 @@
 {{-- -------------------------------------------------------------------------
    OVERLAPPING SHEET CONTAINER (Slides UP over the blurring 3D Hero on Scroll)
 ------------------------------------------------------------------------- --}}
-<div class="hero-sheet-container relative z-20 bg-[#12101c] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] border-t border-white/10 shadow-[0_-25px_60px_rgba(0,0,0,0.8)] -mt-16 pt-12 sm:pt-16 pb-16 transition-colors duration-300">
+<div class="hero-sheet-container relative z-20 bg-[#12101c] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] -mt-16 pt-12 sm:pt-16 pb-16 transition-colors duration-300">
     <div class="max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8">
 
-        {{-- -------------------------------------------------------------------------
-           SECTION 2: 3-STEP VALUE PROPOSITION BAR (01 / 02 / 03)
-        ------------------------------------------------------------------------- --}}
-        <section class="pt-4 pb-8 w-full">
-            <div class="grid gap-6 md:grid-cols-3">
-                <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 shadow-sm">
-                    <span class="text-2xl font-black text-[#99ff04] font-mono">01</span>
-                    <div>
-                        <h3 class="text-sm font-black text-white">Dana dicairkan bertahap</h3>
-                        <p class="mt-1 text-xs text-slate-400 leading-relaxed">Dana disalurkan sesuai progres di lapangan secara terkontrol.</p>
-                    </div>
-                </div>
-        
-                <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 shadow-sm">
-                    <span class="text-2xl font-black text-[#99ff04] font-mono">02</span>
-                    <div>
-                        <h3 class="text-sm font-black text-white">Bukti penggunaan diperiksa</h3>
-                        <p class="mt-1 text-xs text-slate-400 leading-relaxed">Setiap pencairan dilengkapi bukti kuitansi yang relevan & valid.</p>
-                    </div>
-                </div>
-        
-                <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 shadow-sm">
-                    <span class="text-2xl font-black text-[#99ff04] font-mono">03</span>
-                    <div>
-                        <h3 class="text-sm font-black text-white">Riwayat dapat ditelusuri</h3>
-                        <p class="mt-1 text-xs text-slate-400 leading-relaxed">Seluruh catatan tersimpan dan dapat dilihat oleh publik secara transparan.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
 {{-- -------------------------------------------------------------------------
    SECTION 3: MAIN CAMPAIGN EXPLORATION SECTION (3 Columns Grid)
 ------------------------------------------------------------------------- --}}
-<section id="kampanye-section" class="py-12 w-full">
+<section id="kampanye-section" class="w-full">
     
     {{-- Header & Title Row --}}
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8">
+    <div data-aos="fade-up" data-aos-duration="600" class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8">
         <div>
             <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
                 Temukan kebaikan yang ingin kamu dukung.
@@ -419,7 +390,7 @@
     </div>
 
     {{-- Integrated Search Bar & Category Pills Row --}}
-    <div id="static-navtab-v2" class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8 pb-4 border-b border-white/10">
+    <div data-aos="fade-up" data-aos-duration="600" data-aos-delay="100" id="static-navtab-v2" class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8 pb-4 border-b border-white/10">
         
         {{-- Search Input --}}
         <div class="w-full md:w-80">
@@ -463,7 +434,7 @@
     </div>
 
     {{-- Campaign Grid 3 Columns --}}
-    <div id="campaign-grid-container-v2" class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 min-h-[300px] transition-all">
+    <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="200" id="campaign-grid-container-v2" class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 min-h-[300px] transition-all">
         @include('partials.campaign-grid')
     </div>
 
@@ -476,7 +447,7 @@
     <div class="grid gap-10 lg:grid-cols-12 lg:items-center">
         
         {{-- Left Info --}}
-        <div class="lg:col-span-5 space-y-4">
+        <div data-aos="fade-right" data-aos-duration="750" class="lg:col-span-5 space-y-4">
             <h2 class="text-3xl font-black tracking-tight text-white">
                 Kepercayaan bukan sekadar janji.
             </h2>
@@ -491,7 +462,7 @@
         </div>
 
         {{-- Right Interactive Audit Log Table Mockup --}}
-        <div class="lg:col-span-7">
+        <div data-aos="fade-left" data-aos-duration="750" data-aos-delay="150" class="lg:col-span-7">
             <div class="rounded-3xl border border-white/15 bg-[#1b182a] p-6 shadow-2xl space-y-4">
                 <div class="flex items-center justify-between border-b border-white/10 pb-3">
                     <span class="text-xs font-black text-white uppercase tracking-wider">Contoh riwayat kampanye</span>
@@ -541,7 +512,7 @@
    SECTION 5: BOTTOM CTA BANNER
 ------------------------------------------------------------------------- --}}
 <section class="py-12 w-full">
-    <div class="relative overflow-hidden rounded-3xl bg-[#1b182a] p-8 sm:p-12 border border-white/15 shadow-2xl">
+    <div data-aos="zoom-in-up" data-aos-duration="750" class="relative overflow-hidden rounded-3xl bg-[#1b182a] p-8 sm:p-12 border border-white/15 shadow-2xl">
         <div class="grid items-center gap-8 lg:grid-cols-[1.5fr_1fr]">
             <div>
                 <h2 class="text-3xl font-black tracking-tight text-white sm:text-4xl">

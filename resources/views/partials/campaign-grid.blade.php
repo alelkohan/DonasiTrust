@@ -7,7 +7,9 @@
         <p class="mt-2 text-xs text-slate-400">Coba ubah kata kunci pencarian atau pilih kategori lain.</p>
     </div>
 @else
-    @foreach ($campaigns as $campaign)
-        <x-campaign-card :campaign="$campaign" :dark="true" />
+    @foreach ($campaigns as $index => $campaign)
+        <div data-aos="fade-up" data-aos-duration="650" data-aos-delay="{{ min(($loop->index % 3) * 100 + 50, 350) }}">
+            <x-campaign-card :campaign="$campaign" :dark="true" />
+        </div>
     @endforeach
 @endif
