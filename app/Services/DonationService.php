@@ -96,9 +96,15 @@ class DonationService
                 'campaign' => $campaign->title,
             ]);
 
-            if (filled($fresh->donor_email)) {
-                \Illuminate\Support\Facades\Mail::to($fresh->donor_email)
-                    ->queue(new \App\Mail\DonationReceiptMail($fresh));
+            $recipientEmail = $fresh->donor_email ?: $fresh->user?->email;
+
+            if (filled($recipientEmail)) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($recipientEmail)
+                        ->send(new \App\Mail\DonationReceiptMail($fresh));
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error('Gagal mengirim email kuitansi donasi: '.$e->getMessage());
+                }
             }
 
             return true;
