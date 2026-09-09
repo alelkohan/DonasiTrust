@@ -20,7 +20,12 @@
 @endphp
 
 @section('content')
-<div class="w-full py-8">
+<div class="w-full py-8"
+     x-data="{
+         activeCampaign: null,
+         showModal: false,
+         campaignsMap: {{ Illuminate\Support\Js::from($campaignsData) }}
+     }">
 
     <header class="max-w-3xl mb-8">
         <span class="inline-block rounded bg-[#99ff04] px-3 py-1 text-xs font-black uppercase tracking-wider text-black mb-3">
@@ -201,17 +206,204 @@
                                     </td>
                                     <td class="py-3.5 px-4 text-right text-white font-bold tabular-nums">{{ $campaign->donatur_count }}</td>
                                     <td class="py-3.5 px-4 text-right">
-                                        <a href="{{ route('kampanye.transparansi', $campaign) }}" class="text-xs font-black text-[#99ff04] hover:underline">
+                                        <button type="button"
+                                                @click="activeCampaign = campaignsMap[{{ $campaign->id }}]; showModal = true"
+                                                class="text-xs font-black text-[#99ff04] hover:underline cursor-pointer">
                                             Rincian &rarr;
-                                        </a>
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
+
+                @if ($campaigns->hasPages())
+                    <div class="border-t border-white/10 bg-[#13111c] p-4">
+                        {{ $campaigns->links() }}
+                    </div>
+                @endif
             </div>
         @endif
     </section>
+
+    {{-- SIDE MODAL RINCIAN PENGGUNAAN DANA (TRANSPARANSI) --}}
+    <div x-show="showModal && activeCampaign" x-cloak
+         class="fixed inset-0 z-[100] flex justify-end"
+         role="dialog" aria-modal="true"
+         @keydown.escape.window="showModal = false">
+
+        {{-- Backdrop blur & darken --}}
+        <div x-show="showModal"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-black/80 backdrop-blur-md"
+             @click="showModal = false"
+             aria-hidden="true"></div>
+
+        {{-- Drawer Container --}}
+        <div x-show="showModal"
+             x-transition:enter="transition ease-out duration-300 transform sm:duration-500"
+             x-transition:enter-start="translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="transition ease-in duration-200 transform sm:duration-300"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="translate-x-full"
+             class="relative w-full max-w-2xl bg-[#12101c] border-l border-white/15 p-6 sm:p-8 shadow-2xl z-10 h-full overflow-y-auto flex flex-col custom-scrollbar">
+
+            <template x-if="activeCampaign">
+                <div class="flex flex-col h-full">
+                    {{-- Header --}}
+                    <div class="flex items-start justify-between border-b border-white/10 pb-5 shrink-0">
+                        <div>
+                            <span class="inline-block rounded bg-[#99ff04] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-black mb-2" x-text="activeCampaign.category_label"></span>
+                            <h2 class="text-xl sm:text-2xl font-black text-white" x-text="activeCampaign.title"></h2>
+                        </div>
+                        <button type="button" @click="showModal = false"
+                                class="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white transition-colors cursor-pointer">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    </div>
+
+                    {{-- Content Scrollable --}}
+                    <div class="flex-1 space-y-6 py-6 overflow-y-auto custom-scrollbar">
+
+                        {{-- Posisi Dana --}}
+                        <div class="rounded-3xl border border-white/10 bg-[#1b182a] p-5 shadow-xl">
+                            <h3 class="text-sm font-black text-white">Posisi Dana Saat Ini</h3>
+
+                            <div class="mt-4 flex h-3.5 w-full gap-0.5 overflow-hidden rounded-full bg-[#12101c] p-0.5 border border-white/5">
+                                <div class="h-full rounded-l-full bg-[#99ff04]" :style="`width: ${Math.round((activeCampaign.disbursed_amount / Math.max(1, activeCampaign.collected_amount)) * 100)}%`"></div>
+                                <div class="h-full rounded-r-full bg-amber-400" :style="`width: ${Math.round((activeCampaign.remaining_balance / Math.max(1, activeCampaign.collected_amount)) * 100)}%`"></div>
+                            </div>
+
+                            <dl class="mt-5 grid gap-3 sm:grid-cols-3">
+                                <div class="rounded-2xl border border-white/5 bg-[#231f36] p-3.5">
+                                    <dt class="flex items-center gap-1.5 text-[10px] font-extrabold tracking-wide text-slate-400 uppercase">
+                                        <span class="h-2 w-2 rounded-full bg-slate-500"></span> Terkumpul
+                                    </dt>
+                                    <dd class="mt-1.5 text-base font-black text-white tabular-nums" x-text="activeCampaign.collected_formatted"></dd>
+                                    <dd class="mt-0.5 text-[10px] text-slate-400" x-text="`${activeCampaign.donatur_count} donatur`"></dd>
+                                </div>
+                                <div class="rounded-2xl border border-white/5 bg-[#231f36] p-3.5">
+                                    <dt class="flex items-center gap-1.5 text-[10px] font-extrabold tracking-wide text-slate-400 uppercase">
+                                        <span class="h-2 w-2 rounded-full bg-[#99ff04]"></span> Dicairkan
+                                    </dt>
+                                    <dd class="mt-1.5 text-base font-black text-[#99ff04] tabular-nums" x-text="activeCampaign.disbursed_formatted"></dd>
+                                    <dd class="mt-0.5 text-[10px] text-slate-400">acc admin platform</dd>
+                                </div>
+                                <div class="rounded-2xl border border-white/5 bg-[#231f36] p-3.5">
+                                    <dt class="flex items-center gap-1.5 text-[10px] font-extrabold tracking-wide text-slate-400 uppercase">
+                                        <span class="h-2 w-2 rounded-full bg-amber-400"></span> Tertahan
+                                    </dt>
+                                    <dd class="mt-1.5 text-base font-black text-amber-300 tabular-nums" x-text="activeCampaign.remaining_formatted"></dd>
+                                    <dd class="mt-0.5 text-[10px] text-slate-400">aman di sistem</dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        {{-- Tahapan Pencairan --}}
+                        <div class="rounded-3xl border border-white/10 bg-[#1b182a] p-5 shadow-xl">
+                            <h3 class="text-sm font-black text-white">Tahapan Pencairan Dana</h3>
+                            <p class="mt-1 text-xs text-slate-400">
+                                Dana dicairkan bertahap dan tahap berikutnya terkunci sampai laporan nota disetujui.
+                            </p>
+
+                            <ol class="mt-4 space-y-2.5">
+                                <template x-for="m in activeCampaign.milestones" :key="m.sequence">
+                                    <li class="flex items-center justify-between gap-3 rounded-2xl border p-3 text-xs"
+                                        :class="{
+                                            'border-[#99ff04]/30 bg-[#99ff04]/5': m.is_done,
+                                            'border-amber-500/30 bg-amber-500/5': m.is_active,
+                                            'border-white/10 bg-[#231f36]': !m.is_done && !m.is_active
+                                        }">
+                                        <div class="flex items-center gap-2.5 min-w-0">
+                                            <span class="grid h-7 w-7 shrink-0 place-items-center rounded-xl text-xs font-black"
+                                                  :class="{
+                                                      'bg-[#99ff04] text-black': m.is_done,
+                                                      'bg-amber-400 text-black': m.is_active,
+                                                      'bg-white/10 text-slate-400': !m.is_done && !m.is_active
+                                                  }" x-text="m.sequence"></span>
+                                            <div class="min-w-0">
+                                                <p class="font-bold text-white truncate" x-text="m.title"></p>
+                                                <p class="text-[10px] text-slate-400" x-text="m.status_label"></p>
+                                            </div>
+                                        </div>
+                                        <p class="font-black text-[#99ff04] tabular-nums shrink-0" x-text="m.amount_formatted"></p>
+                                    </li>
+                                </template>
+                            </ol>
+                        </div>
+
+                        {{-- Riwayat Pencairan --}}
+                        <div class="rounded-3xl border border-white/10 bg-[#1b182a] p-5 shadow-xl">
+                            <h3 class="text-sm font-black text-white">Riwayat Pencairan ke Pengaju</h3>
+                            <template x-if="activeCampaign.disbursements.length === 0">
+                                <p class="mt-3 text-xs text-slate-400">Belum ada pencairan dana yang dilakukan.</p>
+                            </template>
+                            <template x-if="activeCampaign.disbursements.length > 0">
+                                <ul class="mt-3 divide-y divide-white/5 text-xs">
+                                    <template x-for="d in activeCampaign.disbursements" :key="d.reference">
+                                        <li class="py-3 flex flex-wrap items-center justify-between gap-2">
+                                            <div>
+                                                <p class="font-bold text-white">Tahap <span x-text="d.sequence"></span> &middot; <span class="font-mono text-slate-300" x-text="d.reference"></span></p>
+                                                <p class="text-[11px] text-slate-400 mt-0.5" x-text="d.purpose"></p>
+                                                <p class="text-[10px] text-slate-500" x-text="`Tujuan: ${d.masked_payee}`"></p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="font-black text-[#99ff04] tabular-nums" x-text="d.amount_formatted"></p>
+                                                <span class="rounded bg-[#99ff04]/20 px-1.5 py-0.5 text-[9px] font-black text-[#99ff04] uppercase" x-text="d.status_label"></span>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </template>
+                        </div>
+
+                        {{-- Laporan Pengeluaran / Bukti Nota --}}
+                        <div class="rounded-3xl border border-white/10 bg-[#1b182a] p-5 shadow-xl">
+                            <h3 class="text-sm font-black text-white">Laporan Pengeluaran &amp; Bukti Nota</h3>
+                            <template x-if="activeCampaign.expense_reports.length === 0">
+                                <p class="mt-3 text-xs text-slate-400">Belum ada laporan bukti pengeluaran yang diunggah.</p>
+                            </template>
+                            <template x-if="activeCampaign.expense_reports.length > 0">
+                                <ul class="mt-3 divide-y divide-white/5 text-xs">
+                                    <template x-for="e in activeCampaign.expense_reports" :key="e.title">
+                                        <li class="py-3 flex flex-wrap items-start justify-between gap-2">
+                                            <div>
+                                                <p class="font-bold text-white" x-text="e.title"></p>
+                                                <p class="text-[10px] text-slate-400 mt-0.5" x-text="e.spent_on_formatted"></p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="font-black text-white tabular-nums" x-text="e.amount_formatted"></p>
+                                                <template x-if="e.receipt_url">
+                                                    <a :href="e.receipt_url" target="_blank" rel="noopener" class="text-[11px] font-bold text-[#99ff04] hover:underline">Lihat nota &rarr;</a>
+                                                </template>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </template>
+                        </div>
+
+                    </div>
+
+                    {{-- Footer Link --}}
+                    <div class="border-t border-white/10 pt-4 flex items-center justify-between gap-3 shrink-0">
+                        <a :href="activeCampaign.show_url" class="text-xs font-bold text-[#99ff04] hover:underline flex items-center gap-1">
+                            <span>Buka Halaman Kampanye &rarr;</span>
+                        </a>
+                        <button type="button" @click="showModal = false" class="rounded-full bg-white/10 px-5 py-2 text-xs font-bold text-white hover:bg-white/20 transition-colors cursor-pointer">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
 </div>
 @endsection

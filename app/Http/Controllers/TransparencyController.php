@@ -24,8 +24,54 @@ class TransparencyController extends Controller
 
         $campaigns = Campaign::published()
             ->withCount(['donations as donatur_count' => fn ($q) => $q->where('status', Donation::STATUS_PAID)])
+            ->with([
+                'milestones',
+                'disbursements' => fn ($q) => $q->with('milestone:id,title,sequence')->whereIn('status', ['approved', 'released'])->orderBy('created_at'),
+                'expenseReports' => fn ($q) => $q->with('item:id,name')->orderByDesc('spent_on'),
+            ])
             ->orderByDesc('collected_amount')
-            ->get();
+            ->paginate(5);
+
+        $campaignsData = collect($campaigns->items())->mapWithKeys(function ($c) {
+            return [
+                $c->id => [
+                    'id' => $c->id,
+                    'title' => $c->title,
+                    'category_label' => $c->categoryLabel(),
+                    'collected_amount' => $c->collected_amount,
+                    'collected_formatted' => rupiah($c->collected_amount),
+                    'disbursed_amount' => $c->disbursed_amount,
+                    'disbursed_formatted' => rupiah($c->disbursed_amount),
+                    'remaining_balance' => $c->remainingBalance(),
+                    'remaining_formatted' => rupiah($c->remainingBalance()),
+                    'donatur_count' => $c->donatur_count,
+                    'show_url' => route('kampanye.show', $c),
+                    'transparency_url' => route('kampanye.transparansi', $c),
+                    'milestones' => $c->milestones->map(fn ($m) => [
+                        'sequence' => $m->sequence,
+                        'title' => $m->title,
+                        'amount_formatted' => rupiah($m->amount),
+                        'status_label' => $m->statusLabel(),
+                        'is_done' => in_array($m->status, ['disbursed', 'reported'], true),
+                        'is_active' => in_array($m->status, ['available', 'requested', 'approved'], true),
+                    ])->values()->all(),
+                    'disbursements' => $c->disbursements->map(fn ($d) => [
+                        'sequence' => $d->milestone?->sequence ?? '—',
+                        'reference' => $d->reference,
+                        'purpose' => $d->purpose,
+                        'masked_payee' => $d->maskedPayee() ?? '—',
+                        'amount_formatted' => rupiah($d->amount),
+                        'status_label' => $d->statusLabel(),
+                    ])->values()->all(),
+                    'expense_reports' => $c->expenseReports->map(fn ($e) => [
+                        'title' => $e->title,
+                        'spent_on_formatted' => $e->spent_on ? $e->spent_on->translatedFormat('d F Y') : '—',
+                        'amount_formatted' => rupiah($e->amount),
+                        'receipt_url' => $e->receipt_path ? route('berkas.lpj', $e) : null,
+                    ])->values()->all(),
+                ],
+            ];
+        })->all();
 
         // Grafik 30 hari terakhir, diagregasi di PHP supaya sintaks tanggal
         // tetap sama di MySQL maupun SQLite.
@@ -51,6 +97,7 @@ class TransparencyController extends Controller
         return view('public.transparency-index', [
             'totals' => $totals,
             'campaigns' => $campaigns,
+            'campaignsData' => $campaignsData,
             'chart' => $chart,
             'chainStatus' => $audit->verifyChain(),
         ]);
