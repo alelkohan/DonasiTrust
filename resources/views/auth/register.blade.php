@@ -2,7 +2,7 @@
 @section('title', 'Daftar Akun Baru')
 
 @section('content')
-<div>
+<div x-data="{ role: '{{ old('role', 'donatur') }}' }">
     {{-- Heading --}}
     <div class="mb-6">
         <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white brand-logo-text">
@@ -16,7 +16,7 @@
         </p>
     </div>
 
-    <form method="POST" action="{{ route('register') }}" class="space-y-4" x-data="{ role: '{{ old('role', 'donatur') }}' }">
+    <form method="POST" action="{{ route('register') }}" class="space-y-4">
         @csrf
 
         {{-- Role Selection Radio --}}

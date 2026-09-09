@@ -14,7 +14,7 @@
         </h1>
         <p class="mt-2 text-xs sm:text-sm font-medium text-slate-400">
             Belum punya akun?
-            <a href="{{ route('register') }}" class="font-extrabold hover:underline transition-all">
+            <a href="{{ route('register') }}" class="font-extrabold hover:underline transition-all text-[#99ff04]">
                 Daftar gratis sekarang
             </a>
         </p>

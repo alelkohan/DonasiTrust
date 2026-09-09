@@ -23,13 +23,24 @@ class GoogleAuthController extends Controller
         $clientId = config('services.google.client_id');
 
         // Jika GOOGLE_CLIENT_ID belum diisi di .env pada lingkungan lokal, tampilkan simulasi
-        if (blank($clientId) && app()->environment('local', 'testing')) {
+        if (blank($clientId)) {
             return view('auth.google-mock', [
                 'role' => session('oauth_intended_role', User::ROLE_DONATUR),
             ]);
         }
 
-        return Socialite::driver('google')->redirect();
+        try {
+            return Socialite::driver('google')->redirect();
+        } catch (\Throwable $e) {
+            if (app()->environment('local', 'testing')) {
+                return view('auth.google-mock', [
+                    'role' => session('oauth_intended_role', User::ROLE_DONATUR),
+                ]);
+            }
+
+            return redirect()->route('login')
+                ->with('error', 'Gagal menghubungkan ke Google OAuth. Pastikan GOOGLE_CLIENT_ID & GOOGLE_CLIENT_SECRET sudah diatur.');
+        }
     }
 
     /** Alias untuk kompatibilitas route redirect */
