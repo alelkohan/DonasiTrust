@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'For the love of human kindness · DonasiTrust')
+@section('title', 'Niat Baikmu, Bukti Nyatanya · DonasiTrust')
 
 @section('content')
 
@@ -13,12 +13,12 @@
     searchHtml: '',
     initScroll() {
         const checkScroll = () => {
-            const el = document.getElementById('static-navtab');
+            const el = document.getElementById('static-navtab-v2');
             if (el) {
                 const rect = el.getBoundingClientRect();
-                this.isSticky = rect.bottom < 60;
+                this.isSticky = rect.top <= 60;
             } else {
-                this.isSticky = window.scrollY > 300;
+                this.isSticky = window.scrollY > 400;
             }
         };
         window.addEventListener('scroll', checkScroll, { passive: true });
@@ -56,7 +56,7 @@
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
             const data = await res.json();
-            const container = document.getElementById('campaign-grid-container');
+            const container = document.getElementById('campaign-grid-container-v2');
             if (container && data.html) {
                 container.innerHTML = data.html;
             }
@@ -73,132 +73,359 @@
     }
 }" x-init="initScroll(); if (searchQuery) { doSearch(); }">
 
-{{-- VGen Hero Header Section --}}
-<section class="relative bg-[#12101c] pt-8 pb-8 text-white w-full">
-    <div class="relative w-full">
+{{-- Floating Sticky Search & Category Bar (Appears when scrolled past static navtab) --}}
+<div x-show="isSticky"
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0 -translate-y-4"
+     x-transition:enter-end="opacity-100 translate-y-0"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100 translate-y-0"
+     x-transition:leave-end="opacity-0 -translate-y-4"
+     class="navtab-floating-bar fixed top-[60px] left-0 right-0 z-30 shadow-xl backdrop-blur-md transition-all duration-300"
+     style="display: none;">
+    <div class="max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
         
-        {{-- Title & Hero Main Search Bar Row (Initial Position at top) --}}
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-8">
-            <div>
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
-                    For the love of human kindness
-                </h1>
-                <p class="mt-2 text-sm sm:text-base text-slate-300">
-                    Donasi transparan bertahap dengan jejak audit kuitansi yang dapat diverifikasi publik.
-                </p>
-            </div>
-
-            {{-- Initial Hero Search Bar --}}
-            <div class="w-full lg:max-w-md">
-                <div class="relative flex items-center">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </span>
-                    <input type="text"
-                           x-model="searchQuery"
-                           @input.debounce.300ms="doSearch()"
-                           placeholder="Search for a tag, category, applicant, or cause..."
-                           class="w-full rounded-2xl border border-white/15 bg-[#231f36] py-3.5 pl-12 pr-20 text-sm font-medium text-white placeholder-slate-400 shadow-xl backdrop-blur-md transition-all focus:border-[#99ff04] focus:outline-none focus:ring-1 focus:ring-[#99ff04]">
-                    <button type="button"
-                            x-show="searchQuery"
-                            @click="clearSearch()"
-                            class="absolute right-3 text-xs font-extrabold text-slate-400 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg px-2 py-1 transition-all">
-                        Clear ✕
-                    </button>
-                </div>
+        {{-- Search Input --}}
+        <div class="w-full md:w-80 shrink-0">
+            <div class="relative flex items-center">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </span>
+                <input type="text"
+                       x-model="searchQuery"
+                       @input.debounce.300ms="doSearch()"
+                       placeholder="Cari kampanye atau lokasi..."
+                       class="navtab-search-input w-full rounded-2xl py-2 pl-10 pr-14 text-xs font-medium placeholder-slate-400 shadow-md focus:border-[#99ff04] focus:outline-none">
+                <button type="button"
+                        x-show="searchQuery"
+                        @click="clearSearch()"
+                        class="absolute right-2 text-[10px] font-extrabold text-slate-400 hover:text-white bg-white/10 rounded px-1.5 py-0.5">
+                    Clear ✕
+                </button>
             </div>
         </div>
 
-        {{-- Hero Dynamic Block (Swaps between 3 Hero Cards and Search Results if search query is active) --}}
-        <div id="hero-dynamic-block" class="w-full min-h-[250px]">
-            {{-- Live Search Result Replacement --}}
-            <div x-show="isSearching" x-cloak class="w-full transition-opacity duration-300">
-                <div x-html="searchHtml"></div>
+        {{-- Category Pills --}}
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+            <button type="button"
+                    @click="switchCategory('semua')"
+                    :class="(activeCategory === 'semua' || !activeCategory) ? 'category-btn-active scale-105' : 'category-btn-inactive'"
+                    class="flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-black transition-all">
+                Semua
+            </button>
+
+            @foreach ($categories as $key => $label)
+                <button type="button"
+                        @click="switchCategory('{{ $key }}')"
+                        :class="activeCategory === '{{ $key }}' ? 'category-btn-active scale-105' : 'category-btn-inactive'"
+                        class="flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-black transition-all">
+                    {{ $label }}
+                </button>
+            @endforeach
+        </div>
+
+    </div>
+</div>
+
+{{-- -------------------------------------------------------------------------
+   SECTION 1: HERO SECTION (With Background Sliding Cards & Gradient Blur)
+------------------------------------------------------------------------- --}}
+<section class="hero-section-v2 relative bg-[#12101c] text-white overflow-hidden transition-colors duration-300" style="padding-top: 80px; padding-bottom: 70px;">
+    
+    {{-- Animated Background Sliding Cards Marquee --}}
+    @if ($heroCampaigns->isNotEmpty())
+        <div class="hero-marquee-container absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-25 select-none flex justify-center gap-6 p-4" style="transform: rotate(-22deg) scale(1.45);">
+            
+            {{-- Column 1: Scrolls Up --}}
+            <div class="flex flex-col gap-6 animate-hero-marquee-up w-72 shrink-0">
+                @foreach ($heroCampaigns->concat($heroCampaigns) as $cmp)
+                    @php
+                        $catRaw = $cmp->category ?? $cmp->kategori ?? 'sosial';
+                        $catLabel = method_exists($cmp, 'categoryLabel') ? $cmp->categoryLabel() : (\App\Models\Campaign::CATEGORIES[$catRaw] ?? (is_string($catRaw) ? $catRaw : 'Umum'));
+                        $img = $cmp->cover_path ?? $cmp->gambar ?? '';
+                        if (!empty($img) && !Str::startsWith($img, 'http')) {
+                            $img = asset('storage/' . $img);
+                        }
+                        if (empty($img)) {
+                            $img = match($catRaw) {
+                                'bencana' => 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80',
+                                'pendidikan' => 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+                                'kesehatan' => 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80',
+                                'infrastruktur' => 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80',
+                                'lingkungan' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+                                default => 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80',
+                            };
+                        }
+                        $title = $cmp->title ?? $cmp->judul ?? '';
+                        $summary = $cmp->summary ?? 'Program donasi terverifikasi dengan audit transparansi real-time.';
+                        $collected = $cmp->collected_amount ?? $cmp->terkumpul ?? 0;
+                        $target = $cmp->target_amount ?? $cmp->target_dana ?? 1;
+                        $pct = $target > 0 ? min(100, round(($collected / $target) * 100)) : 100;
+                    @endphp
+                    <article class="hero-marquee-card flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#1b182a] shadow-xl w-72 shrink-0">
+                        <div class="relative aspect-[16/9] overflow-hidden bg-slate-900">
+                            <img src="{{ $img }}" alt="{{ $title }}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80';" class="h-full w-full object-cover">
+                            <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
+                            <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
+                                <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[9px] font-black tracking-wider text-black uppercase shadow-sm">OPEN</span>
+                                <span class="rounded bg-black/70 px-2 py-0.5 text-[9px] font-extrabold text-white backdrop-blur-md uppercase border border-white/10">{{ $catLabel }}</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-1 flex-col p-3.5">
+                            <h3 class="text-xs font-extrabold leading-snug line-clamp-1 text-white">{{ $title }}</h3>
+                            <p class="mt-1 line-clamp-2 text-[11px] leading-relaxed text-slate-400">{{ $summary }}</p>
+                            <div class="mt-3 pt-2">
+                                <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#2a253e]">
+                                    <div class="h-full rounded-full bg-[#99ff04]" style="width: {{ $pct }}%"></div>
+                                </div>
+                                <div class="mt-2 flex items-baseline justify-between gap-2 text-[11px]">
+                                    <span class="font-black text-white">Rp{{ number_format($collected, 0, ',', '.') }}</span>
+                                    <span class="text-[10px] text-slate-400">target Rp{{ number_format($target / 1000000, 0) }}Jt</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
             </div>
 
-            {{-- Default 3 Hero Banners (Mobile Horizontal Scrollable with Side Scroll, Desktop 3 Columns) --}}
-            <div x-show="!isSearching" class="w-full">
-                <div class="flex overflow-x-auto gap-4 scrollbar-none snap-x snap-mandatory md:grid md:grid-cols-3 pb-3 -mx-4 px-4 sm:mx-0 sm:px-0">
-                    {{-- Banner 1 --}}
-                    <div class="photo-banner-card snap-start shrink-0 w-[84vw] sm:w-[380px] md:w-auto group relative flex h-60 flex-col justify-end overflow-hidden rounded-3xl border border-white/10 p-6 shadow-xl transition-all duration-300 hover:border-purple-500/50 hover:shadow-2xl">
-                        <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80"
-                             alt="Made for trust" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-[#12101c]/80"></div>
-
-                        <div class="relative z-10">
-                            <span class="inline-block rounded bg-[#99ff04] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-black mb-2">
-                                Pencairan Bertahap
-                            </span>
-                            <h3 class="text-xl font-black text-white">Made for trust</h3>
-                            <p class="mt-1 text-xs text-slate-300 leading-relaxed line-clamp-2">
-                                Dana dicairkan setahap demi setahap. Tahap berikutnya terkunci sampai bukti nota dilaporkan.
-                            </p>
-                            <div class="mt-3 flex items-center justify-end">
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-extrabold text-white backdrop-blur-md border border-white/10">
-                                    <span class="h-2 w-2 rounded-full bg-[#99ff04]"></span>
-                                    @yayasan_peduli
-                                </span>
+            {{-- Column 2: Scrolls Down --}}
+            <div class="flex flex-col gap-6 animate-hero-marquee-down w-72 shrink-0 -mt-32">
+                @foreach ($heroCampaigns->reverse()->concat($heroCampaigns->reverse()) as $cmp)
+                    @php
+                        $catRaw = $cmp->category ?? $cmp->kategori ?? 'sosial';
+                        $catLabel = method_exists($cmp, 'categoryLabel') ? $cmp->categoryLabel() : (\App\Models\Campaign::CATEGORIES[$catRaw] ?? (is_string($catRaw) ? $catRaw : 'Umum'));
+                        $img = $cmp->cover_path ?? $cmp->gambar ?? '';
+                        if (!empty($img) && !Str::startsWith($img, 'http')) {
+                            $img = asset('storage/' . $img);
+                        }
+                        if (empty($img)) {
+                            $img = match($catRaw) {
+                                'bencana' => 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80',
+                                'pendidikan' => 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+                                'kesehatan' => 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80',
+                                'infrastruktur' => 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80',
+                                'lingkungan' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+                                default => 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80',
+                            };
+                        }
+                        $title = $cmp->title ?? $cmp->judul ?? '';
+                        $summary = $cmp->summary ?? 'Program donasi terverifikasi dengan audit transparansi real-time.';
+                        $collected = $cmp->collected_amount ?? $cmp->terkumpul ?? 0;
+                        $target = $cmp->target_amount ?? $cmp->target_dana ?? 1;
+                        $pct = $target > 0 ? min(100, round(($collected / $target) * 100)) : 100;
+                    @endphp
+                    <article class="hero-marquee-card flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#1b182a] shadow-xl w-72 shrink-0">
+                        <div class="relative aspect-[16/9] overflow-hidden bg-slate-900">
+                            <img src="{{ $img }}" alt="{{ $title }}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80';" class="h-full w-full object-cover">
+                            <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
+                            <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
+                                <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[9px] font-black tracking-wider text-black uppercase shadow-sm">OPEN</span>
+                                <span class="rounded bg-black/70 px-2 py-0.5 text-[9px] font-extrabold text-white backdrop-blur-md uppercase border border-white/10">{{ $catLabel }}</span>
                             </div>
                         </div>
-                    </div>
-
-                    {{-- Banner 2 --}}
-                    <div class="photo-banner-card snap-start shrink-0 w-[84vw] sm:w-[380px] md:w-auto group relative flex h-60 flex-col justify-end overflow-hidden rounded-3xl border border-white/10 p-6 shadow-xl transition-all duration-300 hover:border-purple-500/50 hover:shadow-2xl">
-                        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80"
-                             alt="No Hidden Fees" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-[#12101c]/80"></div>
-
-                        <div class="relative z-10">
-                            <span class="inline-block rounded bg-cyan-400 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-black mb-2">
-                                Ledger Publik HMAC
-                            </span>
-                            <h3 class="text-xl font-black text-white">No Hidden Fees</h3>
-                            <p class="mt-1 text-xs text-slate-300 leading-relaxed line-clamp-2">
-                                Setiap transaksi tersambung dalam rantai hash kriptografi yang tidak dapat dimanipulasi.
-                            </p>
-                            <div class="mt-3 flex items-center justify-end">
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-extrabold text-white backdrop-blur-md border border-white/10">
-                                    <span class="h-2 w-2 rounded-full bg-cyan-400"></span>
-                                    @donasitrust_official
-                                </span>
+                        <div class="flex flex-1 flex-col p-3.5">
+                            <h3 class="text-xs font-extrabold leading-snug line-clamp-1 text-white">{{ $title }}</h3>
+                            <p class="mt-1 line-clamp-2 text-[11px] leading-relaxed text-slate-400">{{ $summary }}</p>
+                            <div class="mt-3 pt-2">
+                                <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#2a253e]">
+                                    <div class="h-full rounded-full bg-[#99ff04]" style="width: {{ $pct }}%"></div>
+                                </div>
+                                <div class="mt-2 flex items-baseline justify-between gap-2 text-[11px]">
+                                    <span class="font-black text-white">Rp{{ number_format($collected, 0, ',', '.') }}</span>
+                                    <span class="text-[10px] text-slate-400">target Rp{{ number_format($target / 1000000, 0) }}Jt</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </article>
+                @endforeach
+            </div>
 
-                    {{-- Banner 3 --}}
-                    <div class="photo-banner-card snap-start shrink-0 w-[84vw] sm:w-[380px] md:w-auto group relative flex h-60 flex-col justify-end overflow-hidden rounded-3xl border border-white/10 p-6 shadow-xl transition-all duration-300 hover:border-purple-500/50 hover:shadow-2xl">
-                        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80"
-                             alt="Verified but safe" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-[#12101c]/80"></div>
-
-                        <div class="relative z-10">
-                            <span class="inline-block rounded bg-purple-400 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-black mb-2">
-                                Identitas KTP Valid
-                            </span>
-                            <h3 class="text-xl font-black text-white">Verified but safe</h3>
-                            <p class="mt-1 text-xs text-slate-300 leading-relaxed line-clamp-2">
-                                Seluruh pengaju diverifikasi identitas KTP & legalitas lembaga oleh admin sebelum tayang.
-                            </p>
-                            <div class="mt-3 flex items-center justify-end">
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-extrabold text-white backdrop-blur-md border border-white/10">
-                                    <span class="h-2 w-2 rounded-full bg-purple-400"></span>
-                                    @relawan_nusantara
-                                </span>
+            {{-- Column 3: Scrolls Up --}}
+            <div class="flex flex-col gap-6 animate-hero-marquee-up w-72 shrink-0 -mt-16">
+                @foreach ($heroCampaigns->concat($heroCampaigns) as $cmp)
+                    @php
+                        $catRaw = $cmp->category ?? $cmp->kategori ?? 'sosial';
+                        $catLabel = method_exists($cmp, 'categoryLabel') ? $cmp->categoryLabel() : (\App\Models\Campaign::CATEGORIES[$catRaw] ?? (is_string($catRaw) ? $catRaw : 'Umum'));
+                        $img = $cmp->cover_path ?? $cmp->gambar ?? '';
+                        if (!empty($img) && !Str::startsWith($img, 'http')) {
+                            $img = asset('storage/' . $img);
+                        }
+                        if (empty($img)) {
+                            $img = match($catRaw) {
+                                'bencana' => 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80',
+                                'pendidikan' => 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+                                'kesehatan' => 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80',
+                                'infrastruktur' => 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80',
+                                'lingkungan' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+                                default => 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80',
+                            };
+                        }
+                        $title = $cmp->title ?? $cmp->judul ?? '';
+                        $summary = $cmp->summary ?? 'Program donasi terverifikasi dengan audit transparansi real-time.';
+                        $collected = $cmp->collected_amount ?? $cmp->terkumpul ?? 0;
+                        $target = $cmp->target_amount ?? $cmp->target_dana ?? 1;
+                        $pct = $target > 0 ? min(100, round(($collected / $target) * 100)) : 100;
+                    @endphp
+                    <article class="hero-marquee-card flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#1b182a] shadow-xl w-72 shrink-0">
+                        <div class="relative aspect-[16/9] overflow-hidden bg-slate-900">
+                            <img src="{{ $img }}" alt="{{ $title }}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80';" class="h-full w-full object-cover">
+                            <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
+                            <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
+                                <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[9px] font-black tracking-wider text-black uppercase shadow-sm">OPEN</span>
+                                <span class="rounded bg-black/70 px-2 py-0.5 text-[9px] font-extrabold text-white backdrop-blur-md uppercase border border-white/10">{{ $catLabel }}</span>
                             </div>
                         </div>
-                    </div>
+                        <div class="flex flex-1 flex-col p-3.5">
+                            <h3 class="text-xs font-extrabold leading-snug line-clamp-1 text-white">{{ $title }}</h3>
+                            <p class="mt-1 line-clamp-2 text-[11px] leading-relaxed text-slate-400">{{ $summary }}</p>
+                            <div class="mt-3 pt-2">
+                                <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#2a253e]">
+                                    <div class="h-full rounded-full bg-[#99ff04]" style="width: {{ $pct }}%"></div>
+                                </div>
+                                <div class="mt-2 flex items-baseline justify-between gap-2 text-[11px]">
+                                    <span class="font-black text-white">Rp{{ number_format($collected, 0, ',', '.') }}</span>
+                                    <span class="text-[10px] text-slate-400">target Rp{{ number_format($target / 1000000, 0) }}Jt</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+
+        </div>
+    @endif
+
+    {{-- Gradient Blur Overlay Mask (Adaptive Theme Fade from Bottom to Top) --}}
+    <div class="hero-marquee-overlay-v2 absolute inset-0 z-1 backdrop-blur-[2px] pointer-events-none transition-colors duration-300"></div>
+    
+    {{-- Ambient Glow Backdrop --}}
+    <div class="pointer-events-none absolute left-1/3 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[600px] rounded-full bg-gradient-to-tr from-[#99ff04]/15 via-emerald-500/10 to-purple-600/10 blur-[130px] opacity-70 z-2"></div>
+
+    <div class="relative z-10 w-full">
+        
+        <div class="max-w-2xl space-y-6">
+            
+            {{-- Small Subtitle Tag --}}
+            <div class="text-xs font-extrabold tracking-widest text-slate-400 uppercase">
+                KEBAIKAN YANG BISA DITELUSURI
+            </div>
+
+            {{-- Main Title --}}
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12]">
+                Niat baikmu.<br>
+                <span>Bukti nyatanya.</span>
+            </h1>
+
+            {{-- Subtitle Paragraph --}}
+            <p class="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
+                Pantau donasimu dari dana terkumpul, pencairan bertahap, hingga bukti penggunaan.
+            </p>
+
+            {{-- CTA Buttons --}}
+            <div class="pt-2 flex flex-wrap items-center gap-3.5">
+                <a href="#kampanye-section" class="inline-flex items-center gap-2 rounded-xl bg-[#99ff04] px-6 py-3.5 text-sm font-black text-black shadow-lg shadow-[#99ff04]/20 hover:bg-[#84e000] hover:scale-[1.02] transition-all">
+                    <span>Jelajahi Kampanye</span>
+                    <svg class="h-4 w-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                </a>
+                <a href="#cara-kerja" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10 transition-all">
+                    Lihat Cara Kerja
+                </a>
+            </div>
+
+            {{-- Trust Indicators / Checklist --}}
+            <div class="pt-2 flex flex-wrap items-center gap-6 text-xs sm:text-sm font-semibold text-slate-300">
+                <div class="flex items-center gap-2">
+                    <span class="grid h-5 w-5 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04] font-black text-xs">
+                        ✓
+                    </span>
+                    <span>Pencairan bertahap</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="grid h-5 w-5 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04] font-black text-xs">
+                        ✓
+                    </span>
+                    <span>Bukti bisa diperiksa</span>
                 </div>
             </div>
+
         </div>
 
     </div>
 </section>
 
-{{-- STATIC IN-FLOW CATEGORY NAVTAB (Non-sticky, no shadow, no overflow-hidden) --}}
-<div id="static-navtab" class="w-full py-4 border-b border-white/10 mb-6">
-    <div class="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+{{-- -------------------------------------------------------------------------
+   SECTION 2: 3-STEP VALUE PROPOSITION BAR (01 / 02 / 03)
+------------------------------------------------------------------------- --}}
+<section class="py-10 w-full">
+    <div class="grid gap-6 md:grid-cols-3">
+        <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+            <span class="text-2xl font-black text-slate-500 font-mono">01</span>
+            <div>
+                <h3 class="text-sm font-black text-white">Dana dicairkan bertahap</h3>
+                <p class="mt-1 text-xs text-slate-400 leading-relaxed">Dana disalurkan sesuai progres di lapangan secara terkontrol.</p>
+            </div>
+        </div>
+
+        <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+            <span class="text-2xl font-black text-slate-500 font-mono">02</span>
+            <div>
+                <h3 class="text-sm font-black text-white">Bukti penggunaan diperiksa</h3>
+                <p class="mt-1 text-xs text-slate-400 leading-relaxed">Setiap pencairan dilengkapi bukti kuitansi yang relevan & valid.</p>
+            </div>
+        </div>
+
+        <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+            <span class="text-2xl font-black text-slate-500 font-mono">03</span>
+            <div>
+                <h3 class="text-sm font-black text-white">Riwayat dapat ditelusuri</h3>
+                <p class="mt-1 text-xs text-slate-400 leading-relaxed">Seluruh catatan tersimpan dan dapat dilihat oleh publik secara transparan.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- -------------------------------------------------------------------------
+   SECTION 3: MAIN CAMPAIGN EXPLORATION SECTION (3 Columns Grid)
+------------------------------------------------------------------------- --}}
+<section id="kampanye-section" class="py-12 w-full">
+    
+    {{-- Header & Title Row --}}
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8">
+        <div>
+            <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                Temukan kebaikan yang ingin kamu dukung.
+            </h2>
+        </div>
+        <a href="{{ route('kampanye.index') }}" class="inline-flex items-center gap-1.5 text-xs font-black text-[#99ff04] hover:underline shrink-0">
+            Lihat semua kampanye
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+    </div>
+
+    {{-- Integrated Search Bar & Category Pills Row --}}
+    <div id="static-navtab-v2" class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8 pb-4 border-b border-white/10">
+        
+        {{-- Search Input --}}
+        <div class="w-full md:w-80">
+            <div class="relative flex items-center">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </span>
+                <input type="text"
+                       x-model="searchQuery"
+                       @input.debounce.300ms="doSearch()"
+                       placeholder="Cari kampanye atau lokasi..."
+                       class="w-full rounded-2xl border border-white/15 bg-[#231f36] py-2.5 pl-10 pr-14 text-xs font-medium text-white placeholder-slate-400 shadow-md focus:border-[#99ff04] focus:outline-none">
+                <button type="button"
+                        x-show="searchQuery"
+                        @click="clearSearch()"
+                        class="absolute right-2 text-[10px] font-extrabold text-slate-400 hover:text-white bg-white/10 rounded px-1.5 py-0.5">
+                    Clear ✕
+                </button>
+            </div>
+        </div>
+
+        {{-- Category Pills --}}
         <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             <button type="button"
                     @click="switchCategory('semua')"
@@ -215,160 +442,108 @@
                     {{ $label }}
                 </button>
             @endforeach
-
-            <a href="{{ route('kampanye.index') }}"
-               class="category-btn-inactive flex shrink-0 items-center justify-center rounded-full border px-4 py-1.5 text-xs font-bold transition-all">
-                All categories &rarr;
-            </a>
         </div>
 
-        <div class="hidden md:flex items-center gap-3 shrink-0">
-            <span class="category-stats-text text-xs font-bold text-white">
-                {{ number_format($stats['kampanye']) }}+ kampanye aktif
-            </span>
-        </div>
     </div>
-</div>
 
-{{-- FLOATING DUPLICATE NAVTAB (Pop out from behind navbar when scrolled past static navtab) --}}
-<div x-show="isSticky"
-     x-transition:enter="transition ease-out duration-300 transform"
-     x-transition:enter-start="-translate-y-full opacity-0"
-     x-transition:enter-end="translate-y-0 opacity-100"
-     x-transition:leave="transition ease-in duration-200 transform"
-     x-transition:leave-start="translate-y-0 opacity-100"
-     x-transition:leave-end="-translate-y-full opacity-0"
-     class="navtab-floating-bar fixed top-[60px] left-0 right-0 z-30 backdrop-blur-md py-2.5 transition-colors"
-     style="display: none;">
-    <div class="w-full max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            
-            {{-- Category Pills --}}
-            <div class="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none">
-                <button type="button"
-                        @click="switchCategory('semua')"
-                        :class="(activeCategory === 'semua' || !activeCategory) ? 'category-btn-active scale-105' : 'category-btn-inactive'"
-                        class="flex shrink-0 items-center justify-center rounded-full border px-3.5 py-1 text-xs font-black transition-all">
-                    Semua
-                </button>
-
-                @foreach ($categories as $key => $label)
-                    <button type="button"
-                            @click="switchCategory('{{ $key }}')"
-                            :class="activeCategory === '{{ $key }}' ? 'category-btn-active scale-105' : 'category-btn-inactive'"
-                            class="flex shrink-0 items-center justify-center rounded-full border px-3.5 py-1 text-xs font-black transition-all">
-                        {{ $label }}
-                    </button>
-                @endforeach
-            </div>
-
-            {{-- Compact Search Bar --}}
-            <div class="w-full md:w-80 shrink-0">
-                <div class="relative flex items-center">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </span>
-                    <input type="text"
-                           x-model="searchQuery"
-                           @input.debounce.300ms="doSearch()"
-                           placeholder="Cari kampanye / kategori..."
-                           class="navtab-search-input w-full rounded-full py-1.5 pl-9 pr-14 text-xs font-medium focus:border-[#99ff04] focus:outline-none">
-                    <button type="button"
-                            x-show="searchQuery"
-                            @click="clearSearch()"
-                            class="absolute right-2 text-[10px] font-extrabold text-slate-400 hover:text-white bg-white/10 hover:bg-white/20 rounded px-1.5 py-0.5 transition-all">
-                        Clear ✕
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- MAIN CAMPAIGN GRID SECTION --}}
-<section class="w-full pt-6 pb-16">
-    <div id="campaign-grid-container" class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 min-h-[300px] transition-all duration-300">
+    {{-- Campaign Grid 3 Columns --}}
+    <div id="campaign-grid-container-v2" class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 min-h-[300px] transition-all">
         @include('partials.campaign-grid')
     </div>
+
 </section>
 
-{{-- Three Pillars Section --}}
-<section class="border-t border-white/10 py-16 w-full">
-    <div class="w-full">
-        <div class="max-w-2xl">
-            <h2 class="text-3xl font-black tracking-tight text-white">3 Pilar Akuntabilitas DonasiTrust</h2>
-            <p class="mt-2 text-sm text-slate-400">
-                Setiap transaksi dan rincian pengeluaran dikunci secara otomatis oleh sistem.
+{{-- -------------------------------------------------------------------------
+   SECTION 4: PUBLIC AUDIT LEDGER SHOWCASE SECTION ("Kepercayaan bukan sekadar janji")
+------------------------------------------------------------------------- --}}
+<section class="py-16 border-t border-white/10 w-full">
+    <div class="grid gap-10 lg:grid-cols-12 lg:items-center">
+        
+        {{-- Left Info --}}
+        <div class="lg:col-span-5 space-y-4">
+            <h2 class="text-3xl font-black tracking-tight text-white">
+                Kepercayaan bukan sekadar janji.
+            </h2>
+            <p class="text-sm text-slate-300 leading-relaxed">
+                Lihat catatan pencairan dan bukti penggunaan dana dalam satu tempat yang dapat diakses publik kapan saja.
             </p>
+            <div class="pt-2">
+                <a href="{{ route('transparansi') }}" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-xs font-black text-white hover:bg-white/20 transition-all">
+                    Buka Jejak Audit ↗
+                </a>
+            </div>
         </div>
 
-        <div class="mt-10 grid gap-6 md:grid-cols-3">
-            @foreach ([
-                [
-                    'Pencairan Bertahap',
-                    'Dana wajib dipecah menjadi tahapan RAB. Tahap berikutnya hanya terbuka setelah nota tahap sebelumnya diunggah & diverifikasi.',
-                    'M3 20h5v-5H3zM9.5 20h5V10h-5zM16 20h5V4h-5z',
-                ],
-                [
-                    'Kuitansi Terverifikasi HMAC',
-                    'Tiap donasi menghasilkan kode HMAC-SHA256 unik. Siapa pun bisa mencocokkan kuitansi di halaman verifikasi tanpa login.',
-                    'M12 3 4 6.2v5.1c0 4.6 3.2 8.4 8 9.7 4.8-1.3 8-5.1 8-9.7V6.2Zm-3 8.9 2.2 2.2 4.2-4.4',
-                ],
-                [
-                    'Jejak Audit Ber-Rantai',
-                    'Setiap entri menyimpan hash entri sebelumnya. Mengubah satu catatan lama membuat seluruh rantai sesudahnya gagal diverifikasi.',
-                    'M10.6 13.4a4 4 0 0 0 5.7 0l2.8-2.9a4 4 0 0 0-5.7-5.6l-1.6 1.6M13.4 10.6a4 4 0 0 0-5.7 0l-2.8 2.9a4 4 0 0 0 5.7 5.6l1.6-1.6',
-                ],
-            ] as $pilar)
-                <div class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl hover:border-purple-500/40 transition-all">
-                    <span class="grid h-12 w-12 place-items-center rounded-2xl bg-[#99ff04] text-black shadow-md border border-black/10 transition-all">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="{{ $pilar[2] }}"/>
-                        </svg>
-                    </span>
-                    <h3 class="mt-4 text-base font-extrabold text-white">{{ $pilar[0] }}</h3>
-                    <p class="mt-2 text-xs leading-relaxed text-slate-300">{{ $pilar[1] }}</p>
+        {{-- Right Interactive Audit Log Table Mockup --}}
+        <div class="lg:col-span-7">
+            <div class="rounded-3xl border border-white/15 bg-[#1b182a] p-6 shadow-2xl space-y-4">
+                <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                    <span class="text-xs font-black text-white uppercase tracking-wider">Contoh riwayat kampanye</span>
+                    <span class="text-[10px] font-bold text-slate-400">Status Terbaru</span>
                 </div>
-            @endforeach
+
+                <div class="space-y-3 text-xs">
+                    {{-- Row 1 --}}
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-2xl bg-[#231f36] border border-white/10">
+                        <div class="flex items-center gap-3">
+                            <span class="text-slate-400 font-mono text-[11px] w-20 shrink-0">12 Jan 2025</span>
+                            <div class="font-bold text-white">📄 Bukti penggunaan diperiksa</div>
+                        </div>
+                        <div class="text-slate-400 text-[11px]">Nota pembelian pipa dan dokumentasi lapangan</div>
+                    </div>
+
+                    {{-- Row 2 --}}
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-2xl bg-[#231f36] border border-white/10">
+                        <div class="flex items-center gap-3">
+                            <span class="text-slate-400 font-mono text-[11px] w-20 shrink-0">28 Des 2024</span>
+                            <div class="font-bold text-white">⇄ Pencairan tahap 1 dicatat</div>
+                        </div>
+                        <div class="text-[#99ff04] font-bold text-[11px]">Rp7.150.000 disalurkan ke rekening mitra</div>
+                    </div>
+
+                    {{-- Row 3 --}}
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-2xl bg-[#231f36] border border-white/10">
+                        <div class="flex items-center gap-3">
+                            <span class="text-slate-400 font-mono text-[11px] w-20 shrink-0">20 Des 2024</span>
+                            <div class="font-bold text-white">☑ Rencana anggaran disetujui</div>
+                        </div>
+                        <div class="text-slate-400 text-[11px]">Rincian anggaran dan timeline telah diverifikasi</div>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex items-center gap-2 text-[11px] text-slate-400 border-t border-white/10">
+                    <span class="text-[#99ff04]">ⓘ</span>
+                    Perubahan catatan dapat terdeteksi melalui pemeriksaan jejak audit.
+                </div>
+            </div>
         </div>
+
     </div>
 </section>
 
-{{-- CTA Section --}}
-<section class="w-full py-16">
+{{-- -------------------------------------------------------------------------
+   SECTION 5: BOTTOM CTA BANNER
+------------------------------------------------------------------------- --}}
+<section class="py-12 w-full">
     <div class="relative overflow-hidden rounded-3xl bg-[#1b182a] p-8 sm:p-12 border border-white/15 shadow-2xl">
         <div class="grid items-center gap-8 lg:grid-cols-[1.5fr_1fr]">
             <div>
-                <span class="rounded bg-[#99ff04] px-3 py-1 text-xs font-black text-black uppercase tracking-wider">
-                    Gabung Komunitas Pengaju
-                </span>
-                <h2 class="mt-4 text-3xl font-black tracking-tight text-white sm:text-4xl">
-                    Punya program kebaikan yang butuh pendanaan?
+                <h2 class="text-3xl font-black tracking-tight text-white sm:text-4xl">
+                    Punya gerakan baik?<br>Mulai dari sini.
                 </h2>
                 <p class="mt-3 text-sm text-slate-300 leading-relaxed">
-                    Daftar sebagai pengaju, verifikasi identitas KTP Anda, lalu susun RAB & tahapan pencairan. Transparansi tinggi terbukti meningkatkan kepercayaan donatur!
+                    Ajak lebih banyak orang untuk menciptakan dampak nyata di komunitasmu.
                 </p>
             </div>
             <div class="flex flex-col gap-3 sm:flex-row lg:justify-end">
-                <a href="{{ route('register') }}" class="rounded-full bg-[#99ff04] px-8 py-3.5 text-sm font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 text-center">
-                    Mulai Kampanye Sekarang
+                <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#99ff04] px-8 py-3.5 text-sm font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 text-center shadow-xl">
+                    Ajukan Kampanye
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
         </div>
     </div>
 </section>
-
-{{-- Floating Version Comparison Switcher --}}
-<div class="fixed bottom-6 right-6 z-50 flex items-center gap-1.5 rounded-full border border-white/20 bg-[#1b182a]/95 p-1.5 shadow-2xl backdrop-blur-xl">
-    <a href="{{ url('/?v=1') }}" class="rounded-full px-3.5 py-1.5 text-xs font-black transition-all bg-[#99ff04] text-black shadow-md">
-        Versi 1 (Lama)
-    </a>
-    <a href="{{ url('/?v=2') }}" class="rounded-full px-3.5 py-1.5 text-xs font-black transition-all text-slate-300 hover:text-white hover:bg-white/10">
-        Versi 2 (Redesain Baru) ↗
-    </a>
-</div>
 
 </div>
 

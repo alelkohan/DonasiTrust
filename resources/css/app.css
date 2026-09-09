@@ -682,21 +682,21 @@ html.theme-light .guest-right-hero .hero-glass-card .card-sub {
   color: #64748b !important;
 }
 
-html.theme-light .guest-right-hero .hero-marquee-card {
+html.theme-light .hero-marquee-card {
   background-color: #ffffff !important;
   border-color: #cbd5e1 !important;
   box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12) !important;
 }
 
-html.theme-light .guest-right-hero .hero-marquee-card h3 {
+html.theme-light .hero-marquee-card h3 {
   color: #0f172a !important;
 }
 
-html.theme-light .guest-right-hero .hero-marquee-card p {
+html.theme-light .hero-marquee-card p {
   color: #64748b !important;
 }
 
-html.theme-light .guest-right-hero .hero-marquee-card .font-black {
+html.theme-light .hero-marquee-card .font-black {
   color: #0f172a !important;
 }
 
@@ -790,14 +790,7 @@ html.theme-light .mobile-nav-drawer {
   color: #0f172a !important;
 }
 
-/* -------------------------------------------------------------------------
-   3D Coverflow Infinity Marquee Hero Showcase
-------------------------------------------------------------------------- */
-.hero-3d-card-coverflow {
-  transform-style: preserve-3d;
-  will-change: transform, opacity;
-  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
-}
+
 
 html.theme-light .mobile-nav-drawer a:not(.bg-\[\#99ff04\]) {
   color: #334155 !important;
@@ -806,4 +799,58 @@ html.theme-light .mobile-nav-drawer a:not(.bg-\[\#99ff04\]) {
 html.theme-light .mobile-nav-drawer a:not(.bg-\[\#99ff04\]):hover {
   background-color: #f1f5f9 !important;
   color: #0f172a !important;
+}
+
+/* -------------------------------------------------------------------------
+   Hero Section V2 Dynamic Theme Adaptations (Dark & Light)
+------------------------------------------------------------------------- */
+/* Mobile: Fade from bottom to top */
+.hero-marquee-overlay-v2 {
+  background: linear-gradient(to top, #12101c 0%, rgba(18, 16, 28, 0.85) 50%, rgba(18, 16, 28, 0.35) 100%);
+}
+
+/* Desktop: Fade from left to right so hero text on left is 100% readable & cards shine through on right */
+@media (min-width: 1024px) {
+  .hero-marquee-overlay-v2 {
+    background: linear-gradient(to right, #12101c 0%, #12101c 42%, rgba(18, 16, 28, 0.88) 60%, rgba(18, 16, 28, 0.15) 100%);
+  }
+}
+
+html.theme-light .hero-section-v2 {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html.theme-light .hero-marquee-container {
+  opacity: 0.65 !important;
+}
+
+html.theme-light .hero-marquee-card .bg-\[\#12101c\]\/30 {
+  background-color: transparent !important;
+}
+
+html.theme-light .hero-marquee-overlay-v2 {
+  background: linear-gradient(to top, #f8fafc 0%, rgba(248, 250, 252, 0.75) 50%, rgba(248, 250, 252, 0.1) 100%) !important;
+}
+
+@media (min-width: 1024px) {
+  html.theme-light .hero-marquee-overlay-v2 {
+    background: linear-gradient(to right, #f8fafc 0%, #f8fafc 40%, rgba(248, 250, 252, 0.6) 58%, rgba(248, 250, 252, 0.05) 100%) !important;
+  }
+}
+
+html.theme-light .hero-section-v2 h1 {
+  color: #0f172a !important;
+}
+
+html.theme-light .hero-section-v2 p {
+  color: #475569 !important;
+}
+
+html.theme-light .hero-section-v2 .text-slate-400 {
+  color: #64748b !important;
+}
+
+html.theme-light .hero-section-v2 .text-slate-300 {
+  color: #334155 !important;
 }

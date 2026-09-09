@@ -1,6 +1,6 @@
 @php
     try {
-        $heroCampaigns = \App\Models\Campaign::with(['user', 'paidDonations'])->where('status', 'approved')->latest()->take(6)->get();
+        $heroCampaigns = \App\Models\Campaign::published()->whereNotNull('cover_path')->where('cover_path', '!=', '')->with(['user', 'paidDonations'])->orderByDesc('collected_amount')->take(8)->get();
     } catch (\Throwable $e) {
         $heroCampaigns = collect();
     }
@@ -90,18 +90,24 @@
             <div class="flex flex-col gap-5 animate-hero-marquee-up w-64 shrink-0">
                 @foreach ($heroCampaigns->concat($heroCampaigns) as $cmp)
                     @php
+                        $catRaw = $cmp->category ?? $cmp->kategori ?? 'sosial';
+                        $catLabel = method_exists($cmp, 'categoryLabel') ? $cmp->categoryLabel() : (\App\Models\Campaign::CATEGORIES[$catRaw] ?? (is_string($catRaw) ? $catRaw : 'Umum'));
                         $img = $cmp->cover_path ?? $cmp->gambar ?? '';
-                        if (method_exists($cmp, 'coverUrl')) {
-                            $img = $cmp->coverUrl();
-                        } elseif (!empty($img) && !Str::startsWith($img, 'http')) {
+                        if (!empty($img) && !Str::startsWith($img, 'http')) {
                             $img = asset('storage/' . $img);
-                        } elseif (empty($img)) {
-                            $img = asset('images/no-cover.svg');
+                        }
+                        if (empty($img)) {
+                            $img = match($catRaw) {
+                                'bencana' => 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80',
+                                'pendidikan' => 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+                                'kesehatan' => 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80',
+                                'infrastruktur' => 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80',
+                                'lingkungan' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+                                default => 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80',
+                            };
                         }
                         $title = $cmp->title ?? $cmp->judul ?? '';
                         $summary = $cmp->summary ?? 'Program donasi terverifikasi dengan audit transparansi real-time.';
-                        $catRaw = $cmp->category ?? $cmp->kategori ?? '';
-                        $catLabel = method_exists($cmp, 'categoryLabel') ? $cmp->categoryLabel() : (\App\Models\Campaign::CATEGORIES[$catRaw] ?? (is_string($catRaw) ? $catRaw : 'Umum'));
                         $collected = $cmp->collected_amount ?? $cmp->terkumpul ?? 0;
                         $target = $cmp->target_amount ?? $cmp->target_dana ?? 1;
                         $pct = $target > 0 ? min(100, round(($collected / $target) * 100)) : 100;
@@ -152,18 +158,24 @@
             <div class="flex flex-col gap-5 animate-hero-marquee-down w-64 shrink-0 -mt-24">
                 @foreach ($heroCampaigns->reverse()->concat($heroCampaigns->reverse()) as $cmp)
                     @php
+                        $catRaw = $cmp->category ?? $cmp->kategori ?? 'sosial';
+                        $catLabel = method_exists($cmp, 'categoryLabel') ? $cmp->categoryLabel() : (\App\Models\Campaign::CATEGORIES[$catRaw] ?? (is_string($catRaw) ? $catRaw : 'Umum'));
                         $img = $cmp->cover_path ?? $cmp->gambar ?? '';
-                        if (method_exists($cmp, 'coverUrl')) {
-                            $img = $cmp->coverUrl();
-                        } elseif (!empty($img) && !Str::startsWith($img, 'http')) {
+                        if (!empty($img) && !Str::startsWith($img, 'http')) {
                             $img = asset('storage/' . $img);
-                        } elseif (empty($img)) {
-                            $img = asset('images/no-cover.svg');
+                        }
+                        if (empty($img)) {
+                            $img = match($catRaw) {
+                                'bencana' => 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80',
+                                'pendidikan' => 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+                                'kesehatan' => 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80',
+                                'infrastruktur' => 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80',
+                                'lingkungan' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+                                default => 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80',
+                            };
                         }
                         $title = $cmp->title ?? $cmp->judul ?? '';
                         $summary = $cmp->summary ?? 'Program donasi terverifikasi dengan audit transparansi real-time.';
-                        $catRaw = $cmp->category ?? $cmp->kategori ?? '';
-                        $catLabel = method_exists($cmp, 'categoryLabel') ? $cmp->categoryLabel() : (\App\Models\Campaign::CATEGORIES[$catRaw] ?? (is_string($catRaw) ? $catRaw : 'Umum'));
                         $collected = $cmp->collected_amount ?? $cmp->terkumpul ?? 0;
                         $target = $cmp->target_amount ?? $cmp->target_dana ?? 1;
                         $pct = $target > 0 ? min(100, round(($collected / $target) * 100)) : 100;
@@ -271,18 +283,24 @@
             <div class="flex flex-col gap-6 animate-hero-marquee-up w-72 shrink-0">
                 @foreach ($heroCampaigns->concat($heroCampaigns) as $cmp)
                     @php
+                        $catRaw = $cmp->category ?? $cmp->kategori ?? 'sosial';
+                        $catLabel = method_exists($cmp, 'categoryLabel') ? $cmp->categoryLabel() : (\App\Models\Campaign::CATEGORIES[$catRaw] ?? (is_string($catRaw) ? $catRaw : 'Umum'));
                         $img = $cmp->cover_path ?? $cmp->gambar ?? '';
-                        if (method_exists($cmp, 'coverUrl')) {
-                            $img = $cmp->coverUrl();
-                        } elseif (!empty($img) && !Str::startsWith($img, 'http')) {
+                        if (!empty($img) && !Str::startsWith($img, 'http')) {
                             $img = asset('storage/' . $img);
-                        } elseif (empty($img)) {
-                            $img = asset('images/no-cover.svg');
+                        }
+                        if (empty($img)) {
+                            $img = match($catRaw) {
+                                'bencana' => 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80',
+                                'pendidikan' => 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+                                'kesehatan' => 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80',
+                                'infrastruktur' => 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80',
+                                'lingkungan' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+                                default => 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80',
+                            };
                         }
                         $title = $cmp->title ?? $cmp->judul ?? '';
                         $summary = $cmp->summary ?? 'Program donasi terverifikasi dengan audit transparansi real-time.';
-                        $catRaw = $cmp->category ?? $cmp->kategori ?? '';
-                        $catLabel = method_exists($cmp, 'categoryLabel') ? $cmp->categoryLabel() : (\App\Models\Campaign::CATEGORIES[$catRaw] ?? (is_string($catRaw) ? $catRaw : 'Umum'));
                         $collected = $cmp->collected_amount ?? $cmp->terkumpul ?? 0;
                         $target = $cmp->target_amount ?? $cmp->target_dana ?? 1;
                         $pct = $target > 0 ? min(100, round(($collected / $target) * 100)) : 100;
@@ -293,11 +311,7 @@
                     <article class="hero-marquee-card flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#1b182a] shadow-xl w-72 shrink-0">
                         {{-- Cover Image --}}
                         <div class="relative aspect-[16/9] overflow-hidden bg-[#12101c]">
-                            @if (!empty($img))
-                                <img src="{{ $img }}" alt="{{ $title }}" onerror="this.onerror=null;this.src='{{ asset('images/no-cover.svg') }}';" class="h-full w-full object-cover">
-                            @else
-                                <img src="{{ asset('images/no-cover.svg') }}" alt="{{ $title }}" class="h-full w-full object-cover">
-                            @endif
+                            <img src="{{ $img }}" alt="{{ $title }}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80';" class="h-full w-full object-cover">
                             <div class="absolute inset-0 bg-[#12101c]/30"></div>
                             <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
                                 <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[9px] font-black tracking-wider text-black uppercase shadow-sm">OPEN</span>
@@ -337,18 +351,24 @@
             <div class="flex flex-col gap-6 animate-hero-marquee-down w-72 shrink-0 -mt-32">
                 @foreach ($heroCampaigns->reverse()->concat($heroCampaigns->reverse()) as $cmp)
                     @php
+                        $catRaw = $cmp->category ?? $cmp->kategori ?? 'sosial';
+                        $catLabel = method_exists($cmp, 'categoryLabel') ? $cmp->categoryLabel() : (\App\Models\Campaign::CATEGORIES[$catRaw] ?? (is_string($catRaw) ? $catRaw : 'Umum'));
                         $img = $cmp->cover_path ?? $cmp->gambar ?? '';
-                        if (method_exists($cmp, 'coverUrl')) {
-                            $img = $cmp->coverUrl();
-                        } elseif (!empty($img) && !Str::startsWith($img, 'http')) {
+                        if (!empty($img) && !Str::startsWith($img, 'http')) {
                             $img = asset('storage/' . $img);
-                        } elseif (empty($img)) {
-                            $img = asset('images/no-cover.svg');
+                        }
+                        if (empty($img)) {
+                            $img = match($catRaw) {
+                                'bencana' => 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80',
+                                'pendidikan' => 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+                                'kesehatan' => 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80',
+                                'infrastruktur' => 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80',
+                                'lingkungan' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+                                default => 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80',
+                            };
                         }
                         $title = $cmp->title ?? $cmp->judul ?? '';
                         $summary = $cmp->summary ?? 'Program donasi terverifikasi dengan audit transparansi real-time.';
-                        $catRaw = $cmp->category ?? $cmp->kategori ?? '';
-                        $catLabel = method_exists($cmp, 'categoryLabel') ? $cmp->categoryLabel() : (\App\Models\Campaign::CATEGORIES[$catRaw] ?? (is_string($catRaw) ? $catRaw : 'Umum'));
                         $collected = $cmp->collected_amount ?? $cmp->terkumpul ?? 0;
                         $target = $cmp->target_amount ?? $cmp->target_dana ?? 1;
                         $pct = $target > 0 ? min(100, round(($collected / $target) * 100)) : 100;
@@ -359,11 +379,7 @@
                     <article class="hero-marquee-card flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#1b182a] shadow-xl w-72 shrink-0">
                         {{-- Cover Image --}}
                         <div class="relative aspect-[16/9] overflow-hidden bg-[#12101c]">
-                            @if (!empty($img))
-                                <img src="{{ $img }}" alt="{{ $title }}" onerror="this.onerror=null;this.src='{{ asset('images/no-cover.svg') }}';" class="h-full w-full object-cover">
-                            @else
-                                <img src="{{ asset('images/no-cover.svg') }}" alt="{{ $title }}" class="h-full w-full object-cover">
-                            @endif
+                            <img src="{{ $img }}" alt="{{ $title }}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80';" class="h-full w-full object-cover">
                             <div class="absolute inset-0 bg-[#12101c]/30"></div>
                             <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
                                 <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[9px] font-black tracking-wider text-black uppercase shadow-sm">OPEN</span>

@@ -90,11 +90,13 @@ class HomeController extends Controller
 
         $campaigns = $query->take(16)->get();
 
-        // 3 Feature Banners for Hero
+        // Featured Banners for Hero Carousel (Only campaigns with valid cover photos)
         $heroCampaigns = Campaign::published()
-            ->with(['user:id,name,organization'])
+            ->whereNotNull('cover_path')
+            ->where('cover_path', '!=', '')
+            ->with(['user:id,name,organization,verification_status', 'paidDonations:id,campaign_id'])
             ->orderByDesc('collected_amount')
-            ->take(3)
+            ->take(8)
             ->get();
 
         $stats = [
@@ -106,14 +108,8 @@ class HomeController extends Controller
 
         $categories = Campaign::CATEGORIES;
 
-        // Versioning logic for A/B comparison (v=1 vs v=2)
-        if ($request->has('v')) {
-            session(['dt_home_version' => $request->input('v')]);
-        }
-        $version = session('dt_home_version', '1');
+        $viewName = ($request->input('v') == '2' || $request->has('v2') || $request->has('v-2')) ? 'public.home-v2' : 'public.home';
 
-        $viewName = ($version === '2') ? 'public.home-v2' : 'public.home';
-
-        return view($viewName, compact('campaigns', 'heroCampaigns', 'stats', 'categories', 'version'));
+        return view($viewName, compact('campaigns', 'heroCampaigns', 'stats', 'categories'));
     }
 }
