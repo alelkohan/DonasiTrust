@@ -108,9 +108,28 @@
 
 
             {{-- Solid Neon CTA Button --}}
-            <a href="{{ route('register') }}" class="rounded-full bg-[#99ff04] px-4 py-1.5 text-xs font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 active:scale-95">
-                Jadi Pengaju+
-            </a>
+            @guest
+                <a href="{{ route('register') }}?role=pengaju" class="rounded-full bg-[#99ff04] px-4 py-1.5 text-xs font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 active:scale-95 flex items-center gap-1">
+                    <svg class="h-3.5 w-3.5 stroke-black" fill="none" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    <span>Galang Dana</span>
+                </a>
+            @else
+                @if ($u->isPengaju())
+                    <a href="{{ route('pengaju.kampanye.create') }}" class="rounded-full bg-[#99ff04] px-4 py-1.5 text-xs font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 active:scale-95 flex items-center gap-1">
+                        <svg class="h-3.5 w-3.5 stroke-black" fill="none" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        <span>Buat Kampanye</span>
+                    </a>
+                @elseif ($u->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" class="rounded-full bg-[#99ff04] px-4 py-1.5 text-xs font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 active:scale-95 flex items-center gap-1">
+                        <span>Panel Admin</span>
+                    </a>
+                @else
+                    <a href="{{ route('verifikasi.identitas') }}" class="rounded-full bg-[#99ff04] px-4 py-1.5 text-xs font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 active:scale-95 flex items-center gap-1">
+                        <svg class="h-3.5 w-3.5 stroke-black" fill="none" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        <span>Galang Dana</span>
+                    </a>
+                @endif
+            @endguest
 
             @guest
                 <a href="{{ route('login') }}" class="rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold text-white hover:bg-white/20 transition-all">
@@ -195,9 +214,25 @@
                 </template>
             </button>
 
-            <a href="{{ route('register') }}" class="rounded-full bg-[#99ff04] px-3 py-1 text-[11px] font-black text-black">
-                + Pengaju
-            </a>
+            @guest
+                <a href="{{ route('register') }}?role=pengaju" class="rounded-full bg-[#99ff04] px-3 py-1 text-[11px] font-black text-black">
+                    + Galang Dana
+                </a>
+            @else
+                @if ($u->isPengaju())
+                    <a href="{{ route('pengaju.kampanye.create') }}" class="rounded-full bg-[#99ff04] px-3 py-1 text-[11px] font-black text-black">
+                        + Kampanye
+                    </a>
+                @elseif ($u->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" class="rounded-full bg-[#99ff04] px-3 py-1 text-[11px] font-black text-black">
+                        Admin
+                    </a>
+                @else
+                    <a href="{{ route('verifikasi.identitas') }}" class="rounded-full bg-[#99ff04] px-3 py-1 text-[11px] font-black text-black">
+                        + Galang Dana
+                    </a>
+                @endif
+            @endguest
 
             <button type="button" @click="open = !open" class="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-[#231f36] text-slate-300">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -244,8 +279,8 @@
                 <a href="{{ route('login') }}" class="w-full text-center rounded-xl border border-white/20 bg-white/10 py-2.5 text-xs font-extrabold text-white hover:bg-white/20 transition-all">
                     Masuk Akun
                 </a>
-                <a href="{{ route('register') }}" class="w-full text-center rounded-xl bg-[#99ff04] py-2.5 text-xs font-black text-black hover:bg-[#84e000] transition-all">
-                    Daftar Sebagai Pengaju+
+                <a href="{{ route('register') }}?role=pengaju" class="w-full text-center rounded-xl bg-[#99ff04] py-2.5 text-xs font-black text-black hover:bg-[#84e000] transition-all">
+                    Galang Dana (Buat Kampanye)
                 </a>
             @else
                 <a href="{{ $u->homeRoute() }}" class="w-full flex items-center justify-center gap-2 rounded-xl bg-[#99ff04] py-2.5 text-xs font-black text-black">
