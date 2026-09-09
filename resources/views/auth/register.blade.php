@@ -40,6 +40,27 @@
             @error('role') <p class="mt-1 text-xs font-bold text-rose-400">{{ $message }}</p> @enderror
         </div>
 
+        {{-- Dynamic Role Information Banner --}}
+        <div x-show="role === 'donatur'" x-cloak class="rounded-2xl border border-[#99ff04]/30 bg-[#99ff04]/10 p-3.5 text-xs text-[#99ff04] flex items-start gap-2.5 shadow-md">
+            <svg class="h-4 w-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+                <strong class="font-extrabold text-white">Akun Donatur Langsung Aktif:</strong>
+                <p class="mt-0.5 text-[11px] text-slate-300 leading-relaxed">Pendaftaran cepat tanpa upload KTP. Anda dapat langsung berdonasi, melacak kuitansi digital, dan mengunduh sertifikat.</p>
+            </div>
+        </div>
+
+        <div x-show="role === 'pengaju'" x-cloak class="rounded-2xl border border-amber-400/30 bg-amber-400/10 p-3.5 text-xs text-amber-300 flex items-start gap-2.5 shadow-md">
+            <svg class="h-4 w-4 shrink-0 mt-0.5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <div>
+                <strong class="font-extrabold text-white">Registrasi 2-Tahap (Verifikasi Identitas KTP):</strong>
+                <p class="mt-0.5 text-[11px] text-slate-300 leading-relaxed">Buat akun dasar sekarang. Saat akan membuat kampanye di dashboard, Anda akan diminta mengunggah KTP &amp; Rekening Bank untuk kebutuhan verifikasi keamanan publik.</p>
+            </div>
+        </div>
+
         {{-- Full Name --}}
         <div>
             <label for="name" class="block text-xs font-extrabold uppercase tracking-wider text-slate-300 mb-1.5">
