@@ -12,9 +12,8 @@
         <a href="{{ route('kampanye.show', $campaign) }}" class="block h-full w-full">
             <img src="{{ $campaign->coverUrl() }}" alt="{{ $campaign->title }}"
                  loading="lazy"
-                 onerror="this.onerror=null;this.src='{{ asset('images/no-cover.svg') }}';"
+                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80';"
                  class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
-            <div class="absolute inset-0 bg-[#12101c]/40 opacity-60 group-hover:opacity-30 transition-opacity"></div>
         </a>
 
         {{-- Top Left Badges (Solid VGen Style) --}}

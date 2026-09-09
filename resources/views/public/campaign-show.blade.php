@@ -65,9 +65,8 @@
             <div class="rounded-3xl border border-white/10 bg-[#1b182a] overflow-hidden shadow-2xl">
                 <div class="aspect-[16/9] bg-[#12101c] relative overflow-hidden">
                     <img src="{{ $campaign->coverUrl() }}" alt="{{ $campaign->title }}"
-                         onerror="this.onerror=null;this.src='{{ asset('images/no-cover.svg') }}';"
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80';"
                          class="h-full w-full object-cover">
-                    <div class="absolute inset-0 bg-[#12101c]/30"></div>
                 </div>
 
                 <div class="p-6 sm:p-8">

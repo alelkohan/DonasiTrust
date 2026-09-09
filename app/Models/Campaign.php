@@ -192,7 +192,7 @@ class Campaign extends Model
         $this->save();
     }
 
-    /** URL gambar sampul/banner kampanye dengan fallback gambar placeholder lokal jika belum ada sampul. */
+    /** URL gambar sampul/banner kampanye dengan fallback gambar kategori Unsplash jika belum ada sampul. */
     public function coverUrl(): string
     {
         if ($this->cover_path && (str_starts_with($this->cover_path, 'http://') || str_starts_with($this->cover_path, 'https://'))) {
@@ -203,7 +203,14 @@ class Campaign extends Model
             return asset('storage/'.$this->cover_path);
         }
 
-        return asset('images/no-cover.svg');
+        return match ($this->category) {
+            'bencana' => 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80',
+            'pendidikan' => 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+            'kesehatan' => 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80',
+            'infrastruktur' => 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80',
+            'lingkungan' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+            default => 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80',
+        };
     }
 
     /** Cek apakah kampanye sudah memiliki foto sampul. */

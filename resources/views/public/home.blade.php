@@ -434,7 +434,7 @@
     </div>
 
     {{-- Campaign Grid 3 Columns --}}
-    <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="200" id="campaign-grid-container-v2" class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 min-h-[300px] transition-all">
+    <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="200" id="campaign-grid-container-v2" class="grid gap-6 sm:grid-cols-2 md:grid-cols-4 min-h-[300px] transition-all">
         @include('partials.campaign-grid')
     </div>
 
