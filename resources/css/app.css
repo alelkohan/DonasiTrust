@@ -86,6 +86,7 @@
 
 /* Comprehensive Global Light Mode Overrides */
 html.theme-light {
+
   /* Surfaces & Backgrounds - Exact & Wildcard matches for arbitrary opacities */
   .bg-\[\#12101c\],
   .bg-\[\#1b182a\],
@@ -151,29 +152,34 @@ html.theme-light {
   .text-amber-200,
   .text-amber-300,
   .text-amber-400 {
-    color: #92400e !important; /* amber-800 */
+    color: #92400e !important;
+    /* amber-800 */
   }
 
   .text-emerald-200,
   .text-emerald-300,
   .text-emerald-400 {
-    color: #065f46 !important; /* emerald-800 */
+    color: #065f46 !important;
+    /* emerald-800 */
   }
 
   .text-sky-200,
   .text-sky-300,
   .text-sky-400 {
-    color: #0369a1 !important; /* sky-700 */
+    color: #0369a1 !important;
+    /* sky-700 */
   }
 
   .text-rose-200,
   .text-rose-300,
   .text-rose-400 {
-    color: #be123c !important; /* rose-700 */
+    color: #be123c !important;
+    /* rose-700 */
   }
 
   .text-\[\#99ff04\] {
-    color: #065f46 !important; /* Rich Dark Forest Emerald with AAA contrast on white/slate-50 */
+    color: #065f46 !important;
+    /* Rich Dark Forest Emerald with AAA contrast on white/slate-50 */
   }
 
   /* Preserve black text on bright neon lime elements */
@@ -188,26 +194,34 @@ html.theme-light {
   /* Status Alert Box Backgrounds in Light Mode */
   [class*="bg-amber-500/10"],
   [class*="bg-amber-500/15"] {
-    background-color: #fef3c7 !important; /* amber-100 */
-    border-color: #fcd34d !important; /* amber-300 */
+    background-color: #fef3c7 !important;
+    /* amber-100 */
+    border-color: #fcd34d !important;
+    /* amber-300 */
   }
 
   [class*="bg-emerald-500/10"],
   [class*="bg-emerald-500/15"] {
-    background-color: #d1fae5 !important; /* emerald-100 */
-    border-color: #6ee7b7 !important; /* emerald-300 */
+    background-color: #d1fae5 !important;
+    /* emerald-100 */
+    border-color: #6ee7b7 !important;
+    /* emerald-300 */
   }
 
   [class*="bg-rose-500/10"],
   [class*="bg-rose-500/15"] {
-    background-color: #ffe4e6 !important; /* rose-100 */
-    border-color: #fecdd3 !important; /* rose-200 */
+    background-color: #ffe4e6 !important;
+    /* rose-100 */
+    border-color: #fecdd3 !important;
+    /* rose-200 */
   }
 
   [class*="bg-sky-500/10"],
   [class*="bg-sky-500/15"] {
-    background-color: #e0f2fe !important; /* sky-100 */
-    border-color: #bae6fd !important; /* sky-200 */
+    background-color: #e0f2fe !important;
+    /* sky-100 */
+    border-color: #bae6fd !important;
+    /* sky-200 */
   }
 
   /* Dashboard Nav Sidebar in Light Mode */
@@ -298,8 +312,10 @@ html.theme-light {
   html.theme-light .brand-logo-text {
     color: #0f172a !important;
   }
+
   html.theme-light .brand-trust-text {
-    color: #065f46 !important; /* Rich Dark Forest Emerald - AAA contrast ratio (7.2:1) on white */
+    color: #065f46 !important;
+    /* Rich Dark Forest Emerald - AAA contrast ratio (7.2:1) on white */
     font-weight: 900 !important;
   }
 
@@ -307,11 +323,14 @@ html.theme-light {
   html.theme-light .nav-link-item {
     color: #475569 !important;
   }
+
   html.theme-light .nav-link-item:hover {
     color: #0f172a !important;
   }
+
   html.theme-light .nav-link-item.is-active {
-    color: #065f46 !important; /* Rich Dark Forest Emerald with high contrast */
+    color: #065f46 !important;
+    /* Rich Dark Forest Emerald with high contrast */
     background-color: rgba(6, 95, 70, 0.1) !important;
     border-radius: 9999px;
   }
@@ -324,16 +343,19 @@ html.theme-light {
     border-color: #99ff04 !important;
     box-shadow: 0 4px 10px rgba(153, 255, 4, 0.4) !important;
   }
+
   html.theme-light .category-btn-inactive,
   html.theme-light button.category-btn-inactive,
   html.theme-light a.category-btn-inactive {
     background-color: transparent !important;
     background: transparent !important;
     color: #0f172a !important;
-    border-color: #334155 !important; /* Dark text and dark outline border */
+    border-color: #334155 !important;
+    /* Dark text and dark outline border */
     font-weight: 800 !important;
     box-shadow: none !important;
   }
+
   html.theme-light .category-btn-inactive:hover,
   html.theme-light button.category-btn-inactive:hover,
   html.theme-light a.category-btn-inactive:hover {
@@ -353,6 +375,7 @@ html.theme-light {
     border-color: rgba(0, 0, 0, 0.15) !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
   }
+
   html.theme-light .pilar-icon-box svg {
     color: #000000 !important;
     stroke: #000000 !important;
@@ -360,17 +383,20 @@ html.theme-light {
 }
 
 @layer components {
+
   /* Category Pill Utilities */
   .category-btn-active {
     background-color: #99ff04;
     color: #000000;
     border-color: #99ff04;
   }
+
   .category-btn-inactive {
     background-color: #1b182a;
     color: #cbd5e1;
     border-color: rgba(255, 255, 255, 0.1);
   }
+
   .category-btn-inactive:hover {
     background-color: rgba(255, 255, 255, 0.15);
     color: #ffffff;
@@ -418,8 +444,7 @@ html.theme-light {
   }
 
   .dt-btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold
-           transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .dt-btn-primary {
@@ -509,6 +534,7 @@ html.theme-light {
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+
   .scrollbar-none {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -583,6 +609,7 @@ html.theme-light a.category-btn-inactive:hover {
   background-color: #99ff04 !important;
   color: #000000 !important;
 }
+
 .nav-icon-box svg {
   stroke: #000000 !important;
   color: #000000 !important;
@@ -592,6 +619,7 @@ html.theme-light nav.fixed.bottom-0 .mobile-nav-item.is-active span.truncate {
   color: #065f46 !important;
   font-weight: 900 !important;
 }
+
 html.theme-light nav.fixed.bottom-0 .mobile-nav-item:not(.is-active) span.truncate {
   color: #64748b !important;
 }
@@ -600,13 +628,23 @@ html.theme-light nav.fixed.bottom-0 .mobile-nav-item:not(.is-active) span.trunca
    Auth Hero Infinite Campaign Marquee & Theme Adaptation
 ------------------------------------------------------------------------- */
 @keyframes hero-marquee-up {
-  0% { transform: translateY(0%); }
-  100% { transform: translateY(-50%); }
+  0% {
+    transform: translateY(0%);
+  }
+
+  100% {
+    transform: translateY(-50%);
+  }
 }
 
 @keyframes hero-marquee-down {
-  0% { transform: translateY(-50%); }
-  100% { transform: translateY(0%); }
+  0% {
+    transform: translateY(-50%);
+  }
+
+  100% {
+    transform: translateY(0%);
+  }
 }
 
 .animate-hero-marquee-up {
@@ -769,8 +807,3 @@ html.theme-light .mobile-nav-drawer a:not(.bg-\[\#99ff04\]):hover {
   background-color: #f1f5f9 !important;
   color: #0f172a !important;
 }
-
-
-
-
-
