@@ -5,6 +5,7 @@
 @section('content')<div class="w-full py-8"
      x-data="{
          batal: false,
+         sideModalTransparansi: false,
          bukaBatal() {
              this.batal = true;
          },
@@ -370,11 +371,11 @@
                     </div>
                 </dl>
 
-                <a href="{{ route('kampanye.transparansi', $campaign) }}"
-                   class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-[#231f36] px-4 py-3 text-xs font-black text-slate-200 hover:text-white hover:bg-white/10 transition-all">
-                    <svg class="h-4 w-4 text-[#99ff04]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5m0 14h16M8 15V9m4 6V7m4 8v-4"/></svg>
-                    Lihat Ledger Transparansi
-                </a>
+                <button type="button" @click="sideModalTransparansi = true"
+                        class="mt-5 inline-flex w-full items-center justify-center gap-2.5 rounded-2xl border border-[#99ff04]/30 bg-[#99ff04]/10 px-4 py-3.5 text-xs font-black text-[#99ff04] hover:bg-[#99ff04] hover:text-black transition-all shadow-lg group cursor-pointer">
+                    <svg class="h-4 w-4 transition-transform group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 19V5m0 14h16M8 15V9m4 6V7m4 8v-4"/></svg>
+                    <span>Rincian Penggunaan Dana</span>
+                </button>
             </div>
 
             @livewire('donation-form', ['campaign' => $campaign])
@@ -445,5 +446,193 @@
             </div>
         </div>
     @endif
+
+    {{-- SIDE MODAL RINCIAN PENGGUNAAN DANA (TRANSPARANSI) --}}
+    <div x-show="sideModalTransparansi" x-cloak
+         class="fixed inset-0 z-[100] flex justify-end"
+         role="dialog" aria-modal="true"
+         @keydown.escape.window="sideModalTransparansi = false">
+
+        {{-- Backdrop blur & darken --}}
+        <div x-show="sideModalTransparansi"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-black/80 backdrop-blur-md"
+             @click="sideModalTransparansi = false"
+             aria-hidden="true"></div>
+
+        {{-- Drawer Container (Right side slide-over) --}}
+        <div x-show="sideModalTransparansi"
+             x-transition:enter="transition ease-out duration-300 transform sm:duration-500"
+             x-transition:enter-start="translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="transition ease-in duration-200 transform sm:duration-300"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="translate-x-full"
+             class="relative w-full max-w-2xl bg-[#12101c] border-l border-white/15 p-6 sm:p-8 shadow-2xl z-10 h-full overflow-y-auto flex flex-col custom-scrollbar">
+
+            {{-- Header --}}
+            <div class="flex items-start justify-between border-b border-white/10 pb-5">
+                <div>
+                    <span class="inline-block rounded bg-[#99ff04] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-black mb-2">
+                        Real-Time Transparansi
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-black text-white">Rincian Penggunaan Dana</h2>
+                    <p class="mt-1 text-xs text-slate-300 line-clamp-1">{{ $campaign->title }}</p>
+                </div>
+                <button type="button" @click="sideModalTransparansi = false"
+                        class="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white transition-colors cursor-pointer">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            {{-- Content Scrollable --}}
+            <div class="flex-1 space-y-6 py-6">
+
+                @php
+                    $terkumpul = $campaign->collected_amount;
+                    $tercairkan = $campaign->disbursed_amount;
+                    $saldo = $campaign->remainingBalance();
+                    $totalBar = max(1, $terkumpul);
+                @endphp
+
+                {{-- Posisi Dana --}}
+                <div class="rounded-3xl border border-white/10 bg-[#1b182a] p-5 shadow-xl">
+                    <h3 class="text-sm font-black text-white">Posisi Dana Saat Ini</h3>
+
+                    <div class="mt-4 flex h-3.5 w-full gap-0.5 overflow-hidden rounded-full bg-[#12101c] p-0.5 border border-white/5">
+                        <div class="h-full rounded-l-full bg-[#99ff04]" style="width: {{ round($tercairkan / $totalBar * 100, 2) }}%"></div>
+                        <div class="h-full rounded-r-full bg-amber-400" style="width: {{ round($saldo / $totalBar * 100, 2) }}%"></div>
+                    </div>
+
+                    <dl class="mt-5 grid gap-3 sm:grid-cols-3">
+                        <div class="rounded-2xl border border-white/5 bg-[#231f36] p-3.5">
+                            <dt class="flex items-center gap-1.5 text-[10px] font-extrabold tracking-wide text-slate-400 uppercase">
+                                <span class="h-2 w-2 rounded-full bg-slate-500"></span> Terkumpul
+                            </dt>
+                            <dd class="mt-1.5 text-base font-black text-white tabular-nums">{{ rupiah($terkumpul) }}</dd>
+                            <dd class="mt-0.5 text-[10px] text-slate-400">{{ number_format($totalDonorsCount, 0, ',', '.') }} donatur</dd>
+                        </div>
+                        <div class="rounded-2xl border border-white/5 bg-[#231f36] p-3.5">
+                            <dt class="flex items-center gap-1.5 text-[10px] font-extrabold tracking-wide text-slate-400 uppercase">
+                                <span class="h-2 w-2 rounded-full bg-[#99ff04]"></span> Dicairkan
+                            </dt>
+                            <dd class="mt-1.5 text-base font-black text-[#99ff04] tabular-nums">{{ rupiah($tercairkan) }}</dd>
+                            <dd class="mt-0.5 text-[10px] text-slate-400">acc admin platform</dd>
+                        </div>
+                        <div class="rounded-2xl border border-white/5 bg-[#231f36] p-3.5">
+                            <dt class="flex items-center gap-1.5 text-[10px] font-extrabold tracking-wide text-slate-400 uppercase">
+                                <span class="h-2 w-2 rounded-full bg-amber-400"></span> Tertahan
+                            </dt>
+                            <dd class="mt-1.5 text-base font-black text-amber-300 tabular-nums">{{ rupiah($saldo) }}</dd>
+                            <dd class="mt-0.5 text-[10px] text-slate-400">aman di sistem</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                {{-- Tahapan Pencairan --}}
+                <div class="rounded-3xl border border-white/10 bg-[#1b182a] p-5 shadow-xl">
+                    <h3 class="text-sm font-black text-white">Tahapan Pencairan Dana</h3>
+                    <p class="mt-1 text-xs text-slate-400">
+                        Dana dicairkan bertahap dan tahap berikutnya terkunci sampai laporan nota disetujui.
+                    </p>
+
+                    <ol class="mt-4 space-y-2.5">
+                        @foreach ($campaign->milestones as $milestone)
+                            @php
+                                $done = in_array($milestone->status, ['disbursed', 'reported'], true);
+                                $active = in_array($milestone->status, ['available', 'requested', 'approved'], true);
+                            @endphp
+                            <li @class([
+                                'flex items-center justify-between gap-3 rounded-2xl border p-3 text-xs',
+                                'border-[#99ff04]/30 bg-[#99ff04]/5' => $done,
+                                'border-amber-500/30 bg-amber-500/5' => $active,
+                                'border-white/10 bg-[#231f36]' => ! $done && ! $active,
+                            ])>
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <span @class([
+                                        'grid h-7 w-7 shrink-0 place-items-center rounded-xl text-xs font-black',
+                                        'bg-[#99ff04] text-black' => $done,
+                                        'bg-amber-400 text-black' => $active,
+                                        'bg-white/10 text-slate-400' => ! $done && ! $active,
+                                    ])>{{ $milestone->sequence }}</span>
+                                    <div class="min-w-0">
+                                        <p class="font-bold text-white truncate">{{ $milestone->title }}</p>
+                                        <p class="text-[10px] text-slate-400">{{ $milestone->statusLabel() }}</p>
+                                    </div>
+                                </div>
+                                <p class="font-black text-[#99ff04] tabular-nums shrink-0">{{ rupiah($milestone->amount) }}</p>
+                            </li>
+                        @endforeach
+                    </ol>
+                </div>
+
+                {{-- Riwayat Pencairan --}}
+                <div class="rounded-3xl border border-white/10 bg-[#1b182a] p-5 shadow-xl">
+                    <h3 class="text-sm font-black text-white">Riwayat Pencairan ke Pengaju</h3>
+                    @if ($disbursements->isEmpty())
+                        <p class="mt-3 text-xs text-slate-400">Belum ada pencairan dana yang dilakukan.</p>
+                    @else
+                        <ul class="mt-3 divide-y divide-white/5 text-xs">
+                            @foreach ($disbursements as $d)
+                                <li class="py-3 flex flex-wrap items-center justify-between gap-2">
+                                    <div>
+                                        <p class="font-bold text-white">Tahap {{ $d->milestone?->sequence ?? '—' }} &middot; <span class="font-mono text-slate-300">{{ $d->reference }}</span></p>
+                                        <p class="text-[11px] text-slate-400 mt-0.5">{{ $d->purpose }}</p>
+                                        <p class="text-[10px] text-slate-500">Tujuan: {{ $d->maskedPayee() ?? '—' }}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-black text-[#99ff04] tabular-nums">{{ rupiah($d->amount) }}</p>
+                                        <span class="rounded bg-[#99ff04]/20 px-1.5 py-0.5 text-[9px] font-black text-[#99ff04] uppercase">{{ $d->statusLabel() }}</span>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+
+                {{-- Laporan Pengeluaran / Bukti Nota --}}
+                <div class="rounded-3xl border border-white/10 bg-[#1b182a] p-5 shadow-xl">
+                    <h3 class="text-sm font-black text-white">Laporan Pengeluaran &amp; Bukti Nota</h3>
+                    @if ($expenses->isEmpty())
+                        <p class="mt-3 text-xs text-slate-400">Belum ada laporan bukti pengeluaran yang diunggah.</p>
+                    @else
+                        <ul class="mt-3 divide-y divide-white/5 text-xs">
+                            @foreach ($expenses as $expense)
+                                <li class="py-3 flex flex-wrap items-start justify-between gap-2">
+                                    <div>
+                                        <p class="font-bold text-white">{{ $expense->title }}</p>
+                                        <p class="text-[10px] text-slate-400 mt-0.5">{{ $expense->spent_on->translatedFormat('d F Y') }}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-black text-white tabular-nums">{{ rupiah($expense->amount) }}</p>
+                                        @if ($expense->receipt_path)
+                                            <a href="{{ route('berkas.lpj', $expense) }}" target="_blank" rel="noopener" class="text-[11px] font-bold text-[#99ff04] hover:underline">Lihat nota &rarr;</a>
+                                        @endif
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+
+            </div>
+
+            {{-- Footer Link Full Page --}}
+            <div class="border-t border-white/10 pt-4 flex items-center justify-between gap-3">
+                <a href="{{ route('kampanye.transparansi', $campaign) }}" target="_blank" class="text-xs font-bold text-[#99ff04] hover:underline flex items-center gap-1">
+                    <span>Buka laporan di halaman penuh</span>
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+                <button type="button" @click="sideModalTransparansi = false" class="rounded-full bg-white/10 px-5 py-2 text-xs font-bold text-white hover:bg-white/20 transition-colors cursor-pointer">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection

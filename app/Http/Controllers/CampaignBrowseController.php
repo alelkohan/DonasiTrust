@@ -45,6 +45,17 @@ class CampaignBrowseController extends Controller
 
         $totalDonorsCount = $campaign->paidDonations()->count();
 
+        $disbursements = $campaign->disbursements()
+            ->with('milestone:id,title,sequence')
+            ->whereIn('status', ['approved', 'released'])
+            ->orderBy('created_at')
+            ->get();
+
+        $expenses = $campaign->expenseReports()
+            ->with('item:id,name')
+            ->orderByDesc('spent_on')
+            ->get();
+
         $pendingReference = session('pending_donation_'.$campaign->id);
         $pendingDonation = null;
 
@@ -72,7 +83,9 @@ class CampaignBrowseController extends Controller
             }
         }
 
-        return view('public.campaign-show', compact('campaign', 'recentDonations', 'pendingDonation', 'totalDonorsCount'));
+        return view('public.campaign-show', compact(
+            'campaign', 'recentDonations', 'pendingDonation', 'totalDonorsCount', 'disbursements', 'expenses'
+        ));
     }
 
     /** Endpoint JSON donatur ter-paginasi untuk modal 'Lihat Semua Donatur' */
