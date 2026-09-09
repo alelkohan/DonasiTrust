@@ -84,6 +84,19 @@
   }
 }
 
+/* Custom Text Selection / Highlight Color */
+::selection,
+*::selection {
+  background-color: #99ff04 !important;
+  color: #000000 !important;
+}
+
+::-moz-selection,
+*::-moz-selection {
+  background-color: #99ff04 !important;
+  color: #000000 !important;
+}
+
 /* Comprehensive Global Light Mode Overrides */
 html.theme-light {
 
