@@ -10,15 +10,20 @@
     isSearching: false,
     isLoadingCategory: false,
     isSticky: false,
+    heroScrollProgress: 0,
     searchHtml: '',
     initScroll() {
         const checkScroll = () => {
+            const scrollY = window.scrollY;
+            const maxScroll = 500;
+            this.heroScrollProgress = Math.min(1, Math.max(0, scrollY / maxScroll));
+
             const el = document.getElementById('static-navtab-v2');
             if (el) {
                 const rect = el.getBoundingClientRect();
                 this.isSticky = rect.top <= 60;
             } else {
-                this.isSticky = window.scrollY > 400;
+                this.isSticky = scrollY > 400;
             }
         };
         window.addEventListener('scroll', checkScroll, { passive: true });
@@ -128,13 +133,21 @@
 </div>
 
 {{-- -------------------------------------------------------------------------
-   SECTION 1: HERO SECTION (With Background Sliding Cards & Gradient Blur)
+   SECTION 1: HERO SECTION (3D Depth Parallax Shrink & Blur on Scroll)
 ------------------------------------------------------------------------- --}}
-<section class="hero-section-v2 relative bg-[#12101c] text-white overflow-hidden transition-colors duration-300" style="padding-top: 80px; padding-bottom: 70px;">
+<div class="sticky top-0 z-0 w-full overflow-hidden" style="perspective: 1200px; -webkit-perspective: 1200px;">
+    <section class="hero-section-v2 relative bg-[#12101c] text-white overflow-hidden transition-all duration-75 ease-out origin-center"
+             style="padding-top: 80px; padding-bottom: 90px;"
+             :style="`
+                 transform: perspective(1200px) scale(${1 - heroScrollProgress * 0.12}) translateZ(${-heroScrollProgress * 150}px) translateY(${heroScrollProgress * 40}px);
+                 filter: blur(${heroScrollProgress * 14}px);
+                 opacity: ${1 - heroScrollProgress * 0.85};
+                 will-change: transform, filter, opacity;
+             `">
     
-    {{-- Animated Background Sliding Cards Marquee --}}
+    {{-- Animated Background Sliding Cards Marquee (Shifted Right on Desktop for Text Legibility) --}}
     @if ($heroCampaigns->isNotEmpty())
-        <div class="hero-marquee-container absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-25 select-none flex justify-center gap-6 p-4" style="transform: rotate(-22deg) scale(1.45);">
+        <div class="hero-marquee-container absolute inset-0 lg:left-[8%] lg:right-0 z-0 overflow-hidden pointer-events-none opacity-25 select-none flex justify-center lg:justify-end gap-6 p-4" style="transform: rotate(-22deg) scale(1.45);">
             
             {{-- Column 1: Scrolls Up --}}
             <div class="flex flex-col gap-6 animate-hero-marquee-up w-72 shrink-0">
@@ -295,8 +308,11 @@
         </div>
     @endif
 
-    {{-- Gradient Blur Overlay Mask (Adaptive Theme Fade) --}}
+    {{-- Gradient Blur Overlay Mask (Adaptive Theme Fade from Bottom to Top) --}}
     <div class="hero-marquee-overlay-v2 absolute inset-0 z-1 backdrop-blur-[2px] pointer-events-none transition-colors duration-300"></div>
+    
+    {{-- Ambient Glow Backdrop --}}
+    <div class="pointer-events-none absolute left-1/3 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[600px] rounded-full bg-gradient-to-tr from-[#99ff04]/15 via-emerald-500/10 to-purple-600/10 blur-[130px] opacity-70 z-2"></div>
 
     <div class="relative z-10 w-full">
         
@@ -349,6 +365,13 @@
 
     </div>
 </section>
+</div>
+
+{{-- -------------------------------------------------------------------------
+   OVERLAPPING SHEET CONTAINER (Slides UP over the blurring 3D Hero on Scroll)
+------------------------------------------------------------------------- --}}
+<div class="hero-sheet-container relative z-20 bg-[#12101c] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] border-t border-white/10 shadow-[0_-25px_60px_rgba(0,0,0,0.8)] -mt-10 pt-4 pb-16 transition-colors duration-300">
+    <div class="max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8">
 
 {{-- -------------------------------------------------------------------------
    SECTION 2: 3-STEP VALUE PROPOSITION BAR (01 / 02 / 03)
@@ -540,7 +563,7 @@
             </div>
         </div>
     </div>
-</section>
+</div>
 
 </div>
 

@@ -865,3 +865,10 @@ html.theme-light .hero-section-v2 .text-slate-300 {
 html.theme-light .hero-marquee-overlay-v2 {
   background: linear-gradient(to right, rgba(248, 250, 252, 0.98) 0%, rgba(248, 250, 252, 0.82) 35%, rgba(248, 250, 252, 0.3) 65%, rgba(248, 250, 252, 0) 100%) !important;
 }
+
+/* Overlapping Sheet Container Theme Overrides */
+html.theme-light .hero-sheet-container {
+  background-color: #f8fafc !important;
+  border-top-color: #cbd5e1 !important;
+  box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.08) !important;
+}
