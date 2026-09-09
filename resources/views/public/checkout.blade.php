@@ -136,7 +136,7 @@
                 <div class="mt-6 rounded-2xl border border-[#99ff04]/30 bg-[#99ff04]/5 p-5">
                     <p class="text-xs font-black uppercase text-[#99ff04]">Mode Simulasi Instant Payment</p>
                     <p class="mt-1 text-xs leading-relaxed text-slate-300">
-                        Klik tombol di bawah untuk mensimulasikan webhooks sukses dan menguji penerbitan kuitansi HMAC.
+                        Klik tombol di bawah untuk mensimulasikan pembayaran berhasil dan menguji penerbitan kuitansi resmi.
                     </p>
 
                     <form method="POST" action="{{ route('donasi.simulasi', $donation) }}" class="mt-4">

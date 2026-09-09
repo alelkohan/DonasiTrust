@@ -429,14 +429,14 @@
             {{-- Badge --}}
             <div class="inline-flex items-center gap-2 rounded-full border border-[#99ff04]/30 bg-[#99ff04]/10 px-4 py-1.5 text-xs font-black text-[#99ff04] backdrop-blur-md mb-6">
                 <span class="h-2 w-2 rounded-full bg-[#99ff04] animate-pulse"></span>
-                Transparansi Finansial Berbasis Kriptografi
+                Platform Donasi Transparan & Terpercaya
             </div>
 
             <h2 class="text-3xl xl:text-4xl font-black leading-tight tracking-tight text-white transition-colors duration-300">
                 &ldquo;Terkumpul ratusan juta tidak ada artinya tanpa jaminan kejujuran.&rdquo;
             </h2>
             <p class="mt-4 text-base leading-relaxed text-slate-300 transition-colors duration-300">
-                Setiap rupiah yang masuk dan didistribusikan dikunci otomatis dengan bukti kuitansi HMAC-SHA256 &amp; audit pencairan bertahap per milestone.
+                Setiap rupiah yang disalurkan dicatat secara terbuka dan terverifikasi aman melalui bukti penggunaan yang sah.
             </p>
 
             {{-- 3 Pillars Stat Cards --}}
@@ -444,19 +444,19 @@
                 <div class="hero-glass-card rounded-2xl border border-white/10 bg-[#1b182a]/80 p-4 backdrop-blur-md transition-all hover:border-[#99ff04]/40">
                     <div class="card-sub text-xs font-bold uppercase tracking-wider text-slate-400">Pencairan</div>
                     <div class="card-title mt-1.5 text-sm font-extrabold text-white">Bertahap</div>
-                    <div class="card-sub mt-0.5 text-[11px] text-slate-400">Via Milestone RAB</div>
+                    <div class="card-sub mt-0.5 text-[11px] text-slate-400">Sesuai Progres Proyek</div>
                 </div>
 
                 <div class="hero-glass-card rounded-2xl border border-white/10 bg-[#1b182a]/80 p-4 backdrop-blur-md transition-all hover:border-[#99ff04]/40">
                     <div class="card-sub text-xs font-bold uppercase tracking-wider text-slate-400">Kuitansi</div>
-                    <div class="mt-1.5 text-sm font-extrabold text-[#99ff04]">HMAC-SHA256</div>
-                    <div class="card-sub mt-0.5 text-[11px] text-slate-400">Verifikasi Publik</div>
+                    <div class="mt-1.5 text-sm font-extrabold text-[#99ff04]">Bukti Sah</div>
+                    <div class="card-sub mt-0.5 text-[11px] text-slate-400">Terverifikasi Publik</div>
                 </div>
 
                 <div class="hero-glass-card rounded-2xl border border-white/10 bg-[#1b182a]/80 p-4 backdrop-blur-md transition-all hover:border-[#99ff04]/40">
-                    <div class="card-sub text-xs font-bold uppercase tracking-wider text-slate-400">Audit Ledger</div>
-                    <div class="card-title mt-1.5 text-sm font-extrabold text-white">Anti-Falsifikasi</div>
-                    <div class="card-sub mt-0.5 text-[11px] text-slate-400">Hash Rantai Terkunci</div>
+                    <div class="card-sub text-xs font-bold uppercase tracking-wider text-slate-400">Keamanan</div>
+                    <div class="card-title mt-1.5 text-sm font-extrabold text-white">Terpercaya</div>
+                    <div class="card-sub mt-0.5 text-[11px] text-slate-400">Bebas Manipulasi</div>
                 </div>
             </div>
         </div>

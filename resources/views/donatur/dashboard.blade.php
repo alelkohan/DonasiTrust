@@ -22,7 +22,7 @@
                         Halo, {{ auth()->user()->name }}
                     </h1>
                     <p class="mt-1 text-xs sm:text-sm font-medium text-slate-300">
-                        Jejak kebaikan &amp; bukti kuitansi terverifikasi HMAC-SHA256 tersimpan di sini.
+                        Jejak kebaikan &amp; bukti kuitansi terverifikasi resmi tersimpan di sini.
                     </p>
                 </div>
             </div>
@@ -53,7 +53,7 @@
             </div>
             <div class="mt-2 flex items-center gap-1.5 text-[11px] font-semibold text-[#99ff04]">
                 <span class="h-1.5 w-1.5 rounded-full bg-[#99ff04] animate-pulse"></span>
-                <span>Tercatat Dalam Ledger Publik</span>
+                <span>Tercatat Dalam Catatan Resmi</span>
             </div>
         </div>
 
