@@ -23,8 +23,8 @@
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
+        <env name="DB_CONNECTION" value="mysql"/>
+        <env name="DB_DATABASE" value="db_projectmanager"/>
         <env name="DB_URL" value=""/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
@@ -32,9 +32,8 @@
         <env name="DONASI_RECEIPT_SECRET" value="secret-untuk-pengujian-saja"/>
         <env name="PAYMENT_GATEWAY" value="mock"/>
         <env name="MOCK_WEBHOOK_TOKEN" value="token-uji"/>
-        <env name="ASSET_URL" value="/"/>
-        <env name="PULSE_ENABLED" value="false"/>
-        <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="ERROR_REPORTING" value="32759"/>
+        <env name="LOG_DEPRECATIONS_CHANNEL" value="null"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
     </php>
 </phpunit>
