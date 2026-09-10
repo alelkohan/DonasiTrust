@@ -274,131 +274,54 @@
     {{-- Ambient Glow Backdrop --}}
     <div class="pointer-events-none absolute left-1/3 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[600px] rounded-full bg-gradient-to-tr from-[#99ff04]/15 via-emerald-500/10 to-purple-600/10 blur-[130px] opacity-70 z-2"></div>
 
-    <div class="relative z-10 w-full max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="relative z-10 w-full">
         
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div class="max-w-2xl space-y-6">
             
-            {{-- Left Column: Hero Text & CTAs --}}
-            <div class="lg:col-span-6 space-y-6">
-                {{-- Small Subtitle Tag --}}
-                <div data-aos="fade-down" data-aos-duration="600" class="text-xs font-extrabold tracking-widest text-[#99ff04] uppercase flex items-center gap-2">
-                    <span class="h-1.5 w-1.5 rounded-full bg-[#99ff04]"></span>
-                    KEBAIKAN YANG BISA DITELUSURI
-                </div>
-
-                {{-- Main Title --}}
-                <h1 data-aos="fade-up" data-aos-duration="700" data-aos-delay="100" class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12]">
-                    Niat baikmu.<br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#99ff04] via-emerald-300 to-teal-200">Bukti nyatanya.</span>
-                </h1>
-
-                {{-- Subtitle Paragraph --}}
-                <p data-aos="fade-up" data-aos-duration="700" data-aos-delay="200" class="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
-                    Pantau donasimu dari dana terkumpul, pencairan bertahap, hingga bukti penggunaan real-time bergaransi audit.
-                </p>
-
-                {{-- CTA Buttons --}}
-                <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="300" class="pt-2 flex flex-wrap items-center gap-3.5">
-                    <a href="#kampanye-section" class="inline-flex items-center gap-2 rounded-xl bg-[#99ff04] px-6 py-3.5 text-sm font-black text-black shadow-lg shadow-[#99ff04]/20 hover:bg-[#84e000] hover:scale-[1.02] transition-all">
-                        <span>Jelajahi Kampanye</span>
-                        <svg class="h-4 w-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-                    </a>
-                    <a href="#cara-kerja" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10 transition-all">
-                        Lihat Cara Kerja
-                    </a>
-                </div>
-
-                {{-- Trust Indicators / Checklist --}}
-                <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="400" class="pt-2 flex flex-wrap items-center gap-6 text-xs sm:text-sm font-semibold text-slate-300">
-                    <div class="flex items-center gap-2">
-                        <span class="grid h-5 w-5 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04] font-black text-xs">
-                            ✓
-                        </span>
-                        <span>Pencairan bertahap</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="grid h-5 w-5 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04] font-black text-xs">
-                            ✓
-                        </span>
-                        <span>Bukti bisa diperiksa</span>
-                    </div>
-                </div>
+            {{-- Small Subtitle Tag --}}
+            <div data-aos="fade-down" data-aos-duration="600" class="text-xs font-extrabold tracking-widest text-slate-400 uppercase">
+                KEBAIKAN YANG BISA DITELUSURI
             </div>
 
-            {{-- Right Column: Interactive Featured Campaign Slider (Card Geser) --}}
-            <div class="lg:col-span-6 w-full overflow-hidden" data-aos="fade-left" data-aos-duration="800" data-aos-delay="200" x-data="{
-                scrollSlider(dir) {
-                    const el = this.$refs.heroCardSlider;
-                    if (el) {
-                        const amount = 310;
-                        el.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
-                    }
-                }
-            }">
-                <div class="flex items-center justify-between mb-3 px-1">
-                    <div class="flex items-center gap-2">
-                        <span class="relative flex h-2.5 w-2.5">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#99ff04] opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#99ff04]"></span>
-                        </span>
-                        <span class="text-xs font-black tracking-widest text-slate-200 uppercase">Kampanye Pilihan (Geser)</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <button @click="scrollSlider('left')" type="button" aria-label="Geser Kiri" class="grid h-8 w-8 place-items-center rounded-full border border-white/20 bg-black/60 text-white hover:bg-[#99ff04] hover:text-black transition-all shadow-md backdrop-blur-md">
-                            ‹
-                        </button>
-                        <button @click="scrollSlider('right')" type="button" aria-label="Geser Kanan" class="grid h-8 w-8 place-items-center rounded-full border border-white/20 bg-black/60 text-white hover:bg-[#99ff04] hover:text-black transition-all shadow-md backdrop-blur-md">
-                            ›
-                        </button>
-                    </div>
-                </div>
+            {{-- Main Title --}}
+            <h1 data-aos="fade-up" data-aos-duration="700" data-aos-delay="100" class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12]">
+                Niat baikmu.<br>
+                <span>Bukti nyatanya.</span>
+            </h1>
 
-                {{-- Horizontal Card Geser Container --}}
-                <div x-ref="heroCardSlider" class="flex gap-4 overflow-x-auto pb-4 pt-1 px-1 scrollbar-none snap-x snap-mandatory scroll-smooth pointer-events-auto">
-                    @foreach ($heroCampaigns as $cmp)
-                        @php
-                            $catRaw = $cmp->category ?? 'sosial';
-                            $catLabel = method_exists($cmp, 'categoryLabel') ? $cmp->categoryLabel() : ucfirst($catRaw);
-                            $img = method_exists($cmp, 'coverUrl') ? $cmp->coverUrl() : asset('storage/' . $cmp->cover_path);
-                            $collected = $cmp->collected_amount ?? 0;
-                            $target = $cmp->target_amount ?? 1;
-                            $pct = $target > 0 ? min(100, round(($collected / $target) * 100)) : 100;
-                        @endphp
-                        <a href="{{ route('kampanye.show', $cmp) }}" class="group hero-card-slider-item snap-start shrink-0 w-[270px] sm:w-[300px] rounded-2xl border border-white/20 bg-[#1e1b2e]/95 backdrop-blur-2xl shadow-2xl overflow-hidden hover:border-[#99ff04] hover:scale-[1.02] transition-all duration-300 block text-left">
-                            <div class="relative aspect-[16/9] overflow-hidden bg-slate-900">
-                                <img src="{{ $img }}" alt="{{ $cmp->title }}" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80';">
-                                <div class="absolute inset-0 bg-gradient-to-t from-[#1e1b2e] via-transparent to-black/40"></div>
-                                <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
-                                    <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[9px] font-black text-black uppercase tracking-wider shadow-sm">TERVERIFIKASI</span>
-                                    <span class="rounded bg-black/70 backdrop-blur-md px-2 py-0.5 text-[9px] font-extrabold text-white border border-white/10 uppercase">{{ $catLabel }}</span>
-                                </div>
-                            </div>
-                            <div class="p-4 flex flex-col justify-between">
-                                <div>
-                                    <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-[#99ff04] transition-colors line-clamp-1 leading-snug">{{ $cmp->title }}</h3>
-                                    <p class="mt-1 text-[11px] text-slate-400 line-clamp-2 leading-relaxed">{{ $cmp->summary }}</p>
-                                </div>
-                                <div class="mt-3.5 pt-2.5 border-t border-white/10">
-                                    <div class="flex items-center justify-between text-[11px] font-bold text-slate-300 mb-1">
-                                        <span>Terkumpul</span>
-                                        <span class="text-[#99ff04] font-black">{{ $pct }}%</span>
-                                    </div>
-                                    <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#2a253e]">
-                                        <div class="h-full rounded-full bg-gradient-to-r from-[#99ff04] to-emerald-400 transition-all duration-500" style="width: {{ $pct }}%"></div>
-                                    </div>
-                                    <div class="mt-2 flex items-center justify-between text-[11px]">
-                                        <span class="font-extrabold text-white">Rp {{ number_format($collected, 0, ',', '.') }}</span>
-                                        <span class="text-[10px] text-slate-400">Target Rp {{ number_format($target / 1000000, 0) }}Jt</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    @endforeach
+            {{-- Subtitle Paragraph --}}
+            <p data-aos="fade-up" data-aos-duration="700" data-aos-delay="200" class="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
+                Pantau donasimu dari dana terkumpul, pencairan bertahap, hingga bukti penggunaan.
+            </p>
+
+            {{-- CTA Buttons --}}
+            <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="300" class="pt-2 flex flex-wrap items-center gap-3.5">
+                <a href="#kampanye-section" class="inline-flex items-center gap-2 rounded-xl bg-[#99ff04] px-6 py-3.5 text-sm font-black text-black shadow-lg shadow-[#99ff04]/20 hover:bg-[#84e000] hover:scale-[1.02] transition-all">
+                    <span>Jelajahi Kampanye</span>
+                    <svg class="h-4 w-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                </a>
+                <a href="#cara-kerja" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10 transition-all">
+                    Lihat Cara Kerja
+                </a>
+            </div>
+
+            {{-- Trust Indicators / Checklist --}}
+            <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="400" class="pt-2 flex flex-wrap items-center gap-6 text-xs sm:text-sm font-semibold text-slate-300">
+                <div class="flex items-center gap-2">
+                    <span class="grid h-5 w-5 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04] font-black text-xs">
+                        ✓
+                    </span>
+                    <span>Pencairan bertahap</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="grid h-5 w-5 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04] font-black text-xs">
+                        ✓
+                    </span>
+                    <span>Bukti bisa diperiksa</span>
                 </div>
             </div>
 
         </div>
-
     </div>
 </section>
 </div>
