@@ -90,13 +90,11 @@ class HomeController extends Controller
 
         $campaigns = $query->take(16)->get();
 
-        // Featured Banners for Hero Carousel (Only campaigns with valid cover photos)
+        // Featured Banners for Hero Carousel & Slider
         $heroCampaigns = Campaign::published()
-            ->whereNotNull('cover_path')
-            ->where('cover_path', '!=', '')
             ->with(['user:id,name,organization,verification_status', 'paidDonations:id,campaign_id'])
             ->orderByDesc('collected_amount')
-            ->take(8)
+            ->take(12)
             ->get();
 
         $stats = [
