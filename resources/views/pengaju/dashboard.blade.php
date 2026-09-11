@@ -150,7 +150,31 @@
             <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Pencairan Menunggu</span>
             <div class="mt-2 text-2xl font-black text-amber-300 tabular-nums">{{ $pendingDisbursements }}</div>
             <div class="mt-1 text-[11px] font-medium text-slate-400">Dalam review admin</div>
+    </div>
+
+    {{-- Akun Terpadu: Ringkasan Donasi Pribadi Pengaju --}}
+    <div class="rounded-3xl border border-white/10 bg-gradient-to-r from-[#1b182a] via-[#231f36] to-[#1b182a] p-5 sm:p-6 shadow-xl backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <span class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#99ff04]/10 text-[#99ff04] border border-[#99ff04]/20 shadow-md">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </span>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-sm font-black text-white">Donasi Pribadi Anda</h2>
+                    <span class="rounded-full bg-[#99ff04]/10 border border-[#99ff04]/20 px-2 py-0.5 text-[10px] font-black text-[#99ff04]">
+                        Akun Terpadu
+                    </span>
+                </div>
+                <p class="mt-0.5 text-xs text-slate-400">
+                    Tercatat resmi: <strong class="text-white font-black">{{ rupiah($personalDonationStats['total'] ?? 0) }}</strong> ({{ $personalDonationStats['count'] ?? 0 }} transaksi donasi)
+                </p>
+            </div>
         </div>
+        <a href="{{ route('donatur.dashboard') }}" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-bold text-white hover:bg-[#99ff04] hover:text-black hover:border-[#99ff04] transition-all shrink-0">
+            <span>Lihat Riwayat Donasi & Kuitansi &rarr;</span>
+        </a>
     </div>
 
     {{-- Kampanye Saya List --}}

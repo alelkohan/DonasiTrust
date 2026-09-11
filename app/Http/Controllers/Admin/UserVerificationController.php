@@ -49,6 +49,12 @@ class UserVerificationController extends Controller
             $updateData['verification_status'] = User::VERIFICATION_VERIFIED;
             $updateData['verified_at'] = now();
 
+            // Akun Terpadu: Jika pengguna saat ini terdaftar sebagai donatur,
+            // otomatis tingkatkan peran menjadi pengaju agar bisa langsung membuat kampanye.
+            if ($user->isDonatur()) {
+                $updateData['role'] = User::ROLE_PENGAJU;
+            }
+
             // Jika ada pengajuan rekening baru yang sedang ditinjau, setujui dan jadikan rekening aktif
             if ($user->hasPendingPayoutAccount()) {
                 $updateData['bank_name'] = $user->pending_bank_name;

@@ -27,12 +27,25 @@
                 </div>
             </div>
 
-            <a href="{{ route('kampanye.index') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#99ff04] px-5 py-2.5 text-xs font-black text-black hover:bg-[#84e000] transition-all hover:scale-105 active:scale-95 shadow-md shadow-[#99ff04]/20 shrink-0">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
-                </svg>
-                <span>Donasi Kampanye Baru</span>
-            </a>
+            <div class="flex flex-wrap items-center gap-3 shrink-0">
+                @if (auth()->user()->isPengaju())
+                    <a href="{{ route('pengaju.dashboard') }}" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/20 transition-all">
+                        <svg class="h-4 w-4 text-[#99ff04]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                        <span>Dasbor Kampanye</span>
+                    </a>
+                @elseif (auth()->user()->isDonatur() && ! auth()->user()->isVerified())
+                    <a href="{{ route('verifikasi.identitas') }}" class="inline-flex items-center justify-center gap-2 rounded-full border border-[#99ff04]/30 bg-[#99ff04]/10 px-4 py-2.5 text-xs font-bold text-[#99ff04] hover:bg-[#99ff04]/20 transition-all">
+                        <span>Jadi Pengaju Dana &rarr;</span>
+                    </a>
+                @endif
+
+                <a href="{{ route('kampanye.index') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#99ff04] px-5 py-2.5 text-xs font-black text-black hover:bg-[#84e000] transition-all hover:scale-105 active:scale-95 shadow-md shadow-[#99ff04]/20 shrink-0">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <span>Donasi Kampanye Baru</span>
+                </a>
+            </div>
         </div>
     </div>
 

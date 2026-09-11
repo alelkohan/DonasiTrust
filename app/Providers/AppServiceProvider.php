@@ -92,6 +92,11 @@ class AppServiceProvider extends ServiceProvider
                         'active' => request()->routeIs('pengaju.kampanye.*'),
                     ],
                     [
+                        'label' => 'Riwayat donasi',
+                        'url' => route('donatur.dashboard'),
+                        'active' => request()->routeIs('donatur.dashboard'),
+                    ],
+                    [
                         'label' => 'Profil saya',
                         'url' => route('profil.edit'),
                         'active' => request()->routeIs('profil.edit'),
@@ -105,7 +110,7 @@ class AppServiceProvider extends ServiceProvider
             } else {
                 $menu = [
                     [
-                        'label' => 'Riwayat donasi',
+                        'label' => 'Dasbor',
                         'url' => route('donatur.dashboard'),
                         'active' => request()->routeIs('donatur.dashboard'),
                     ],

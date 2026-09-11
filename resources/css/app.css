@@ -415,6 +415,20 @@ html.theme-light {
     color: #ffffff;
   }
 
+
+  .dt-hint {
+    margin-top: calc(var(--spacing) * 1.5);
+    font-size: var(--text-xs);
+    color: #94a3b8;
+  }
+
+  .dt-error {
+    margin-top: calc(var(--spacing) * 1.5);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: #fb7185;
+  }
+
   /* VGen Dark Mode Surface Utilities */
   .vgen-card {
     @apply rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl transition-all duration-300 hover:border-purple-500/40;
@@ -613,6 +627,42 @@ html.theme-light a.category-btn-inactive:hover {
   background-color: rgba(15, 23, 42, 0.08) !important;
   color: #000000 !important;
   border-color: #0f172a !important;
+}
+
+/* -------------------------------------------------------------------------
+   Pill & Nominal Buttons Strict Theme Overrides
+------------------------------------------------------------------------- */
+html.theme-light button.bg-\[\#99ff04\],
+html.theme-light [type="button"].bg-\[\#99ff04\] {
+  background-color: #99ff04 !important;
+  color: #000000 !important;
+  border-color: #99ff04 !important;
+  font-weight: 900 !important;
+  box-shadow: 0 4px 10px rgba(153, 255, 4, 0.4) !important;
+}
+
+html.theme-light button.bg-\[\#231f36\],
+html.theme-light [type="button"].bg-\[\#231f36\] {
+  background-color: #f8fafc !important;
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+html.theme-light button.bg-\[\#231f36\]:hover,
+html.theme-light [type="button"].bg-\[\#231f36\]:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+html.theme-light .dt-hint {
+  color: #64748b !important;
+}
+
+html.theme-light .dt-error {
+  color: #e11d48 !important;
 }
 
 /* -------------------------------------------------------------------------

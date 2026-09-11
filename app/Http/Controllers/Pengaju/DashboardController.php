@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pengaju;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\Disbursement;
+use App\Models\Donation;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -29,6 +30,13 @@ class DashboardController extends Controller
             ->where('status', Disbursement::STATUS_PENDING)
             ->count();
 
-        return view('pengaju.dashboard', compact('campaigns', 'stats', 'pendingDisbursements'));
+        $personalDonationStats = [
+            'total' => (int) Donation::where('user_id', $user->id)
+                ->where('status', Donation::STATUS_PAID)
+                ->sum('amount'),
+            'count' => Donation::where('user_id', $user->id)->count(),
+        ];
+
+        return view('pengaju.dashboard', compact('campaigns', 'stats', 'pendingDisbursements', 'personalDonationStats'));
     }
 }

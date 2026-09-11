@@ -4,13 +4,12 @@ namespace App\Mail;
 
 use App\Models\Donation;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class DonationReceiptMail extends Mailable implements ShouldQueue
+class DonationReceiptMail extends Mailable
 {
     use Queueable, SerializesModels;
 

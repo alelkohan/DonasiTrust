@@ -113,4 +113,19 @@ class DonationFlowTest extends TestCase
                 'redirect_url' => route('kuitansi.show', $donation),
             ]);
     }
+
+    public function test_kuitansi_dikirim_ke_email_saat_donasi_lunas(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+
+        $campaign = $this->campaign();
+        $service = app(DonationService::class);
+
+        $donation = $service->create($campaign, ['amount' => 100_000, 'donor_email' => 'donatur@example.com']);
+        $service->markPaid($donation);
+
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\DonationReceiptMail::class, function ($mail) use ($donation) {
+            return $mail->hasTo('donatur@example.com') && $mail->donation->id === $donation->id;
+        });
+    }
 }

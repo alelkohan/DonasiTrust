@@ -78,8 +78,8 @@
             </div>
         </div>
     @else
-        <h2 class="text-lg font-bold text-ink-900 dark:text-white">Donasi sekarang</h2>
-        <p class="mt-1 text-sm text-ink-600 dark:text-slate-300">
+        <h2 class="text-lg font-black text-white">Donasi sekarang</h2>
+        <p class="mt-1 text-xs sm:text-sm text-slate-300">
             Setiap donasi menerbitkan kuitansi digital dengan kode yang bisa diverifikasi publik.
         </p>
 
@@ -94,21 +94,21 @@
 
             <div>
                 <span class="dt-label">Pilih nominal</span>
-                <div class="grid grid-cols-3 gap-2">
+                <div class="grid grid-cols-3 gap-2.5">
                     <template x-for="angka in cepat" :key="angka">
                         <button type="button" @click="pilihCepat(angka)"
                                 :class="nominal === angka && !manual
-                                    ? 'border-brand-600 bg-brand-50 text-brand-800'
-                                    : 'border-ink-200 text-ink-700 hover:border-brand-300 hover:bg-brand-50/50'"
-                                class="rounded-xl border px-2 py-2.5 text-sm font-semibold tabular-nums transition-colors"
+                                    ? 'bg-[#99ff04] text-black border-[#99ff04] font-black shadow-md shadow-[#99ff04]/25'
+                                    : 'bg-[#231f36] text-slate-300 border-white/10 hover:border-white/30 font-bold'"
+                                class="rounded-2xl border px-2 py-3 text-sm tabular-nums transition-all cursor-pointer select-none"
                                 x-text="ringkas(angka)"></button>
                     </template>
 
                     <button type="button" @click="bukaManual()"
                             :class="manual
-                                ? 'border-brand-600 bg-brand-50 text-brand-800'
-                                : 'border-ink-200 text-ink-700 hover:border-brand-300 hover:bg-brand-50/50'"
-                            class="rounded-xl border px-2 py-2.5 text-sm font-semibold transition-colors">
+                                ? 'bg-[#99ff04] text-black border-[#99ff04] font-black shadow-md shadow-[#99ff04]/25'
+                                : 'bg-[#231f36] text-slate-300 border-white/10 hover:border-white/30 font-bold'"
+                            class="rounded-2xl border px-2 py-3 text-sm transition-all cursor-pointer select-none">
                         Lainnya
                     </button>
                 </div>
@@ -117,7 +117,7 @@
             <div x-show="manual" x-cloak x-collapse>
                 <label for="amount" class="dt-label">Isi nominal sendiri</label>
                 <div class="relative">
-                    <span class="absolute inset-y-0 left-0 grid w-11 place-items-center text-sm font-semibold text-ink-500" aria-hidden="true">Rp</span>
+                    <span class="absolute inset-y-0 left-0 grid w-11 place-items-center text-sm font-black text-slate-400" aria-hidden="true">Rp</span>
                     {{-- wire:model tanpa .live: tidak ada permintaan per ketikan --}}
                     <input id="amount" type="text" inputmode="numeric" x-ref="inputNominal"
                            wire:model="amount"
@@ -155,28 +155,28 @@
                 @error('note') <p class="dt-error">{{ $message }}</p> @enderror
             </div>
 
-            <label class="flex items-start gap-2.5 text-sm text-ink-700">
+            <label class="flex items-start gap-2.5 text-xs sm:text-sm font-semibold text-slate-300 select-none cursor-pointer">
                 <input type="checkbox" wire:model.live="isAnonymous"
-                       class="mt-0.5 h-4 w-4 rounded border-ink-300 text-brand-600 focus:ring-brand-500">
+                       class="mt-0.5 h-4 w-4 rounded border-white/20 bg-[#231f36] text-[#99ff04] focus:ring-1 focus:ring-[#99ff04] accent-[#99ff04]">
                 <span>
                     Sembunyikan nama saya
                     @if ($isAnonymous)
-                        <span class="block text-xs text-ink-500">Akan tampil sebagai &ldquo;Hamba Allah&rdquo; di daftar donatur.</span>
+                        <span class="block text-xs text-slate-400 font-normal">Akan tampil sebagai &ldquo;Hamba Allah&rdquo; di daftar donatur.</span>
                     @endif
                 </span>
             </label>
 
             {{-- Ringkasan muncul seketika, tanpa menunggu server --}}
             <div x-show="valid()" x-cloak x-collapse
-                 class="rounded-xl border border-brand-200 bg-brand-50/70 p-3.5 text-sm">
+                 class="rounded-2xl border border-white/10 bg-[#231f36]/70 p-4 text-sm shadow-md backdrop-blur-md">
                 <div class="flex items-center justify-between">
-                    <span class="text-ink-600">Total donasi</span>
-                    <span class="text-lg font-bold text-ink-900 tabular-nums" x-text="penuh(nominal)"></span>
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Total donasi</span>
+                    <span class="text-xl font-black text-white tabular-nums" x-text="penuh(nominal)"></span>
                 </div>
-                <div x-show="nominal > sisaTarget && sisaTarget > 0" x-cloak class="mt-2.5 rounded-lg border border-amber-500/40 bg-amber-500/10 p-2.5 text-xs text-amber-300 leading-relaxed">
-                    <strong>Catatan Transparansi:</strong> Nominal donasi Anda melebihi sisa kebutuhan target (<span x-text="penuh(sisaTarget)"></span>). Kelebihan dana akan tetap dicatat secara transparan di ledger untuk cadangan operasional/lanjutan.
+                <div x-show="nominal > sisaTarget && sisaTarget > 0" x-cloak class="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-300 leading-relaxed">
+                    <strong class="font-extrabold text-amber-200">Catatan Transparansi:</strong> Nominal donasi Anda melebihi sisa kebutuhan target (<span x-text="penuh(sisaTarget)"></span>). Kelebihan dana akan tetap dicatat secara transparan di ledger untuk cadangan operasional/lanjutan.
                 </div>
-                <p class="mt-1 text-xs text-ink-500">
+                <p class="mt-2 text-[11px] font-medium text-slate-400">
                     Kuitansi diverifikasi dengan HMAC SHA-256 dan dicatat di ledger publik.
                 </p>
             </div>
@@ -189,7 +189,7 @@
                 <span x-show="valid()" x-cloak>Lanjut ke pembayaran &middot; <span x-text="penuh(nominal)"></span></span>
             </button>
 
-            <p class="text-center text-xs text-ink-500">
+            <p class="text-center text-xs text-slate-400">
                 Mode simulasi &mdash; tidak ada uang sungguhan yang berpindah.
             </p>
 

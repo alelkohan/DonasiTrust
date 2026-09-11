@@ -2,12 +2,6 @@
 @section('title', $campaign->exists ? 'Ubah kampanye' : 'Kampanye baru')
 
 @php
-    $menu = [
-        ['label' => 'Dasbor', 'url' => route('pengaju.dashboard')],
-        ['label' => 'Kampanye saya', 'url' => route('pengaju.kampanye.index'), 'active' => true],
-        ['label' => 'Profil saya', 'url' => route('profil.edit')],
-    ];
-
     // Nilai awal untuk Alpine: dari old() bila validasi gagal, dari model bila mengubah.
     $itemsInitial = old('items', $campaign->exists
         ? $campaign->items->map(fn ($i) => [
