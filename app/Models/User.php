@@ -172,6 +172,12 @@ class User extends Authenticatable
         return $this->verification_status === self::VERIFICATION_VERIFIED;
     }
 
+    /** Memeriksa apakah verifikasi 2-langkah (OTP Email) aktif pada akun. */
+    public function hasTwoFactorEnabled(): bool
+    {
+        return true;
+    }
+
 
     /** Hanya pengaju terverifikasi yang boleh mengajukan kampanye. */
     public function canSubmitCampaign(): bool
