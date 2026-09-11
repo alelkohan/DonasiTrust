@@ -36,14 +36,12 @@ class SendExpenseReportBroadcastJob implements ShouldQueue
             ->where('campaign_id', $campaign->id)
             ->where('status', Donation::STATUS_PAID)
             ->whereNotNull('donor_email')
-            ->select('donor_email')
-            ->distinct()
-            ->chunk(100, function ($donations) use ($campaign) {
-                foreach ($donations as $donation) {
-                    if (filter_var($donation->donor_email, FILTER_VALIDATE_EMAIL)) {
-                        Mail::to($donation->donor_email)
-                            ->queue(new ExpenseReportVerifiedMail($campaign, $this->expenseReport));
-                    }
+            ->pluck('donor_email')
+            ->unique()
+            ->each(function ($email) use ($campaign) {
+                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    Mail::to($email)
+                        ->queue(new ExpenseReportVerifiedMail($campaign, $this->expenseReport));
                 }
             });
     }
