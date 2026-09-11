@@ -6,7 +6,6 @@ use App\Models\Campaign;
 use App\Models\ExpenseReport;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-include_once __DIR__.'/../../Support/helpers.php';
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
