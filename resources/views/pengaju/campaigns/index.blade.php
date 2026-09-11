@@ -40,18 +40,22 @@
     @else
         <div class="space-y-4">
                 @foreach ($campaigns as $campaign)
-                    <article class="rounded-3xl border border-white/10 bg-[#1b182a] p-5 sm:p-6 shadow-xl backdrop-blur-md transition-all hover:border-[#99ff04]/30 flex flex-col md:flex-row items-stretch gap-6">
+                    <article class="rounded-3xl border border-white/10 bg-[#1b182a] p-5 sm:p-6 shadow-xl backdrop-blur-md transition-all hover:border-[#99ff04]/30">
                         
-                        <!-- Kolom Gambar di Kiri (Ukuran Tetap) -->
-                        <div class="w-full md:w-56 shrink-0 flex flex-col">
-                            <img src="{{ $campaign->coverUrl() }}" alt="{{ $campaign->title }}" class="w-full h-48 md:h-full min-h-[200px] rounded-2xl object-cover border border-white/10 shadow-md bg-[#231f36]">
-                        </div>
-
-                        <!-- Kolom Konten Utama di Samping Kanan Gambar -->
-                        <div class="flex-1 min-w-0 flex flex-col justify-between space-y-4">
+                        <!-- Side-by-side Flex Container: Gambar di Kiri (220px), Content di Kanan (Flex-1) -->
+                        <div style="display: flex; flex-direction: row; align-items: flex-start; gap: 20px;" class="flex flex-row items-start gap-5">
                             
-                            <!-- Header: Judul, Status, Kategori & Tombol Aksi -->
-                            <div>
+                            <!-- Kolom Gambar di Kiri (Rasio 1 / ~220px) -->
+                            <div style="width: 220px; flex-shrink: 0;" class="w-52 shrink-0">
+                                <img src="{{ $campaign->coverUrl() }}" alt="{{ $campaign->title }}" 
+                                     style="width: 100%; height: 175px; object-fit: cover; border-radius: 1rem;" 
+                                     class="w-full h-44 rounded-2xl object-cover border border-white/10 shadow-md bg-[#231f36]">
+                            </div>
+
+                            <!-- Kolom Seluruh Konten di Kanan (Rasio 4 / Flex-1) -->
+                            <div style="flex: 1; min-width: 0;" class="flex-1 min-w-0 space-y-4">
+                                
+                                <!-- Header: Judul, Status, Kategori & Tombol Aksi -->
                                 <div class="flex flex-col sm:flex-row items-start justify-between gap-3">
                                     <div class="min-w-0 flex-1">
                                         <div class="flex flex-wrap items-center gap-2">
@@ -88,63 +92,63 @@
                                 </div>
 
                                 @if ($campaign->status === 'rejected' && $campaign->review_note)
-                                    <div class="mt-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-xs text-rose-300">
+                                    <div class="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-xs text-rose-300">
                                         <p class="font-extrabold text-rose-200">Catatan Review Admin:</p>
                                         <p class="mt-1 leading-relaxed">{{ $campaign->review_note }}</p>
                                     </div>
                                 @endif
-                            </div>
 
-                            <!-- Bagian Progress Bar & Statistik -->
-                            <div class="border-t border-white/10 pt-3">
-                                <div class="h-2 w-full overflow-hidden rounded-full bg-[#231f36]">
-                                    <div class="h-full bg-[#99ff04]" style="width: {{ $campaign->progressPercent() }}%"></div>
+                                <!-- Bagian Progress Bar & Statistik -->
+                                <div class="border-t border-white/10 pt-3">
+                                    <div class="h-2 w-full overflow-hidden rounded-full bg-[#231f36]">
+                                        <div class="h-full bg-[#99ff04]" style="width: {{ $campaign->progressPercent() }}%"></div>
+                                    </div>
+                                    <dl class="mt-3 grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">
+                                        <div class="rounded-xl border border-white/5 bg-[#231f36] p-2.5">
+                                            <dt class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Terkumpul</dt>
+                                            <dd class="mt-1 font-black text-white text-xs sm:text-sm tabular-nums">{{ rupiah($campaign->collected_amount) }}</dd>
+                                        </div>
+                                        <div class="rounded-xl border border-white/5 bg-[#231f36] p-2.5">
+                                            <dt class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Target</dt>
+                                            <dd class="mt-1 font-black text-white text-xs sm:text-sm tabular-nums">{{ rupiah($campaign->target_amount) }}</dd>
+                                        </div>
+                                        <div class="rounded-xl border border-white/5 bg-[#231f36] p-2.5">
+                                            <dt class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Dicairkan</dt>
+                                            <dd class="mt-1 font-black text-[#99ff04] text-xs sm:text-sm tabular-nums">{{ rupiah($campaign->disbursed_amount) }}</dd>
+                                        </div>
+                                        <div class="rounded-xl border border-white/5 bg-[#231f36] p-2.5">
+                                            <dt class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Donatur</dt>
+                                            <dd class="mt-1 font-black text-white text-xs sm:text-sm tabular-nums">{{ $campaign->donations_count }} Orang</dd>
+                                        </div>
+                                    </dl>
                                 </div>
-                                <dl class="mt-3 grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">
-                                    <div class="rounded-xl border border-white/5 bg-[#231f36] p-2.5">
-                                        <dt class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Terkumpul</dt>
-                                        <dd class="mt-1 font-black text-white text-xs sm:text-sm tabular-nums">{{ rupiah($campaign->collected_amount) }}</dd>
+
+                                <!-- Bagian Footer (Tombol Ajukan & Hapus) -->
+                                @if ($campaign->isEditable() || in_array($campaign->status, ['pending']))
+                                    <div class="flex flex-wrap items-center justify-between border-t border-white/10 pt-3">
+                                        @if ($campaign->isEditable())
+                                            <form method="POST" action="{{ route('pengaju.kampanye.submit', $campaign) }}">
+                                                @csrf
+                                                <button type="submit" class="rounded-full bg-[#99ff04] px-5 py-2 text-xs font-black text-black shadow-md shadow-[#99ff04]/20 transition-all hover:bg-[#84e000]">
+                                                    Ajukan untuk Review Admin &rarr;
+                                                </button>
+                                            </form>
+                                        @else
+                                            <div></div>
+                                        @endif
+                                        @if (in_array($campaign->status, ['draft', 'pending', 'rejected']))
+                                            <form method="POST" action="{{ route('pengaju.kampanye.destroy', $campaign) }}"
+                                                x-data @submit="if (! confirm('Hapus kampanye ini? Tindakan ini tidak bisa dibatalkan.')) $event.preventDefault()">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="text-xs font-bold text-rose-400 transition-colors hover:text-rose-300">
+                                                    Hapus Kampanye
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
-                                    <div class="rounded-xl border border-white/5 bg-[#231f36] p-2.5">
-                                        <dt class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Target</dt>
-                                        <dd class="mt-1 font-black text-white text-xs sm:text-sm tabular-nums">{{ rupiah($campaign->target_amount) }}</dd>
-                                    </div>
-                                    <div class="rounded-xl border border-white/5 bg-[#231f36] p-2.5">
-                                        <dt class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Dicairkan</dt>
-                                        <dd class="mt-1 font-black text-[#99ff04] text-xs sm:text-sm tabular-nums">{{ rupiah($campaign->disbursed_amount) }}</dd>
-                                    </div>
-                                    <div class="rounded-xl border border-white/5 bg-[#231f36] p-2.5">
-                                        <dt class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Donatur</dt>
-                                        <dd class="mt-1 font-black text-white text-xs sm:text-sm tabular-nums">{{ $campaign->donations_count }} Orang</dd>
-                                    </div>
-                                </dl>
+                                @endif
+
                             </div>
-
-                            <!-- Bagian Footer (Tombol Ajukan & Hapus) -->
-                            @if ($campaign->isEditable() || in_array($campaign->status, ['pending']))
-                                <div class="flex flex-wrap items-center justify-between border-t border-white/10 pt-3">
-                                    @if ($campaign->isEditable())
-                                        <form method="POST" action="{{ route('pengaju.kampanye.submit', $campaign) }}">
-                                            @csrf
-                                            <button type="submit" class="rounded-full bg-[#99ff04] px-5 py-2 text-xs font-black text-black shadow-md shadow-[#99ff04]/20 transition-all hover:bg-[#84e000]">
-                                                Ajukan untuk Review Admin &rarr;
-                                            </button>
-                                        </form>
-                                    @else
-                                        <div></div>
-                                    @endif
-                                    @if (in_array($campaign->status, ['draft', 'pending', 'rejected']))
-                                        <form method="POST" action="{{ route('pengaju.kampanye.destroy', $campaign) }}"
-                                            x-data @submit="if (! confirm('Hapus kampanye ini? Tindakan ini tidak bisa dibatalkan.')) $event.preventDefault()">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="text-xs font-bold text-rose-400 transition-colors hover:text-rose-300">
-                                                Hapus Kampanye
-                                            </button>
-                                        </form>
-                                    @endif
-                                </div>
-                            @endif
-
                         </div>
                     </article>
                 @endforeach
