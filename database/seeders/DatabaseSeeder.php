@@ -89,6 +89,23 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
+        $pengajuFaaza = User::firstOrCreate(['email' => 'faazamuartwork@gmail.com'], [
+            'name' => 'Faaza Mubaarok',
+            'password' => 'password123',
+            'role' => User::ROLE_PENGAJU,
+            'phone' => '081234567899',
+            'organization' => 'Faaza Artwork & Digital Studio',
+            'identity_number_last4' => '8899',
+            'identity_number_hash' => User::hashIdentityNumber('3324061503898899'),
+            'bank_name' => 'BCA',
+            'bank_account_number' => '8419203810',
+            'bank_account_holder' => 'AHMAD FAAZA MUBAAROK',
+            'verification_status' => User::VERIFICATION_VERIFIED,
+            'verified_at' => now()->subDays(30),
+            'verified_by' => $admin->id,
+            'email_verified_at' => now(),
+        ]);
+
         $pengajuBaru = User::create([
             'name' => 'Siti Nurhaliza',
             'email' => 'pengaju2@donasitrust.test',

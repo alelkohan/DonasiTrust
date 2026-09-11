@@ -41,15 +41,18 @@
         <div class="space-y-4">
             @foreach ($campaigns as $campaign)
                 <article class="rounded-3xl border border-white/10 bg-[#1b182a] p-6 shadow-xl backdrop-blur-md transition-all hover:border-[#99ff04]/30">
-                    <div class="flex flex-wrap items-start justify-between gap-4">
-                        <div class="min-w-0 flex-1">
-                            <div class="flex flex-wrap items-center gap-2.5">
-                                <h2 class="text-base font-black text-white line-clamp-1">{{ $campaign->title }}</h2>
-                                <span class="rounded-full bg-[#231f36] px-3 py-0.5 text-xs font-extrabold text-slate-300 border border-white/10">
-                                    {{ $campaign->statusLabel() }}
-                                </span>
+                    <div class="flex flex-col sm:flex-row items-start justify-between gap-5">
+                        <div class="flex items-start gap-4 flex-1 min-w-0">
+                            <img src="{{ $campaign->coverUrl() }}" alt="{{ $campaign->title }}" class="h-24 w-32 shrink-0 rounded-2xl object-cover border border-white/10 shadow-md bg-[#231f36]">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex flex-wrap items-center gap-2.5">
+                                    <h2 class="text-base font-black text-white line-clamp-1">{{ $campaign->title }}</h2>
+                                    <span class="rounded-full bg-[#231f36] px-3 py-0.5 text-xs font-extrabold text-slate-300 border border-white/10">
+                                        {{ $campaign->statusLabel() }}
+                                    </span>
+                                </div>
+                                <p class="mt-2 text-xs text-slate-400 line-clamp-2 leading-relaxed">{{ $campaign->summary }}</p>
                             </div>
-                            <p class="mt-2 text-xs text-slate-400 line-clamp-2 leading-relaxed">{{ $campaign->summary }}</p>
                         </div>
 
                         <div class="flex shrink-0 flex-wrap gap-2">

@@ -175,9 +175,11 @@
             <ul class="divide-y divide-white/10">
                 @foreach ($campaigns->take(5) as $campaign)
                     <li class="flex flex-wrap items-center justify-between gap-4 px-6 py-4 hover:bg-white/5 transition-colors">
-                        <div class="min-w-0 flex-1">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <h3 class="text-sm font-black text-white line-clamp-1">{{ $campaign->title }}</h3>
+                        <div class="flex items-center gap-3.5 min-w-0 flex-1">
+                            <img src="{{ $campaign->coverUrl() }}" alt="{{ $campaign->title }}" class="h-12 w-16 shrink-0 rounded-xl object-cover border border-white/10 shadow-sm bg-[#231f36]">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h3 class="text-sm font-black text-white line-clamp-1">{{ $campaign->title }}</h3>
                                 <span class="rounded-full bg-[#231f36] px-2.5 py-0.5 text-[10px] font-extrabold text-slate-300 border border-white/10">
                                     {{ $campaign->statusLabel() }}
                                 </span>
@@ -191,6 +193,7 @@
                                 {{ rupiah($campaign->collected_amount) }} <span class="font-normal text-slate-500">dari {{ rupiah($campaign->target_amount) }}</span>
                             </p>
                         </div>
+                    </div>
 
                         <div class="flex gap-2">
                             @if ($campaign->isEditable())

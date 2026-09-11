@@ -175,13 +175,18 @@ class GoogleAuthController extends Controller
 
         $audit->record('user.login', $newUser, ['provider' => 'google'], $newUser);
 
+        $intended = session('url.intended');
+        if ($intended && (str_contains($intended, '/login') || str_contains($intended, '/register'))) {
+            session()->forget('url.intended');
+        }
+
         if ($donation = app(DonationService::class)->processPendingDonation($newUser)) {
             return redirect()->route('donasi.checkout', $donation->reference)
-                ->with('status', 'Berhasil masuk dengan Google! Silakan selesaikan transaksi donasi Anda.');
+                ->with('status', 'Berhasil mendaftar dengan Google! Silakan selesaikan transaksi donasi Anda.');
         }
 
         return redirect()->intended($newUser->homeRoute())
-            ->with('status', 'Selamat datang di DonasiTrust, '.$newUser->name.'.');
+            ->with('status', 'Selamat datang di DonasiTrust, '.$newUser->name.'. Akun Anda telah aktif dan otomatis masuk.');
     }
 
     /** Alias untuk kompatibilitas */

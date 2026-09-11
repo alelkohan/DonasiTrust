@@ -49,12 +49,17 @@ class RegisteredUserController extends Controller
 
         $audit->record('user.registered', $user, ['role' => $user->role], $user);
 
+        $intended = session('url.intended');
+        if ($intended && (str_contains($intended, '/login') || str_contains($intended, '/register'))) {
+            session()->forget('url.intended');
+        }
+
         if ($donation = app(\App\Services\DonationService::class)->processPendingDonation($user)) {
             return redirect()->route('donasi.checkout', $donation->reference)
-                ->with('status', 'Akun berhasil dibuat! Silakan selesaikan transaksi donasi Anda.');
+                ->with('status', 'Akun berhasil dibuat dan Anda telah otomatis masuk. Silakan selesaikan transaksi donasi Anda.');
         }
 
         return redirect()->intended($user->homeRoute())
-            ->with('status', 'Selamat datang di DonasiTrust, '.$user->name.'.');
+            ->with('status', 'Selamat datang di DonasiTrust, '.$user->name.'. Pendaftaran berhasil dan Anda telah otomatis masuk.');
     }
 }
