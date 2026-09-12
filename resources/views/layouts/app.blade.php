@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full">
+<html lang="id" class="h-full overflow-x-hidden max-w-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -54,7 +54,7 @@
     @livewireStyles
     @stack('head')
 </head>
-<body class="flex min-h-full flex-col pb-16 md:pb-0 font-sans transition-colors duration-300">
+<body class="flex min-h-full flex-col pb-16 md:pb-0 font-sans transition-colors duration-300 overflow-x-hidden max-w-full relative">
 
 <a href="#konten" class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-[#99ff04] focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-black">
     Lompat ke konten utama
@@ -62,7 +62,7 @@
 
 @include('partials.navbar')
 
-<main id="konten" class="flex-1 w-full max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8">
+<main id="konten" class="flex-1 w-full max-w-[1650px] mx-auto pt-[60px]">
     @include('partials.flash')
     @yield('content')
 </main>

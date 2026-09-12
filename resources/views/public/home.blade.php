@@ -86,7 +86,7 @@
      x-transition:leave="transition ease-in duration-200"
      x-transition:leave-start="opacity-100 translate-y-0"
      x-transition:leave-end="opacity-0 -translate-y-4"
-     class="navtab-floating-bar fixed top-[60px] left-0 right-0 z-30 shadow-xl backdrop-blur-md transition-all duration-300"
+     class="navtab-floating-bar fixed top-[60px] left-0 right-0 z-30 shadow-xl backdrop-blur-md transition-all duration-300 max-w-full overflow-x-hidden"
      style="display: none;">
     <div class="max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
         
@@ -111,7 +111,7 @@
         </div>
 
         {{-- Category Pills --}}
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none w-full min-w-0">
             <button type="button"
                     @click="switchCategory('semua')"
                     :class="(activeCategory === 'semua' || !activeCategory) ? 'category-btn-active scale-105' : 'category-btn-inactive'"
@@ -135,8 +135,8 @@
 {{-- -------------------------------------------------------------------------
    SECTION 1: HERO SECTION (3D Depth Parallax Shrink & Blur on Scroll)
 ------------------------------------------------------------------------- --}}
-<div class="sticky top-0 z-0 w-full overflow-hidden" style="perspective: 1200px; -webkit-perspective: 1200px;">
-    <section class="hero-section-v2 relative bg-[#12101c] text-white overflow-hidden transition-all duration-75 ease-out origin-center min-h-[75vh] sm:min-h-[80vh] flex flex-col justify-center pt-24 pb-32 sm:pt-32 sm:pb-40"
+<div class="sticky top-0 z-0 w-full max-w-full overflow-hidden" style="perspective: 1200px; -webkit-perspective: 1200px;">
+    <section class="hero-section-v2 relative bg-[#12101c] text-white overflow-hidden max-w-full transition-all duration-75 ease-out origin-center min-h-[75vh] sm:min-h-[80vh] flex flex-col justify-center pt-24 pb-32 sm:pt-32 sm:pb-40"
              :style="`
                  transform: perspective(1200px) scale(${1 - heroScrollProgress * 0.12}) translateZ(${-heroScrollProgress * 150}px) translateY(${heroScrollProgress * 40}px);
                  filter: blur(${heroScrollProgress * 14}px);
@@ -146,7 +146,7 @@
     
     {{-- Animated Background Sliding Cards Marquee (Shifted Right on Desktop for Text Legibility) --}}
     @if ($heroCampaigns->isNotEmpty())
-        <div class="hero-marquee-container absolute inset-0 lg:left-[15%] lg:right-0 z-0 overflow-hidden pointer-events-none opacity-20 select-none flex justify-center lg:justify-end gap-6 p-4" style="transform: rotate(-18deg) scale(1.35);">
+        <div class="hero-marquee-container absolute inset-0 lg:left-[15%] lg:right-0 z-0 overflow-hidden pointer-events-none opacity-20 select-none flex justify-center lg:justify-end gap-6 p-4 max-w-full" style="transform: rotate(-18deg) scale(1.35); transform-origin: center center;">
             
             {{-- Column 1: Scrolls Up --}}
             <div class="flex flex-col gap-6 animate-hero-marquee-up w-72 shrink-0">
@@ -272,9 +272,9 @@
     <div class="hero-marquee-overlay-v2 absolute inset-0 z-1 backdrop-blur-[2px] pointer-events-none transition-colors duration-300"></div>
     
     {{-- Ambient Glow Backdrop --}}
-    <div class="pointer-events-none absolute left-1/3 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[600px] rounded-full bg-gradient-to-tr from-[#99ff04]/15 via-emerald-500/10 to-purple-600/10 blur-[130px] opacity-70 z-2"></div>
+    <div class="pointer-events-none absolute left-1/2 sm:left-1/3 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[300px] sm:h-[400px] w-[90vw] max-w-[600px] rounded-full bg-gradient-to-tr from-[#99ff04]/15 via-emerald-500/10 to-purple-600/10 blur-[100px] sm:blur-[130px] opacity-70 z-2 overflow-hidden"></div>
 
-    <div class="relative z-10 w-full">
+    <div class="relative z-10 w-full px-4 sm:px-6 lg:px-8">
         
         <div class="max-w-2xl space-y-6">
             
@@ -298,7 +298,7 @@
             <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="300" class="pt-2 flex flex-wrap items-center gap-3.5">
                 <a href="#kampanye-section" class="inline-flex items-center gap-2 rounded-xl bg-[#99ff04] px-6 py-3.5 text-sm font-black text-black shadow-lg shadow-[#99ff04]/20 hover:bg-[#84e000] hover:scale-[1.02] transition-all">
                     <span>Jelajahi Kampanye</span>
-                    <svg class="h-4 w-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                    <svg class="h-4 w-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7V17"/></svg>
                 </a>
                 <a href="#cara-kerja" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10 transition-all">
                     Lihat Cara Kerja
@@ -329,8 +329,8 @@
 {{-- -------------------------------------------------------------------------
    OVERLAPPING SHEET CONTAINER (Slides UP over the blurring 3D Hero on Scroll)
 ------------------------------------------------------------------------- --}}
-<div class="hero-sheet-container relative z-20 bg-[#12101c] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] -mt-16 pt-12 sm:pt-16 pb-16 transition-colors duration-300">
-    <div class="max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="hero-sheet-container relative z-20 bg-[#12101c] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] -mt-16 pt-12 sm:pt-16 pb-16 transition-colors duration-300 w-full">
+    <div class="w-full px-4 sm:px-6 lg:px-8">
 
 {{-- -------------------------------------------------------------------------
    SECTION 3: MAIN CAMPAIGN EXPLORATION SECTION (3 Columns Grid)
@@ -374,7 +374,7 @@
         </div>
 
         {{-- Category Pills --}}
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none w-full min-w-0">
             <button type="button"
                     @click="switchCategory('semua')"
                     :class="(activeCategory === 'semua' || !activeCategory) ? 'category-btn-active scale-105' : 'category-btn-inactive'"
@@ -394,8 +394,8 @@
 
     </div>
 
-    {{-- Campaign Grid 3 Columns --}}
-    <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="200" id="campaign-grid-container-v2" class="grid gap-6 sm:grid-cols-2 md:grid-cols-4 min-h-[300px] transition-all">
+    {{-- Campaign Grid Responsive Columns --}}
+    <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="200" id="campaign-grid-container-v2" class="-mx-4 sm:mx-0 px-3 sm:px-0 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-h-[300px] transition-all">
         @include('partials.campaign-grid')
     </div>
 
