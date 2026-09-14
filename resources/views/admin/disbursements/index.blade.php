@@ -53,11 +53,18 @@
                     .then(res => res.text())
                     .then(html => {
                         let doc = new DOMParser().parseFromString(html, 'text/html');
-                        document.getElementById('table-container').innerHTML = doc.getElementById('table-container').innerHTML;
+                        let newContainer = doc.getElementById('table-container');
+                        if (newContainer) {
+                            document.getElementById('table-container').innerHTML = newContainer.innerHTML;
+                        }
+                        this.loading = false;
+                    })
+                    .catch(() => {
                         this.loading = false;
                     });
             }
         }" 
+        @refresh-disbursements.window="applyFilter()"
         class="mt-4 flex flex-wrap items-center gap-3">
         <input type="text" placeholder="Cari ref, kampanye, atau pemohon..." class="dt-input max-w-[280px] text-xs py-2"
                x-model.debounce.500ms="search">
@@ -68,7 +75,7 @@
         <template x-if="search || date">
             <button type="button" @click="search = ''; date = ''; applyFilter()" class="text-xs font-bold text-slate-400 hover:text-white transition-colors">Reset</button>
         </template>
-        <span x-show="loading" x-cloak class="text-xs text-[#99ff04] font-bold">Mencari...</span>
+        <span x-show="loading" x-cloak class="text-xs text-[#99ff04] font-bold">Memuat...</span>
     </div>
 
     <div id="table-container">
@@ -90,7 +97,7 @@
                         @foreach ($disbursements as $disb)
                             <tr>
                                 <td class="align-top">
-                                    <span class="font-mono text-xs font-bold text-emerald-300 bg-emerald-500/15 px-2.5 py-1 rounded-lg border border-emerald-500/30">{{ $disb->reference }}</span>
+                                    <span class="font-mono text-xs font-bold text-[#99ff04] bg-[#99ff04]/10 px-2.5 py-1 rounded-lg border border-[#99ff04]/30">{{ $disb->reference }}</span>
                                     <p class="mt-2 font-bold text-white">{{ Str::limit($disb->campaign->title, 40) }}</p>
                                     <p class="mt-0.5 text-xs text-slate-400">Tahap {{ $disb->milestone->sequence }}: {{ $disb->milestone->title }}</p>
                                 </td>
@@ -115,10 +122,60 @@
                                     }">{{ $disb->statusLabel() }}</x-badge>
                                 </td>
                                 <td class="text-right whitespace-nowrap align-top">
-                                    <div class="flex flex-col items-end gap-2" x-data="{ openReject: false, openRelease: false }">
+                                    <div class="flex flex-col items-end gap-2" x-data="{
+                                        openReject: false,
+                                        openRelease: false,
+                                        isSubmitting: false,
+                                        releaseError: '',
+                                        releaseSuccess: '',
+                                        submitRelease(e) {
+                                            if (this.isSubmitting) return;
+                                            this.isSubmitting = true;
+                                            this.releaseError = '';
+                                            this.releaseSuccess = '';
+                                            const form = e.target;
+                                            const formData = new FormData(form);
+
+                                            fetch(form.action, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'X-Requested-With': 'XMLHttpRequest',
+                                                    'Accept': 'application/json',
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                                },
+                                                body: formData
+                                            })
+                                            .then(async (res) => {
+                                                const data = await res.json().catch(() => ({}));
+                                                if (!res.ok) {
+                                                    throw new Error(data.message || (data.errors ? Object.values(data.errors).flat().join(', ') : 'Gagal memproses pencairan.'));
+                                                }
+                                                return data;
+                                            })
+                                            .then((data) => {
+                                                this.releaseSuccess = data.message || 'Dana berhasil dicairkan!';
+                                                setTimeout(() => {
+                                                    this.openRelease = false;
+                                                    window.dispatchEvent(new CustomEvent('refresh-disbursements'));
+                                                }, 600);
+                                            })
+                                            .catch((err) => {
+                                                this.releaseError = err.message;
+                                            })
+                                            .finally(() => {
+                                                this.isSubmitting = false;
+                                            });
+                                        }
+                                    }">
                                         @if ($disb->status === \App\Models\Disbursement::STATUS_PENDING)
                                             <div class="flex items-center gap-2">
-                                                <form method="POST" action="{{ route('admin.pencairan.approve', $disb) }}">
+                                                <form method="POST" action="{{ route('admin.pencairan.approve', $disb) }}"
+                                                      @submit.prevent="
+                                                          fetch($el.action, {
+                                                              method: 'POST',
+                                                              headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                                                          }).then(() => window.dispatchEvent(new CustomEvent('refresh-disbursements')));
+                                                      ">
                                                     @csrf
                                                     <button type="submit" class="dt-btn-primary py-1 px-3 text-xs">Setujui</button>
                                                 </form>
@@ -126,7 +183,18 @@
                                             </div>
 
                                             <div x-show="openReject" x-cloak class="mt-2 w-72 text-left p-4 rounded-2xl border border-rose-500/30 bg-[#231f36] shadow-xl">
-                                                <form method="POST" action="{{ route('admin.pencairan.reject', $disb) }}" class="space-y-3">
+                                                <form method="POST" action="{{ route('admin.pencairan.reject', $disb) }}" class="space-y-3"
+                                                      @submit.prevent="
+                                                          const fd = new FormData($el);
+                                                          fetch($el.action, {
+                                                              method: 'POST',
+                                                              headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                                              body: fd
+                                                          }).then(() => {
+                                                              openReject = false;
+                                                              window.dispatchEvent(new CustomEvent('refresh-disbursements'));
+                                                          });
+                                                      ">
                                                     @csrf
                                                     <label class="dt-label text-xs">Alasan Penolakan</label>
                                                     <input type="text" name="reason" required placeholder="Jelaskan alasan penolakan..." class="dt-input text-xs">
@@ -142,7 +210,7 @@
                                             </button>
 
                                             <div x-show="openRelease" x-cloak class="mt-2 w-80 text-left p-4 rounded-2xl border border-white/10 bg-[#231f36] shadow-xl">
-                                                <form method="POST" action="{{ route('admin.pencairan.release', $disb) }}" enctype="multipart/form-data" class="space-y-3 whitespace-normal">
+                                                <form method="POST" action="{{ route('admin.pencairan.release', $disb) }}" enctype="multipart/form-data" @submit.prevent="submitRelease($event)" class="space-y-3 whitespace-normal">
                                                     @csrf
                                                     <p class="text-xs font-bold text-white">Unggah Bukti Struk Transfer Bank</p>
                                                     <input type="file" name="proof" required accept="image/*" class="dt-input text-xs">
@@ -151,9 +219,20 @@
                                                         <x-otp-input purpose="disbursement_release" label="Kode Verifikasi Email" />
                                                     </div>
 
+                                                    <template x-if="releaseError">
+                                                        <p class="text-xs font-bold text-rose-400 bg-rose-500/10 p-2.5 rounded-xl border border-rose-500/20" x-text="releaseError"></p>
+                                                    </template>
+
+                                                    <template x-if="releaseSuccess">
+                                                        <p class="text-xs font-bold text-[#99ff04] bg-[#99ff04]/10 p-2.5 rounded-xl border border-[#99ff04]/20" x-text="releaseSuccess"></p>
+                                                    </template>
+
                                                     <div class="flex justify-end gap-2 pt-1">
-                                                        <button type="button" @click="openRelease = false" class="dt-btn-secondary py-1 px-3 text-xs">Batal</button>
-                                                        <button type="submit" class="dt-btn-primary py-1 px-3 text-xs">Simpan &amp; Rilis</button>
+                                                        <button type="button" @click="openRelease = false" class="dt-btn-secondary py-1 px-3 text-xs" :disabled="isSubmitting">Batal</button>
+                                                        <button type="submit" class="dt-btn-primary py-1 px-3 text-xs" :disabled="isSubmitting">
+                                                            <span x-show="!isSubmitting">Simpan &amp; Rilis</span>
+                                                            <span x-show="isSubmitting" x-cloak>Menyimpan...</span>
+                                                        </button>
                                                     </div>
                                                 </form>
                                             </div>

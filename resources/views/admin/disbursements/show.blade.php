@@ -155,13 +155,54 @@
                     </form>
                 </section>
             @elseif ($disbursement->status === \App\Models\Disbursement::STATUS_APPROVED)
-                <section class="dt-card p-5 sm:p-6">
+                <section class="dt-card p-5 sm:p-6" x-data="{
+                    isSubmitting: false,
+                    releaseError: '',
+                    releaseSuccess: '',
+                    submitRelease(e) {
+                        if (this.isSubmitting) return;
+                        this.isSubmitting = true;
+                        this.releaseError = '';
+                        this.releaseSuccess = '';
+                        const form = e.target;
+                        const formData = new FormData(form);
+
+                        fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: formData
+                        })
+                        .then(async (res) => {
+                            const data = await res.json().catch(() => ({}));
+                            if (!res.ok) {
+                                throw new Error(data.message || (data.errors ? Object.values(data.errors).flat().join(', ') : 'Gagal memproses pencairan.'));
+                            }
+                            return data;
+                        })
+                        .then((data) => {
+                            this.releaseSuccess = data.message || 'Dana berhasil dicairkan!';
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 800);
+                        })
+                        .catch((err) => {
+                            this.releaseError = err.message;
+                        })
+                        .finally(() => {
+                            this.isSubmitting = false;
+                        });
+                    }
+                }">
                     <h2 class="text-lg font-black text-white">Tandai dana dicairkan</h2>
                     <p class="mt-1 text-xs font-medium text-slate-400">
                         Transfer manual ke rekening di sebelah kiri, lalu unggah buktinya di sini.
                     </p>
                     <form method="POST" action="{{ route('admin.pencairan.release', $disbursement) }}"
-                          enctype="multipart/form-data" class="mt-5 space-y-3">
+                          enctype="multipart/form-data" @submit.prevent="submitRelease($event)" class="mt-5 space-y-3">
                         @csrf
                         <div>
                             <label for="proof" class="dt-label text-xs">Bukti transfer</label>
@@ -176,7 +217,18 @@
                             <x-otp-input purpose="disbursement_release" label="Kode Verifikasi Email Admin" />
                         </div>
 
-                        <button type="submit" class="dt-btn-primary w-full py-3">Tandai sudah dicairkan</button>
+                        <template x-if="releaseError">
+                            <p class="text-xs font-bold text-rose-400 bg-rose-500/10 p-2.5 rounded-xl border border-rose-500/20" x-text="releaseError"></p>
+                        </template>
+
+                        <template x-if="releaseSuccess">
+                            <p class="text-xs font-bold text-[#99ff04] bg-[#99ff04]/10 p-2.5 rounded-xl border border-[#99ff04]/20" x-text="releaseSuccess"></p>
+                        </template>
+
+                        <button type="submit" class="dt-btn-primary w-full py-3" :disabled="isSubmitting">
+                            <span x-show="!isSubmitting">Tandai sudah dicairkan</span>
+                            <span x-show="isSubmitting" x-cloak>Menyimpan...</span>
+                        </button>
                     </form>
                 </section>
             @endif

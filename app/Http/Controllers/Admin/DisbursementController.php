@@ -43,9 +43,12 @@ class DisbursementController extends Controller
         return view('admin.disbursements.show', compact('disbursement'));
     }
 
-    public function approve(Disbursement $disbursement, AuditLogger $audit)
+    public function approve(Request $request, Disbursement $disbursement, AuditLogger $audit)
     {
         if ($disbursement->status !== Disbursement::STATUS_PENDING) {
+            if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json(['message' => 'Status tidak valid.'], 422);
+            }
             return back()->with('error', 'Status tidak valid.');
         }
 
@@ -65,12 +68,19 @@ class DisbursementController extends Controller
             ]);
         });
 
+        if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json(['success' => true, 'message' => 'Pencairan disetujui. Silakan transfer secara manual, lalu tekan "Dana Dicairkan".']);
+        }
+
         return back()->with('status', 'Pencairan disetujui. Silakan transfer secara manual, lalu tekan "Dana Dicairkan".');
     }
 
     public function reject(Request $request, Disbursement $disbursement, AuditLogger $audit)
     {
         if ($disbursement->status !== Disbursement::STATUS_PENDING) {
+            if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json(['message' => 'Status tidak valid.'], 422);
+            }
             return back()->with('error', 'Status tidak valid.');
         }
         
@@ -95,12 +105,19 @@ class DisbursementController extends Controller
             ]);
         });
 
+        if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json(['success' => true, 'message' => 'Pencairan ditolak.']);
+        }
+
         return back()->with('status', 'Pencairan ditolak.');
     }
 
     public function release(Request $request, Disbursement $disbursement, AuditLogger $audit, OtpService $otp)
     {
         if ($disbursement->status !== Disbursement::STATUS_APPROVED) {
+            if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json(['message' => 'Hanya pencairan yang disetujui yang dapat dirilis.'], 422);
+            }
             return back()->with('error', 'Hanya pencairan yang disetujui yang dapat dirilis.');
         }
 
@@ -139,6 +156,13 @@ class DisbursementController extends Controller
 
         // Broadcast email ke seluruh donatur kampanye via Queue Worker
         \App\Jobs\SendDisbursementBroadcastJob::dispatch($disbursement);
+
+        if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'message' => 'Dana berhasil ditandai telah dicairkan dan notifikasi email dikirim ke donatur.',
+            ]);
+        }
 
         return back()->with('status', 'Dana berhasil ditandai telah dicairkan dan notifikasi email dikirim ke donatur.');
     }

@@ -52,7 +52,7 @@
     <div class="flex items-center justify-between gap-2">
         <label for="{{ $name }}" class="dt-label !mb-0">{{ $label }}</label>
         <button type="button" @click="sendOtp" :disabled="countdown > 0 || loading"
-                class="text-xs font-semibold text-brand-700 hover:text-brand-800 disabled:text-ink-400 disabled:cursor-not-allowed">
+                class="text-xs font-bold text-[#99ff04] hover:text-[#84e000] disabled:text-slate-500 disabled:cursor-not-allowed transition-colors">
             <span x-show="loading">Mengirim...</span>
             <span x-show="!loading && countdown === 0">Kirim Kode ke Email</span>
             <span x-show="!loading && countdown > 0" x-text="'Kirim ulang (' + countdown + 's)'"></span>
@@ -63,8 +63,8 @@
            placeholder="6 digit angka" class="dt-input font-mono tracking-widest text-center text-lg font-bold"
            autocomplete="one-time-code">
 
-    <p class="text-xs text-brand-700 font-medium" x-show="sentMessage" x-text="sentMessage" x-cloak></p>
-    <p class="text-xs text-rose-600 font-medium" x-show="errorMessage" x-text="errorMessage" x-cloak></p>
+    <p class="text-xs text-[#99ff04] font-semibold" x-show="sentMessage" x-text="sentMessage" x-cloak></p>
+    <p class="text-xs text-rose-400 font-semibold" x-show="errorMessage" x-text="errorMessage" x-cloak></p>
     @error($name)
         <p class="dt-error">{{ $message }}</p>
     @enderror
