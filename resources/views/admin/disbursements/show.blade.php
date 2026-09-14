@@ -161,10 +161,23 @@
                     releaseSuccess: '',
                     submitRelease(e) {
                         if (this.isSubmitting) return;
-                        this.isSubmitting = true;
                         this.releaseError = '';
                         this.releaseSuccess = '';
                         const form = e.target;
+                        const otpInput = form.querySelector('input[name=\'otp_code\']');
+                        const fileInput = form.querySelector('input[name=\'proof\']');
+
+                        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                            this.releaseError = 'Bukti struk transfer bank wajib dipilih.';
+                            return;
+                        }
+                        if (!otpInput || !otpInput.value.trim()) {
+                            this.releaseError = 'Kode verifikasi email wajib diisi.';
+                            if (otpInput) otpInput.focus();
+                            return;
+                        }
+
+                        this.isSubmitting = true;
                         const formData = new FormData(form);
 
                         fetch(form.action, {
@@ -179,7 +192,8 @@
                         .then(async (res) => {
                             const data = await res.json().catch(() => ({}));
                             if (!res.ok) {
-                                throw new Error(data.message || (data.errors ? Object.values(data.errors).flat().join(', ') : 'Gagal memproses pencairan.'));
+                                const errMsg = data.message || (data.errors ? Object.values(data.errors).flat().join(', ') : 'Gagal memproses pencairan.');
+                                throw new Error(errMsg);
                             }
                             return data;
                         })
@@ -191,9 +205,14 @@
                         })
                         .catch((err) => {
                             this.releaseError = err.message;
+                            if (otpInput) {
+                                otpInput.value = '';
+                                otpInput.focus();
+                            }
                         })
                         .finally(() => {
                             this.isSubmitting = false;
+                            form.dataset.submitting = '0';
                         });
                     }
                 }">
@@ -201,7 +220,7 @@
                     <p class="mt-1 text-xs font-medium text-slate-400">
                         Transfer manual ke rekening di sebelah kiri, lalu unggah buktinya di sini.
                     </p>
-                    <form method="POST" action="{{ route('admin.pencairan.release', $disbursement) }}"
+                    <form method="POST" action="{{ route('admin.pencairan.release', $disbursement) }}" data-no-loading
                           enctype="multipart/form-data" @submit.prevent="submitRelease($event)" class="mt-5 space-y-3">
                         @csrf
                         <div>

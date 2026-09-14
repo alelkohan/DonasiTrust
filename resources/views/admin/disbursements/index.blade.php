@@ -130,10 +130,23 @@
                                         releaseSuccess: '',
                                         submitRelease(e) {
                                             if (this.isSubmitting) return;
-                                            this.isSubmitting = true;
                                             this.releaseError = '';
                                             this.releaseSuccess = '';
                                             const form = e.target;
+                                            const otpInput = form.querySelector('input[name=\'otp_code\']');
+                                            const fileInput = form.querySelector('input[name=\'proof\']');
+
+                                            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                                                this.releaseError = 'Bukti struk transfer bank wajib dipilih.';
+                                                return;
+                                            }
+                                            if (!otpInput || !otpInput.value.trim()) {
+                                                this.releaseError = 'Kode verifikasi email wajib diisi.';
+                                                if (otpInput) otpInput.focus();
+                                                return;
+                                            }
+
+                                            this.isSubmitting = true;
                                             const formData = new FormData(form);
 
                                             fetch(form.action, {
@@ -148,7 +161,8 @@
                                             .then(async (res) => {
                                                 const data = await res.json().catch(() => ({}));
                                                 if (!res.ok) {
-                                                    throw new Error(data.message || (data.errors ? Object.values(data.errors).flat().join(', ') : 'Gagal memproses pencairan.'));
+                                                    const errMsg = data.message || (data.errors ? Object.values(data.errors).flat().join(', ') : 'Gagal memproses pencairan.');
+                                                    throw new Error(errMsg);
                                                 }
                                                 return data;
                                             })
@@ -161,81 +175,86 @@
                                             })
                                             .catch((err) => {
                                                 this.releaseError = err.message;
+                                                if (otpInput) {
+                                                    otpInput.value = '';
+                                                    otpInput.focus();
+                                                }
                                             })
                                             .finally(() => {
                                                 this.isSubmitting = false;
+                                                form.dataset.submitting = '0';
                                             });
                                         }
                                     }">
                                         @if ($disb->status === \App\Models\Disbursement::STATUS_PENDING)
-                                            <div class="flex items-center gap-2">
-                                                <form method="POST" action="{{ route('admin.pencairan.approve', $disb) }}"
-                                                      @submit.prevent="
-                                                          fetch($el.action, {
-                                                              method: 'POST',
-                                                              headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-                                                          }).then(() => window.dispatchEvent(new CustomEvent('refresh-disbursements')));
-                                                      ">
-                                                    @csrf
-                                                    <button type="submit" class="dt-btn-primary py-1 px-3 text-xs">Setujui</button>
-                                                </form>
-                                                <button type="button" @click="openReject = !openReject" class="dt-btn-secondary py-1 px-3 text-xs text-rose-400 hover:text-rose-300">Tolak</button>
-                                            </div>
+                                             <div class="flex items-center gap-2">
+                                                 <form method="POST" action="{{ route('admin.pencairan.approve', $disb) }}" data-no-loading
+                                                       @submit.prevent="
+                                                           fetch($el.action, {
+                                                               method: 'POST',
+                                                               headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                                                           }).then(() => window.dispatchEvent(new CustomEvent('refresh-disbursements')));
+                                                       ">
+                                                     @csrf
+                                                     <button type="submit" class="dt-btn-primary py-1 px-3 text-xs">Setujui</button>
+                                                 </form>
+                                                 <button type="button" @click="openReject = !openReject" class="dt-btn-secondary py-1 px-3 text-xs text-rose-400 hover:text-rose-300">Tolak</button>
+                                             </div>
 
-                                            <div x-show="openReject" x-cloak class="mt-2 w-72 text-left p-4 rounded-2xl border border-rose-500/30 bg-[#231f36] shadow-xl">
-                                                <form method="POST" action="{{ route('admin.pencairan.reject', $disb) }}" class="space-y-3"
-                                                      @submit.prevent="
-                                                          const fd = new FormData($el);
-                                                          fetch($el.action, {
-                                                              method: 'POST',
-                                                              headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                                                              body: fd
-                                                          }).then(() => {
-                                                              openReject = false;
-                                                              window.dispatchEvent(new CustomEvent('refresh-disbursements'));
-                                                          });
-                                                      ">
-                                                    @csrf
-                                                    <label class="dt-label text-xs">Alasan Penolakan</label>
-                                                    <input type="text" name="reason" required placeholder="Jelaskan alasan penolakan..." class="dt-input text-xs">
-                                                    <div class="flex justify-end gap-2 pt-1">
-                                                        <button type="button" @click="openReject = false" class="dt-btn-secondary py-1 px-3 text-xs">Batal</button>
-                                                        <button type="submit" class="dt-btn-danger py-1 px-3 text-xs">Kirim</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        @elseif ($disb->status === \App\Models\Disbursement::STATUS_APPROVED)
-                                            <button type="button" @click="openRelease = !openRelease" class="dt-btn-primary py-1 px-3 text-xs">
-                                                Tandai Dicairkan
-                                            </button>
+                                             <div x-show="openReject" x-cloak class="mt-2 w-72 text-left p-4 rounded-2xl border border-rose-500/30 bg-[#231f36] shadow-xl">
+                                                 <form method="POST" action="{{ route('admin.pencairan.reject', $disb) }}" data-no-loading class="space-y-3"
+                                                       @submit.prevent="
+                                                           const fd = new FormData($el);
+                                                           fetch($el.action, {
+                                                               method: 'POST',
+                                                               headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                                               body: fd
+                                                           }).then(() => {
+                                                               openReject = false;
+                                                               window.dispatchEvent(new CustomEvent('refresh-disbursements'));
+                                                           });
+                                                       ">
+                                                     @csrf
+                                                     <label class="dt-label text-xs">Alasan Penolakan</label>
+                                                     <input type="text" name="reason" required placeholder="Jelaskan alasan penolakan..." class="dt-input text-xs">
+                                                     <div class="flex justify-end gap-2 pt-1">
+                                                         <button type="button" @click="openReject = false" class="dt-btn-secondary py-1 px-3 text-xs">Batal</button>
+                                                         <button type="submit" class="dt-btn-danger py-1 px-3 text-xs">Kirim</button>
+                                                     </div>
+                                                 </form>
+                                             </div>
+                                         @elseif ($disb->status === \App\Models\Disbursement::STATUS_APPROVED)
+                                             <button type="button" @click="openRelease = !openRelease" class="dt-btn-primary py-1 px-3 text-xs">
+                                                 Tandai Dicairkan
+                                             </button>
 
-                                            <div x-show="openRelease" x-cloak class="mt-2 w-80 text-left p-4 rounded-2xl border border-white/10 bg-[#231f36] shadow-xl">
-                                                <form method="POST" action="{{ route('admin.pencairan.release', $disb) }}" enctype="multipart/form-data" @submit.prevent="submitRelease($event)" class="space-y-3 whitespace-normal">
-                                                    @csrf
-                                                    <p class="text-xs font-bold text-white">Unggah Bukti Struk Transfer Bank</p>
-                                                    <input type="file" name="proof" required accept="image/*" class="dt-input text-xs">
+                                             <div x-show="openRelease" x-cloak class="mt-2 w-80 text-left p-4 rounded-2xl border border-white/10 bg-[#231f36] shadow-xl">
+                                                 <form method="POST" action="{{ route('admin.pencairan.release', $disb) }}" data-no-loading enctype="multipart/form-data" @submit.prevent="submitRelease($event)" class="space-y-3 whitespace-normal">
+                                                     @csrf
+                                                     <p class="text-xs font-bold text-white">Unggah Bukti Struk Transfer Bank</p>
+                                                     <input type="file" name="proof" required accept="image/*" class="dt-input text-xs">
 
-                                                    <div class="bg-[#1b182a] p-3 rounded-xl border border-white/10">
-                                                        <x-otp-input purpose="disbursement_release" label="Kode Verifikasi Email" />
-                                                    </div>
+                                                     <div class="bg-[#1b182a] p-3 rounded-xl border border-white/10">
+                                                         <x-otp-input purpose="disbursement_release" label="Kode Verifikasi Email" />
+                                                     </div>
 
-                                                    <template x-if="releaseError">
-                                                        <p class="text-xs font-bold text-rose-400 bg-rose-500/10 p-2.5 rounded-xl border border-rose-500/20" x-text="releaseError"></p>
-                                                    </template>
+                                                     <template x-if="releaseError">
+                                                         <p class="text-xs font-bold text-rose-400 bg-rose-500/10 p-2.5 rounded-xl border border-rose-500/20" x-text="releaseError"></p>
+                                                     </template>
 
-                                                    <template x-if="releaseSuccess">
-                                                        <p class="text-xs font-bold text-[#99ff04] bg-[#99ff04]/10 p-2.5 rounded-xl border border-[#99ff04]/20" x-text="releaseSuccess"></p>
-                                                    </template>
+                                                     <template x-if="releaseSuccess">
+                                                         <p class="text-xs font-bold text-[#99ff04] bg-[#99ff04]/10 p-2.5 rounded-xl border border-[#99ff04]/20" x-text="releaseSuccess"></p>
+                                                     </template>
 
-                                                    <div class="flex justify-end gap-2 pt-1">
-                                                        <button type="button" @click="openRelease = false" class="dt-btn-secondary py-1 px-3 text-xs" :disabled="isSubmitting">Batal</button>
-                                                        <button type="submit" class="dt-btn-primary py-1 px-3 text-xs" :disabled="isSubmitting">
-                                                            <span x-show="!isSubmitting">Simpan &amp; Rilis</span>
-                                                            <span x-show="isSubmitting" x-cloak>Menyimpan...</span>
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
+                                                     <div class="flex justify-end gap-2 pt-1">
+                                                         <button type="button" @click="openRelease = false" class="dt-btn-secondary py-1 px-3 text-xs" :disabled="isSubmitting">Batal</button>
+                                                         <button type="submit" class="dt-btn-primary py-1 px-3 text-xs" :disabled="isSubmitting">
+                                                             <span x-show="!isSubmitting">Simpan &amp; Rilis</span>
+                                                             <span x-show="isSubmitting" x-cloak>Menyimpan...</span>
+                                                         </button>
+                                                     </div>
+                                                 </form>
+                                             </div>
                                         @elseif ($disb->status === \App\Models\Disbursement::STATUS_RELEASED)
                                             @if ($disb->supporting_document_path)
                                                 <a href="{{ route('berkas.pencairan', $disb) }}" target="_blank" class="dt-link text-xs font-semibold inline-flex items-center gap-1">
