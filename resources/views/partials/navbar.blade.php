@@ -170,10 +170,6 @@
                                     <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
                                     <span>Dasbor Kampanye</span>
                                 </a>
-                                <a href="{{ route('donatur.dashboard') }}" class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
-                                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    <span>Riwayat Donasi Saya</span>
-                                </a>
                             @elseif ($u->isAdmin())
                                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
                                     <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
@@ -299,10 +295,6 @@
                 @if ($u->isPengaju())
                     <a href="{{ route('pengaju.dashboard') }}" class="w-full flex items-center justify-center gap-2 rounded-xl bg-[#99ff04] py-2.5 text-xs font-black text-black">
                         <span>Dasbor Kampanye ({{ $u->name }})</span>
-                    </a>
-                    <a href="{{ route('donatur.dashboard') }}" class="w-full flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-[#231f36] py-2.5 text-xs font-extrabold text-white hover:bg-white/10 transition-all">
-                        <svg class="h-4 w-4 text-[#99ff04]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <span>Riwayat Donasi Saya</span>
                     </a>
                 @elseif ($u->isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="w-full flex items-center justify-center gap-2 rounded-xl bg-[#99ff04] py-2.5 text-xs font-black text-black">

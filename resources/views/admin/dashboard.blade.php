@@ -68,14 +68,14 @@
                     @endunless
                 </p>
             </div>
-            <a href="{{ route('admin.audit.index') }}" class="dt-btn-secondary text-xs">Buka jejak audit</a>
+            <a href="{{ route('admin.audit.index') }}" wire:navigate class="dt-btn-secondary text-xs">Buka jejak audit</a>
         </div>
     </section>
 
     <section class="dt-card mt-6 overflow-hidden">
         <div class="flex items-center justify-between border-b border-white/10 p-5 sm:p-6">
             <h2 class="text-base font-black text-white">Antrean review kampanye</h2>
-            <a href="{{ route('admin.kampanye.index') }}" class="text-xs font-extrabold text-[#99ff04] hover:underline">Lihat semua &rarr;</a>
+            <a href="{{ route('admin.kampanye.index') }}" wire:navigate class="text-xs font-extrabold text-[#99ff04] hover:underline">Lihat semua &rarr;</a>
         </div>
 
         @if ($recentCampaigns->isEmpty())
@@ -93,7 +93,7 @@
                                 &middot; diajukan {{ $campaign->submitted_at?->diffForHumans() }}
                             </p>
                         </div>
-                        <a href="{{ route('admin.kampanye.show', $campaign) }}" class="dt-btn-primary text-xs py-1.5 px-4">Tinjau</a>
+                        <a href="{{ route('admin.kampanye.show', $campaign) }}" wire:navigate class="dt-btn-primary text-xs py-1.5 px-4">Tinjau</a>
                     </li>
                 @endforeach
             </ul>

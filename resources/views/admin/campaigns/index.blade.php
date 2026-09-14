@@ -14,7 +14,7 @@
             'draft' => 'Draf',
         ] as $key => $label)
             @php($active = (request('status') ?: 'pending') === $key)
-            <a href="{{ route('admin.kampanye.index', ['status' => $key]) }}" @class([
+            <a href="{{ route('admin.kampanye.index', ['status' => $key]) }}" wire:navigate @class([
                 'rounded-xl px-3.5 py-2 text-xs transition-all',
                 'bg-[#99ff04] text-black font-black shadow-lg shadow-[#99ff04]/20' => $active,
                 'border border-white/10 bg-[#1b182a] text-slate-300 hover:bg-[#231f36] hover:text-white font-bold' => ! $active,
@@ -63,7 +63,7 @@
                                 {{ $campaign->submitted_at?->translatedFormat('d M Y') ?? '—' }}
                             </td>
                             <td class="text-right">
-                                <a href="{{ route('admin.kampanye.show', $campaign) }}" class="dt-link text-xs whitespace-nowrap">Tinjau &rarr;</a>
+                                <a href="{{ route('admin.kampanye.show', $campaign) }}" wire:navigate class="dt-link text-xs whitespace-nowrap">Tinjau &rarr;</a>
                             </td>
                         </tr>
                     @endforeach

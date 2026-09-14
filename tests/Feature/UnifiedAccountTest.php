@@ -13,25 +13,25 @@ class UnifiedAccountTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_pengaju_memiliki_menu_riwayat_donasi_dan_bisa_membuka_dashboard(): void
+    public function test_pengaju_bisa_membuka_dashboard_donasi_melalui_tombol_dasbor_pengaju(): void
     {
         $pengaju = User::factory()->create([
             'role' => User::ROLE_PENGAJU,
             'verification_status' => User::VERIFICATION_VERIFIED,
         ]);
 
-        $response = $this->actingAs($pengaju)->get(route('donatur.dashboard'));
+        // Di dasbor pengaju, terdapat tombol menuju riwayat donasi pribadi
+        $pengajuDashResponse = $this->actingAs($pengaju)->get(route('pengaju.dashboard'));
+        $pengajuDashResponse->assertOk();
+        $pengajuDashResponse->assertSee('Donasi Pribadi Anda');
+        $pengajuDashResponse->assertSee(route('donatur.dashboard'));
+        $pengajuDashResponse->assertDontSee('<span>Riwayat donasi</span>', false); // Tidak ada di navigasi sidebar pengaju
 
+        // Di halaman riwayat donasi (/dashboard), pengaju tetap bisa melihat riwayat dan tombol kembali ke dasbor kampanye
+        $response = $this->actingAs($pengaju)->get(route('donatur.dashboard'));
         $response->assertOk();
         $response->assertSee('Daftar Riwayat Transaksi');
         $response->assertSee('Dasbor Kampanye');
-        $response->assertSee('Riwayat donasi');
-
-        // Pastikan menu Riwayat donasi berstatus aktif (memiliki aria-current="page")
-        $this->assertMatchesRegularExpression(
-            '/href="[^"]*dashboard"[^>]*aria-current="page"[^>]*>\s*<span>Riwayat donasi<\/span>/s',
-            $response->getContent()
-        );
     }
 
     public function test_pengaju_melihat_ringkasan_donasi_pribadi_di_kedua_dasbor(): void

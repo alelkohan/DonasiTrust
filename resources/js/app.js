@@ -178,3 +178,135 @@ const gambarQr = () => {
 
 document.addEventListener('DOMContentLoaded', gambarQr);
 document.addEventListener('livewire:navigated', gambarQr);
+
+/*
+|------------------------------------------------------------------------------
+| Pendaftaran Komponen Alpine.js
+|------------------------------------------------------------------------------
+| Didaftarkan secara global agar selalu siap ketika navigasi SPA (wire:navigate)
+| berpindah antar halaman tanpa hard reload.
+*/
+const registerAlpineComponents = () => {
+    if (!window.Alpine) return;
+
+    if (!window.Alpine.data('formKampanye')) {
+        window.Alpine.data('formKampanye', (awal = {}) => ({
+            items: awal?.items || [],
+            milestones: awal?.milestones || [],
+            isSubmitting: false,
+            errorMessage: '',
+            errorList: [],
+            successMessage: '',
+
+            get target() {
+                return this.totalItems;
+            },
+
+            get totalItems() {
+                return (this.items || []).reduce((n, i) => n + (Number(i.quantity) || 0) * (Number(i.unit_price) || 0), 0);
+            },
+
+            get totalMilestones() {
+                return (this.milestones || []).reduce((n, m) => n + (Number(m.amount) || 0), 0);
+            },
+
+            format(value) {
+                return 'Rp' + new Intl.NumberFormat('id-ID').format(Math.round(value || 0));
+            },
+
+            async submitForm(event) {
+                if (this.isSubmitting) return;
+
+                this.errorMessage = '';
+                this.errorList = [];
+                this.successMessage = '';
+
+                const form = event.target;
+                const formData = new FormData(form);
+
+                this.isSubmitting = true;
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json().catch(() => ({}));
+
+                    if (response.ok && data.success) {
+                        if (data.redirect) {
+                            if (window.Livewire && typeof window.Livewire.navigate === 'function') {
+                                window.Livewire.navigate(data.redirect);
+                            } else {
+                                window.location.href = data.redirect;
+                            }
+                            return;
+                        }
+                        this.successMessage = data.message || 'Perubahan draf kampanye berhasil disimpan.';
+                        this.isSubmitting = false;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        this.isSubmitting = false;
+                        if (data.errors) {
+                            this.errorMessage = data.message || 'Terdapat kesalahan pengisian formulir:';
+                            this.errorList = Object.values(data.errors).flat();
+                        } else {
+                            this.errorMessage = data.message || 'Terjadi kesalahan saat menyimpan data kampanye.';
+                        }
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                } catch (err) {
+                    this.isSubmitting = false;
+                    this.errorMessage = 'Terjadi gangguan koneksi internet. Silakan coba lagi.';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }
+        }));
+    }
+
+    if (!window.Alpine.data('hitungMundur')) {
+        window.Alpine.data('hitungMundur', ({ sampai, habis }) => ({
+            habis,
+            sisa: '',
+            timer: null,
+
+            init() {
+                this.hitung();
+                this.timer = setInterval(() => this.hitung(), 1000);
+            },
+
+            destroy() {
+                clearInterval(this.timer);
+            },
+
+            hitung() {
+                const selisih = new Date(sampai).getTime() - Date.now();
+
+                if (selisih <= 0) {
+                    this.habis = true;
+                    this.sisa = '00:00:00';
+                    clearInterval(this.timer);
+                    return;
+                }
+
+                const total = Math.floor(selisih / 1000);
+                const jam = String(Math.floor(total / 3600)).padStart(2, '0');
+                const menit = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
+                const detik = String(total % 60).padStart(2, '0');
+
+                this.sisa = `${jam}:${menit}:${detik}`;
+            },
+        }));
+    }
+};
+
+document.addEventListener('alpine:init', registerAlpineComponents);
+document.addEventListener('livewire:navigated', registerAlpineComponents);
+document.addEventListener('DOMContentLoaded', registerAlpineComponents);
+registerAlpineComponents();

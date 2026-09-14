@@ -18,8 +18,9 @@
 @endphp
 
 @section('panel')
-<form method="POST" enctype="multipart/form-data"
+<form method="POST" enctype="multipart/form-data" data-no-loading
       action="{{ $campaign->exists ? route('pengaju.kampanye.update', $campaign) : route('pengaju.kampanye.store') }}"
+      @submit.prevent="submitForm($event)"
       x-data="formKampanye({
           items: {{ Illuminate\Support\Js::from($itemsInitial) }},
           milestones: {{ Illuminate\Support\Js::from($milestonesInitial) }},
@@ -37,8 +38,28 @@
                 Target dana, total RAB, dan total tahapan wajib sama persis. Sistem menolak jika tidak seimbang.
             </p>
         </div>
-        <a href="{{ route('pengaju.kampanye.index') }}" class="dt-btn-secondary">Batal</a>
+        <a href="{{ route('pengaju.kampanye.index') }}" wire:navigate class="dt-btn-secondary">Batal</a>
     </header>
+
+    {{-- Inline Notification --}}
+    <div x-show="errorMessage" x-cloak class="mt-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-300 text-sm shadow-md">
+        <div class="flex items-center gap-2 font-bold text-rose-200">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <span x-text="errorMessage"></span>
+        </div>
+        <template x-if="errorList.length > 0">
+            <ul class="mt-2 list-disc list-inside space-y-1 text-xs text-rose-200/90 pl-1">
+                <template x-for="(err, idx) in errorList" :key="idx">
+                    <li x-text="err"></li>
+                </template>
+            </ul>
+        </template>
+    </div>
+
+    <div x-show="successMessage" x-cloak class="mt-4 flex items-center gap-3 rounded-2xl border border-[#99ff04]/30 bg-[#99ff04]/10 p-4 text-[#99ff04] text-sm shadow-md">
+        <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        <span class="font-bold text-white" x-text="successMessage"></span>
+    </div>
 
     {{-- 1. Informasi dasar --}}
     <section class="dt-card mt-6 p-5 sm:p-6">
@@ -264,8 +285,12 @@
     </section>
 
     <div class="mt-6 flex flex-wrap items-center gap-3">
-        <button type="submit" class="dt-btn-primary px-6 py-3 text-base">
-            {{ $campaign->exists ? 'Simpan perubahan' : 'Simpan sebagai draf' }}
+        <button type="submit" class="dt-btn-primary px-6 py-3 text-base inline-flex items-center gap-2" :disabled="isSubmitting">
+            <svg x-show="isSubmitting" x-cloak class="h-5 w-5 animate-spin text-black" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+            <span x-text="isSubmitting ? 'Menyimpan...' : '{{ $campaign->exists ? 'Simpan perubahan' : 'Simpan sebagai draf' }}'">{{ $campaign->exists ? 'Simpan perubahan' : 'Simpan sebagai draf' }}</span>
         </button>
         <p class="text-sm text-slate-400">
             Draf belum tayang. Ajukan untuk review dari halaman &ldquo;Kampanye saya&rdquo;.
@@ -273,30 +298,95 @@
     </div>
 </form>
 
-@push('head')
 <script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('formKampanye', (awal) => ({
-            items: awal.items,
-            milestones: awal.milestones,
+    (function() {
+        const initFormKampanye = () => {
+            if (window.Alpine && !window.Alpine.data('formKampanye')) {
+                Alpine.data('formKampanye', (awal = {}) => ({
+                    items: awal?.items || [],
+                    milestones: awal?.milestones || [],
+                    isSubmitting: false,
+                    errorMessage: '',
+                    errorList: [],
+                    successMessage: '',
 
-            get target() {
-                return this.totalItems;
-            },
+                    get target() {
+                        return this.totalItems;
+                    },
 
-            get totalItems() {
-                return this.items.reduce((n, i) => n + (Number(i.quantity) || 0) * (Number(i.unit_price) || 0), 0);
-            },
+                    get totalItems() {
+                        return (this.items || []).reduce((n, i) => n + (Number(i.quantity) || 0) * (Number(i.unit_price) || 0), 0);
+                    },
 
-            get totalMilestones() {
-                return this.milestones.reduce((n, m) => n + (Number(m.amount) || 0), 0);
-            },
+                    get totalMilestones() {
+                        return (this.milestones || []).reduce((n, m) => n + (Number(m.amount) || 0), 0);
+                    },
 
-            format(value) {
-                return 'Rp' + new Intl.NumberFormat('id-ID').format(Math.round(value || 0));
-            },
-        }));
-    });
+                    format(value) {
+                        return 'Rp' + new Intl.NumberFormat('id-ID').format(Math.round(value || 0));
+                    },
+
+                    async submitForm(event) {
+                        if (this.isSubmitting) return;
+
+                        this.errorMessage = '';
+                        this.errorList = [];
+                        this.successMessage = '';
+
+                        const form = event.target;
+                        const formData = new FormData(form);
+
+                        this.isSubmitting = true;
+
+                        try {
+                            const response = await fetch(form.action, {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                                },
+                                body: formData
+                            });
+
+                            const data = await response.json().catch(() => ({}));
+
+                            if (response.ok && data.success) {
+                                if (data.redirect) {
+                                    if (window.Livewire && typeof window.Livewire.navigate === 'function') {
+                                        window.Livewire.navigate(data.redirect);
+                                    } else {
+                                        window.location.href = data.redirect;
+                                    }
+                                    return;
+                                }
+                                this.successMessage = data.message || 'Perubahan draf kampanye berhasil disimpan.';
+                                this.isSubmitting = false;
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            } else {
+                                this.isSubmitting = false;
+                                if (data.errors) {
+                                    this.errorMessage = data.message || 'Terdapat kesalahan pengisian formulir:';
+                                    this.errorList = Object.values(data.errors).flat();
+                                } else {
+                                    this.errorMessage = data.message || 'Terjadi kesalahan saat menyimpan data kampanye.';
+                                }
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }
+                        } catch (err) {
+                            this.isSubmitting = false;
+                            this.errorMessage = 'Terjadi gangguan koneksi internet. Silakan coba lagi.';
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                    }
+                }));
+            }
+        };
+
+        document.addEventListener('alpine:init', initFormKampanye);
+        document.addEventListener('livewire:navigated', initFormKampanye);
+        document.addEventListener('DOMContentLoaded', initFormKampanye);
+        initFormKampanye();
+    })();
 </script>
-@endpush
 @endsection

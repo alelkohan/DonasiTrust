@@ -5,7 +5,7 @@
 
 @section('panel')
     <nav class="mb-5 text-sm text-slate-400">
-        <a href="{{ route('admin.pengguna.index') }}" class="hover:text-[#99ff04] transition-colors">&larr; Kembali ke daftar</a>
+        <a href="{{ route('admin.pengguna.index') }}" wire:navigate class="hover:text-[#99ff04] transition-colors">&larr; Kembali ke daftar</a>
     </nav>
 
     <h1 class="text-2xl font-black tracking-tight text-white">{{ $user->name }}</h1>
@@ -136,9 +136,53 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('admin.pengguna.decide', $user) }}" class="mt-5 space-y-4"
-                  x-data="{ keputusan: 'verified' }">
+            <form method="POST" action="{{ route('admin.pengguna.decide', $user) }}" class="mt-5 space-y-4" data-no-loading
+                  x-data="{
+                      keputusan: 'verified',
+                      isSubmitting: false,
+                      errorMessage: '',
+                      async submitDecision(e) {
+                          if (this.isSubmitting) return;
+                          this.errorMessage = '';
+                          const form = e.target;
+                          this.isSubmitting = true;
+                          try {
+                              const res = await fetch(form.action, {
+                                  method: 'POST',
+                                  headers: {
+                                      'Accept': 'application/json',
+                                      'X-Requested-With': 'XMLHttpRequest',
+                                      'X-CSRF-TOKEN': document.querySelector('meta[name=\'csrf-token\']')?.content || ''
+                                  },
+                                  body: new FormData(form)
+                              });
+                              const data = await res.json().catch(() => ({}));
+                              if (res.ok && data.success) {
+                                  if (data.redirect) {
+                                      if (window.Livewire && typeof window.Livewire.navigate === 'function') {
+                                          window.Livewire.navigate(data.redirect);
+                                      } else {
+                                          window.location.href = data.redirect;
+                                      }
+                                      return;
+                                  }
+                                  window.location.reload();
+                              } else {
+                                  this.isSubmitting = false;
+                                  this.errorMessage = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Terjadi kesalahan saat menyimpan keputusan.');
+                              }
+                          } catch (err) {
+                              this.isSubmitting = false;
+                              this.errorMessage = 'Terjadi gangguan koneksi internet. Silakan coba lagi.';
+                          }
+                      }
+                  }"
+                  @submit.prevent="submitDecision($event)">
                 @csrf
+
+                <div x-show="errorMessage" x-cloak class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+                    <span x-text="errorMessage"></span>
+                </div>
 
                 <fieldset>
                     <legend class="dt-label text-xs">Keputusan</legend>
@@ -165,7 +209,13 @@
                     @error('note') <p class="dt-error">{{ $message }}</p> @enderror
                 </div>
 
-                <button type="submit" class="dt-btn-primary w-full py-3">Simpan keputusan</button>
+                <button type="submit" class="dt-btn-primary w-full py-3 inline-flex items-center justify-center gap-2" :disabled="isSubmitting">
+                    <svg x-show="isSubmitting" x-cloak class="h-4 w-4 animate-spin text-black" viewBox="0 0 24 24" fill="none">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan keputusan'">Simpan keputusan</span>
+                </button>
                 <p class="text-center text-xs text-slate-500">Keputusan ini tercatat permanen di jejak audit.</p>
             </form>
         </section>

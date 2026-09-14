@@ -62,8 +62,17 @@ class CampaignController extends Controller
             return $campaign;
         });
 
-        return redirect()->route('pengaju.kampanye.edit', $campaign)
-            ->with('status', 'Draf kampanye tersimpan. Periksa lagi sebelum diajukan.');
+        if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            $request->session()->flash('status', 'Kampanye baru berhasil dibuat sebagai draf!');
+            return response()->json([
+                'success' => true,
+                'message' => 'Kampanye baru berhasil dibuat sebagai draf!',
+                'redirect' => route('pengaju.kampanye.index'),
+            ]);
+        }
+
+        return redirect()->route('pengaju.kampanye.index')
+            ->with('status', 'Kampanye baru berhasil dibuat sebagai draf!');
     }
 
     public function edit(Campaign $campaign)
@@ -100,15 +109,25 @@ class CampaignController extends Controller
             $audit->record('campaign.updated', $campaign, ['judul' => $campaign->title]);
         });
 
+        if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'message' => 'Perubahan draf kampanye berhasil disimpan.',
+            ]);
+        }
+
         return back()->with('status', 'Perubahan tersimpan.');
     }
 
-    public function submit(Campaign $campaign, AuditLogger $audit)
+    public function submit(Request $request, Campaign $campaign, AuditLogger $audit)
     {
         $this->authorize('submit', $campaign);
 
         if ($campaign->milestones()->count() === 0) {
-            return back()->withErrors(['milestones' => 'Tambahkan minimal satu tahap pencairan.']);
+            if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json(['message' => 'Tambahkan minimal satu tahap pencairan sebelum mengajukan review.'], 422);
+            }
+            return back()->withErrors(['milestones' => 'Tambahkan minimal satu tahap pencairan sebelum mengajukan review.']);
         }
 
         $campaign->update([
@@ -119,17 +138,38 @@ class CampaignController extends Controller
 
         $audit->record('campaign.submitted', $campaign, ['judul' => $campaign->title]);
 
+        if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            $request->session()->flash('status', 'Kampanye berhasil diajukan untuk review admin. Data terkunci selama peninjauan.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Kampanye berhasil diajukan untuk review admin. Data terkunci selama peninjauan.',
+                'redirect' => route('pengaju.kampanye.index'),
+            ]);
+        }
+
         return redirect()->route('pengaju.kampanye.index')
-            ->with('status', 'Kampanye diajukan. Admin akan meninjau dalam 1x24 jam.');
+            ->with('status', 'Kampanye berhasil diajukan untuk review admin. Data terkunci selama peninjauan.');
     }
 
-    public function destroy(Campaign $campaign)
+    public function destroy(Request $request, Campaign $campaign, AuditLogger $audit)
     {
         $this->authorize('delete', $campaign);
 
+        $title = $campaign->title;
         $campaign->delete();
 
-        return redirect()->route('pengaju.kampanye.index')->with('status', 'Kampanye dihapus.');
+        $audit->record('campaign.deleted', null, ['judul' => $title]);
+
+        if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            $request->session()->flash('status', 'Kampanye berhasil dihapus.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Kampanye berhasil dihapus.',
+                'redirect' => route('pengaju.kampanye.index'),
+            ]);
+        }
+
+        return redirect()->route('pengaju.kampanye.index')->with('status', 'Kampanye berhasil dihapus.');
     }
 
     private function validated(Request $request): array

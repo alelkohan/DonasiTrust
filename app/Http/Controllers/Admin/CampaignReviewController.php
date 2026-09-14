@@ -57,8 +57,18 @@ class CampaignReviewController extends Controller
             'catatan' => $data['note'] ?? null,
         ]);
 
+        $message = 'Kampanye "'.$campaign->title.'" disetujui dan tayang.';
+        if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            $request->session()->flash('status', $message);
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'redirect' => route('admin.kampanye.index'),
+            ]);
+        }
+
         return redirect()->route('admin.kampanye.index')
-            ->with('status', 'Kampanye "'.$campaign->title.'" disetujui dan tayang.');
+            ->with('status', $message);
     }
 
     public function reject(Request $request, Campaign $campaign, AuditLogger $audit)
@@ -81,8 +91,18 @@ class CampaignReviewController extends Controller
             'alasan' => $data['note'],
         ]);
 
+        $message = 'Kampanye ditolak dengan catatan untuk pengaju.';
+        if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            $request->session()->flash('status', $message);
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'redirect' => route('admin.kampanye.index'),
+            ]);
+        }
+
         return redirect()->route('admin.kampanye.index')
-            ->with('status', 'Kampanye ditolak dengan catatan untuk pengaju.');
+            ->with('status', $message);
     }
 
     public function destroy(Campaign $campaign, AuditLogger $audit)
@@ -94,7 +114,17 @@ class CampaignReviewController extends Controller
 
         $audit->record('campaign.deleted', null, ['judul' => $title]);
 
+        $message = 'Kampanye "'.$title.'" berhasil dihapus.';
+        if (request()->expectsJson() || request()->ajax() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            request()->session()->flash('status', $message);
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'redirect' => route('admin.kampanye.index'),
+            ]);
+        }
+
         return redirect()->route('admin.kampanye.index')
-            ->with('status', 'Kampanye "'.$title.'" berhasil dihapus.');
+            ->with('status', $message);
     }
 }

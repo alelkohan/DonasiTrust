@@ -24,7 +24,7 @@
             </div>
 
             @if (auth()->user()->canSubmitCampaign())
-                <a href="{{ route('pengaju.kampanye.create') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#99ff04] px-5 py-2.5 text-xs font-black text-black hover:bg-[#84e000] transition-all hover:scale-105 active:scale-95 shadow-md shadow-[#99ff04]/20 shrink-0">
+                <a href="{{ route('pengaju.kampanye.create') }}" wire:navigate class="inline-flex items-center justify-center gap-2 rounded-full bg-[#99ff04] px-5 py-2.5 text-xs font-black text-black hover:bg-[#84e000] transition-all hover:scale-105 active:scale-95 shadow-md shadow-[#99ff04]/20 shrink-0">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
                     </svg>
@@ -150,6 +150,7 @@
             <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Pencairan Menunggu</span>
             <div class="mt-2 text-2xl font-black text-amber-300 tabular-nums">{{ $pendingDisbursements }}</div>
             <div class="mt-1 text-[11px] font-medium text-slate-400">Dalam review admin</div>
+        </div>
     </div>
 
     {{-- Akun Terpadu: Ringkasan Donasi Pribadi Pengaju --}}
@@ -181,7 +182,7 @@
     <div class="rounded-3xl border border-white/10 bg-[#1b182a] shadow-xl overflow-hidden backdrop-blur-md">
         <div class="flex items-center justify-between border-b border-white/10 px-6 py-5">
             <h2 class="text-base font-black text-white">Kampanye Terbaru Saya</h2>
-            <a href="{{ route('pengaju.kampanye.index') }}" class="text-xs font-extrabold text-[#99ff04] hover:underline">
+            <a href="{{ route('pengaju.kampanye.index') }}" wire:navigate class="text-xs font-extrabold text-[#99ff04] hover:underline">
                 Kelola Semua Kampanye &rarr;
             </a>
         </div>
@@ -190,7 +191,7 @@
             <div class="px-6 py-12 text-center">
                 <p class="text-xs sm:text-sm font-medium text-slate-400">Belum ada kampanye yang dibuat.</p>
                 @if (auth()->user()->canSubmitCampaign())
-                    <a href="{{ route('pengaju.kampanye.create') }}" class="mt-4 inline-flex items-center gap-2 rounded-full bg-[#99ff04] px-5 py-2 text-xs font-black text-black hover:bg-[#84e000]">
+                    <a href="{{ route('pengaju.kampanye.create') }}" wire:navigate class="mt-4 inline-flex items-center gap-2 rounded-full bg-[#99ff04] px-5 py-2 text-xs font-black text-black hover:bg-[#84e000]">
                         <span>Buat Kampanye Pertama</span>
                     </a>
                 @endif
@@ -221,7 +222,7 @@
 
                         <div class="flex gap-2">
                             @if ($campaign->isEditable())
-                                <a href="{{ route('pengaju.kampanye.edit', $campaign) }}" class="rounded-xl border border-white/20 bg-[#231f36] px-3 py-1.5 text-xs font-extrabold text-white hover:border-[#99ff04] hover:text-[#99ff04]">
+                                <a href="{{ route('pengaju.kampanye.edit', $campaign) }}" wire:navigate class="rounded-xl border border-white/20 bg-[#231f36] px-3 py-1.5 text-xs font-extrabold text-white hover:border-[#99ff04] hover:text-[#99ff04]">
                                     Edit
                                 </a>
                             @elseif ($campaign->isPublished())

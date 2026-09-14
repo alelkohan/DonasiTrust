@@ -22,7 +22,7 @@
 @endphp
 
 <{{ $tag }}
-    @if ($tautan) href="{{ $tautan }}" @endif
+    @if ($tautan) href="{{ $tautan }}" wire:navigate @endif
     {{ $attributes->class([
         'rounded-2xl border border-white/10 bg-[#1b182a] flex h-full flex-col p-5 shadow-lg backdrop-blur-md transition-all hover:border-[#99ff04]/30',
     ]) }}>

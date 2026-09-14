@@ -5,7 +5,7 @@
 
 @section('panel')
     <nav class="mb-5 text-sm text-slate-400">
-        <a href="{{ route('admin.pencairan.index') }}" class="hover:text-[#99ff04] transition-colors">&larr; Kembali ke daftar pencairan</a>
+        <a href="{{ route('admin.pencairan.index') }}" wire:navigate class="hover:text-[#99ff04] transition-colors">&larr; Kembali ke daftar pencairan</a>
     </nav>
 
     <div class="flex flex-wrap items-start justify-between gap-4">
@@ -35,7 +35,7 @@
                 <div class="flex justify-between gap-4">
                     <dt class="text-xs font-bold uppercase tracking-wider text-slate-400">Kampanye</dt>
                     <dd class="text-right font-semibold text-white">
-                        <a href="{{ route('admin.kampanye.show', $disbursement->campaign) }}" class="dt-link text-sm">
+                        <a href="{{ route('admin.kampanye.show', $disbursement->campaign) }}" wire:navigate class="dt-link text-sm">
                             {{ $disbursement->campaign->title }}
                         </a>
                     </dd>

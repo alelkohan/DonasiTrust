@@ -5,7 +5,7 @@
 
 @section('panel')
     <nav class="mb-5 text-sm text-slate-400">
-        <a href="{{ route('admin.kampanye.index') }}" class="hover:text-[#99ff04] transition-colors">&larr; Kembali ke antrean</a>
+        <a href="{{ route('admin.kampanye.index') }}" wire:navigate class="hover:text-[#99ff04] transition-colors">&larr; Kembali ke antrean</a>
     </nav>
 
     <div class="flex flex-wrap items-start justify-between gap-4">
@@ -117,37 +117,93 @@
                         </dd>
                     </div>
                 </dl>
-                <a href="{{ route('admin.pengguna.show', $campaign->user) }}" class="dt-btn-secondary mt-5 w-full text-xs">
+                <a href="{{ route('admin.pengguna.show', $campaign->user) }}" wire:navigate class="dt-btn-secondary mt-5 w-full text-xs">
                     Lihat berkas identitas
                 </a>
             </section>
 
             @if ($campaign->status === 'pending')
-                <section class="dt-card p-5 sm:p-6">
+                <section class="dt-card p-5 sm:p-6"
+                         x-data="{
+                             isSubmitting: false,
+                             errorMessage: '',
+                             async handleDecision(e) {
+                                 if (this.isSubmitting) return;
+                                 this.errorMessage = '';
+                                 const form = e.target;
+                                 this.isSubmitting = true;
+                                 try {
+                                     const res = await fetch(form.action, {
+                                         method: 'POST',
+                                         headers: {
+                                             'Accept': 'application/json',
+                                             'X-Requested-With': 'XMLHttpRequest',
+                                             'X-CSRF-TOKEN': document.querySelector('meta[name=\'csrf-token\']')?.content || ''
+                                         },
+                                         body: new FormData(form)
+                                     });
+                                     const data = await res.json().catch(() => ({}));
+                                     if (res.ok && data.success) {
+                                         if (data.redirect) {
+                                             if (window.Livewire && typeof window.Livewire.navigate === 'function') {
+                                                 window.Livewire.navigate(data.redirect);
+                                             } else {
+                                                 window.location.href = data.redirect;
+                                             }
+                                             return;
+                                         }
+                                         window.location.reload();
+                                     } else {
+                                         this.isSubmitting = false;
+                                         this.errorMessage = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Terjadi kesalahan saat memproses keputusan.');
+                                     }
+                                 } catch (err) {
+                                     this.isSubmitting = false;
+                                     this.errorMessage = 'Terjadi gangguan koneksi internet. Silakan coba lagi.';
+                                 }
+                             }
+                         }">
                     <h2 class="text-lg font-black text-white">Keputusan</h2>
                     <p class="mt-1 text-xs font-medium text-slate-400">Keputusan Anda tercatat permanen di jejak audit.</p>
 
-                    <form method="POST" action="{{ route('admin.kampanye.approve', $campaign) }}" class="mt-5 space-y-3">
+                    <div x-show="errorMessage" x-cloak class="mt-4 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+                        <span x-text="errorMessage"></span>
+                    </div>
+
+                    <form method="POST" action="{{ route('admin.kampanye.approve', $campaign) }}" class="mt-5 space-y-3" data-no-loading
+                          @submit.prevent="handleDecision($event)">
                         @csrf
                         <div>
                             <label for="note-approve" class="dt-label">Catatan <span class="font-normal text-slate-500">(opsional)</span></label>
                             <textarea id="note-approve" name="note" rows="2" class="dt-input text-xs" maxlength="1000"
                                       placeholder="Catatan untuk pengaju"></textarea>
                         </div>
-                        <button type="submit" class="dt-btn-primary w-full py-3">Setujui &amp; tayangkan</button>
+                        <button type="submit" class="dt-btn-primary w-full py-3 inline-flex items-center justify-center gap-2" :disabled="isSubmitting">
+                            <svg x-show="isSubmitting" x-cloak class="h-4 w-4 animate-spin text-black" viewBox="0 0 24 24" fill="none">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                            <span x-text="isSubmitting ? 'Memproses...' : 'Setujui & tayangkan'">Setujui &amp; tayangkan</span>
+                        </button>
                     </form>
 
                     <div class="my-5 border-t border-white/10"></div>
 
-                    <form method="POST" action="{{ route('admin.kampanye.reject', $campaign) }}" class="space-y-3"
-                          x-data @submit="if (! confirm('Tolak kampanye ini?')) $event.preventDefault()">
+                    <form method="POST" action="{{ route('admin.kampanye.reject', $campaign) }}" class="space-y-3" data-no-loading
+                          @submit.prevent="if (confirm('Tolak kampanye ini?')) handleDecision($event)">
                         @csrf
                         <div>
                             <label for="note-reject" class="dt-label">Alasan penolakan <span class="text-rose-400">*</span></label>
                             <textarea id="note-reject" name="note" rows="3" required class="dt-input text-xs" maxlength="1000"
                                       placeholder="Jelaskan apa yang perlu diperbaiki agar pengaju bisa mengajukan ulang."></textarea>
                         </div>
-                        <button type="submit" class="dt-btn-danger w-full py-2.5">Tolak kampanye</button>
+                        <button type="submit" class="dt-btn-danger w-full py-2.5 inline-flex items-center justify-center gap-2" :disabled="isSubmitting">
+                            <svg x-show="isSubmitting" x-cloak class="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                            <span x-text="isSubmitting ? 'Memproses...' : 'Tolak kampanye'">Tolak kampanye</span>
+                        </button>
                     </form>
                 </section>
             @elseif ($campaign->review_note)

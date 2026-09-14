@@ -76,12 +76,25 @@ class ExpenseReportController extends Controller
         // Broadcast email ke seluruh donatur kampanye via Queue Worker
         \App\Jobs\SendExpenseReportBroadcastJob::dispatch($expense);
 
-        return back()->with('status', 'LPJ berhasil diverifikasi dan notifikasi email dikirim ke donatur.');
+        $message = 'LPJ berhasil diverifikasi dan notifikasi email dikirim ke donatur.';
+        if (request()->expectsJson() || request()->ajax() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            request()->session()->flash('status', $message);
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'redirect' => route('admin.lpj.index'),
+            ]);
+        }
+
+        return back()->with('status', $message);
     }
 
     public function reject(Request $request, ExpenseReport $expense, AuditLogger $audit)
     {
         if ($expense->status !== ExpenseReport::STATUS_PENDING) {
+            if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json(['message' => 'Status tidak valid.'], 422);
+            }
             return back()->with('error', 'Status tidak valid.');
         }
 
@@ -103,6 +116,16 @@ class ExpenseReportController extends Controller
             ]);
         });
 
-        return back()->with('status', 'LPJ ditolak.');
+        $message = 'LPJ ditolak.';
+        if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            $request->session()->flash('status', $message);
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'redirect' => route('admin.lpj.index'),
+            ]);
+        }
+
+        return back()->with('status', $message);
     }
 }

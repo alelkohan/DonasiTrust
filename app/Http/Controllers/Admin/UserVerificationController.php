@@ -88,6 +88,15 @@ class UserVerificationController extends Controller
             ['nama' => $user->name, 'catatan' => $data['note'] ?? null]
         );
 
+        if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            $request->session()->flash('status', 'Keputusan verifikasi tersimpan.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Keputusan verifikasi tersimpan.',
+                'redirect' => route('admin.pengguna.index'),
+            ]);
+        }
+
         return redirect()->route('admin.pengguna.index')
             ->with('status', 'Keputusan verifikasi tersimpan.');
     }
