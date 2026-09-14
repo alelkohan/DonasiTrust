@@ -2,6 +2,7 @@
 
 <header x-data="{
     open: false,
+    showUpgradeModal: false,
     isDark: !(localStorage.getItem('dt_theme') === 'light'),
     init() {
         this.isDark = !(localStorage.getItem('dt_theme') === 'light');
@@ -123,11 +124,6 @@
                     <a href="{{ route('admin.dashboard') }}" class="rounded-full bg-[#99ff04] px-4 py-1.5 text-xs font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 active:scale-95 flex items-center gap-1">
                         <span>Panel Admin</span>
                     </a>
-                @else
-                    <a href="{{ route('verifikasi.identitas') }}" class="rounded-full bg-[#99ff04] px-4 py-1.5 text-xs font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 active:scale-95 flex items-center gap-1">
-                        <svg class="h-3.5 w-3.5 stroke-black" fill="none" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                        <span>Galang Dana</span>
-                    </a>
                 @endif
             @endguest
 
@@ -193,11 +189,16 @@
                                 <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                 <span>Profil Saya</span>
                             </a>
-                            @if (! $u->isAdmin())
+                            @if ($u->isPengaju())
                                 <a href="{{ route('verifikasi.identitas') }}" class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
                                     <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                                    <span>{{ $u->isPengaju() ? 'Verifikasi Identitas' : 'Upgrade Jadi Pengaju' }}</span>
+                                    <span>Verifikasi Identitas</span>
                                 </a>
+                            @elseif ($u->isDonatur())
+                                <button type="button" @click="userMenu = false; showUpgradeModal = true" class="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-[#99ff04] hover:bg-[#99ff04]/10 transition-colors text-left cursor-pointer">
+                                    <svg class="h-4 w-4 text-[#99ff04]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                    <span>Upgrade Jadi Pengaju</span>
+                                </button>
                             @endif
                         </div>
                         <div class="border-t border-white/10 pt-1.5">
@@ -242,10 +243,6 @@
                 @elseif ($u->isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="rounded-full bg-[#99ff04] px-3 py-1 text-[11px] font-black text-black">
                         Admin
-                    </a>
-                @else
-                    <a href="{{ route('verifikasi.identitas') }}" class="rounded-full bg-[#99ff04] px-3 py-1 text-[11px] font-black text-black">
-                        + Galang Dana
                     </a>
                 @endif
             @endguest
@@ -320,11 +317,16 @@
                     <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     <span>Profil Saya</span>
                 </a>
-                @if (! $u->isAdmin())
+                @if ($u->isPengaju())
                     <a href="{{ route('verifikasi.identitas') }}" class="w-full flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-[#231f36] py-2.5 text-xs font-extrabold text-white hover:bg-white/10 transition-all">
                         <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                        <span>{{ $u->isPengaju() ? 'Verifikasi Identitas' : 'Upgrade Jadi Pengaju' }}</span>
+                        <span>Verifikasi Identitas</span>
                     </a>
+                @elseif ($u->isDonatur())
+                    <button type="button" @click="open = false; showUpgradeModal = true" class="w-full flex items-center justify-center gap-2 rounded-xl border border-[#99ff04]/30 bg-[#99ff04]/10 py-2.5 text-xs font-extrabold text-[#99ff04] hover:bg-[#99ff04]/20 transition-all cursor-pointer">
+                        <svg class="h-4 w-4 text-[#99ff04]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        <span>Upgrade Jadi Pengaju</span>
+                    </button>
                 @endif
                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                     @csrf
@@ -336,4 +338,94 @@
             @endguest
         </div>
     </div>
+
+    @auth
+        @if ($u->isDonatur())
+            {{-- Modal Konfirmasi Upgrade Jadi Pengaju --}}
+            <div x-show="showUpgradeModal" x-cloak
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+                 @keydown.escape.window="showUpgradeModal = false"
+                 style="display: none;">
+                
+                {{-- Backdrop --}}
+                <div class="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"
+                     @click="showUpgradeModal = false"></div>
+
+                {{-- Modal Dialog --}}
+                <div x-show="showUpgradeModal"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+                     @click.stop
+                     class="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/15 bg-[#1b182a] p-6 sm:p-8 text-left shadow-2xl text-white z-10">
+                    
+                    {{-- Glow effect --}}
+                    <div aria-hidden="true" class="absolute -top-16 -right-16 h-48 w-48 rounded-full bg-[#99ff04]/15 blur-3xl pointer-events-none"></div>
+
+                    {{-- Header Icon & Title --}}
+                    <div class="flex items-start gap-4">
+                        <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#99ff04]/10 text-[#99ff04] border border-[#99ff04]/30 shadow-lg shadow-[#99ff04]/10">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-white tracking-tight">Upgrade Menjadi Penggalang Dana</h3>
+                            <p class="mt-1 text-xs text-slate-300 leading-relaxed">
+                                Pastikan Anda memahami persyaratan verifikasi dan komitmen transparansi sebelum melanjutkan.
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Ketentuan / Informasi Penting --}}
+                    <div class="mt-6 space-y-3 rounded-2xl border border-white/10 bg-[#12101c]/80 p-4 text-xs text-slate-300">
+                        <div class="flex items-start gap-3">
+                            <span class="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04] text-[10px] font-black">1</span>
+                            <div>
+                                <strong class="font-extrabold text-white">Identitas Asli &amp; KTP Resmi:</strong>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Wajib mengunggah foto e-KTP asli dan swafoto untuk verifikasi tim Admin.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04] text-[10px] font-black">2</span>
+                            <div>
+                                <strong class="font-extrabold text-white">Rekening Bank Terkunci:</strong>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Buku tabungan harus sesuai nama KTP. Rekening akan dikunci demi keamanan donatur.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#99ff04]/20 text-[#99ff04] text-[10px] font-black">3</span>
+                            <div>
+                                <strong class="font-extrabold text-white">Pencairan Bertahap &amp; Wajib LPJ:</strong>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Dana dicairkan per milestone dengan kewajiban upload nota/LPJ riil.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Actions --}}
+                    <div class="mt-6 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
+                        <button type="button" @click="showUpgradeModal = false"
+                                class="w-full sm:w-auto rounded-full border border-white/15 bg-[#231f36] px-5 py-2.5 text-xs font-extrabold text-slate-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer text-center">
+                            Batal
+                        </button>
+                        <a href="{{ route('verifikasi.identitas') }}"
+                           class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-[#99ff04] px-6 py-2.5 text-xs font-black text-black hover:bg-[#84e000] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#99ff04]/20 text-center">
+                            <span>Saya Siap &amp; Lanjutkan</span>
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        @endif
+    @endauth
 </header>

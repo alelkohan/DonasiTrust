@@ -119,11 +119,6 @@ class AppServiceProvider extends ServiceProvider
                         'url' => route('profil.edit'),
                         'active' => request()->routeIs('profil.edit'),
                     ],
-                    [
-                        'label' => 'Verifikasi identitas',
-                        'url' => route('verifikasi.identitas'),
-                        'active' => request()->routeIs('verifikasi.identitas'),
-                    ],
                 ];
             }
 

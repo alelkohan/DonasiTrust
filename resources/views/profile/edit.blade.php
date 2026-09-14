@@ -128,20 +128,22 @@
                         </dd>
                     </div>
 
-                    <div class="flex justify-between items-center">
-                        <dt class="text-slate-400">Verifikasi Identitas</dt>
-                        <dd>
-                            @if ($user->isVerified())
-                                <span class="rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-black text-emerald-400 border border-emerald-500/30">
-                                    ✓ Terverifikasi
-                                </span>
-                            @else
-                                <span class="rounded-full bg-amber-500/15 px-3 py-1 text-[11px] font-black text-amber-300 border border-amber-500/30">
-                                    {{ $user->verificationLabel() }}
-                                </span>
-                            @endif
-                        </dd>
-                    </div>
+                    @if ($user->isPengaju())
+                        <div class="flex justify-between items-center">
+                            <dt class="text-slate-400">Verifikasi Identitas</dt>
+                            <dd>
+                                @if ($user->isVerified())
+                                    <span class="rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-black text-emerald-400 border border-emerald-500/30">
+                                        ✓ Terverifikasi
+                                    </span>
+                                @else
+                                    <span class="rounded-full bg-amber-500/15 px-3 py-1 text-[11px] font-black text-amber-300 border border-amber-500/30">
+                                        {{ $user->verificationLabel() }}
+                                    </span>
+                                @endif
+                            </dd>
+                        </div>
+                    @endif
 
                     <div class="flex justify-between items-center">
                         <dt class="text-slate-400">Tanggal Bergabung</dt>
@@ -149,7 +151,7 @@
                     </div>
                 </dl>
 
-                @if (! $user->isVerified() && ! $user->isAdmin())
+                @if ($user->isPengaju() && ! $user->isVerified())
                     <div class="mt-6">
                         <a href="{{ route('verifikasi.identitas') }}" class="flex w-full items-center justify-center gap-2 rounded-full bg-[#99ff04] py-2.5 text-xs font-black text-black hover:bg-[#84e000] shadow-md shadow-[#99ff04]/20 transition-all">
                             <span>Verifikasi Identitas Sekarang &rarr;</span>

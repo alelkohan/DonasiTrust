@@ -2,7 +2,8 @@
 @section('title', $campaign->title.' · DonasiTrust')
 @section('description', $campaign->summary)
 
-@section('content')<div class="w-full py-8"
+@section('content')
+<div class="w-full py-8"
      x-data="{
          batal: false,
          sideModalTransparansi: false,
