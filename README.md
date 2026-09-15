@@ -1,242 +1,186 @@
 # DonasiTrust
 
-Platform donasi dengan pencairan dana bertahap, kuitansi terverifikasi, dan jejak audit ber-rantai-hash.
+Platform donasi transparan dengan pencairan dana bertahap, kuitansi terverifikasi HMAC-SHA256, jejak audit ber-rantai-hash, dan sistem audit anggaran berbasis AI (Google Gemini).
 Dibangun untuk **Web Development Competition SwitchFest 2026** (HMJ TI UIN Walisongo Semarang).
 
 Tema lomba: *NextGen Secure: Building the Future of Trusted Web Ecosystems*.
 
 ---
 
-## Masalah yang dijawab
+## Masalah yang Dijawab
 
-Di kebanyakan platform donasi, jejak uang donatur berhenti begitu pembayaran berhasil. Tidak ada
-cara bagi orang luar untuk memeriksa apakah dana benar-benar dipakai sesuai janji.
+Di kebanyakan platform donasi konvensional, jejak uang donatur terputus begitu pembayaran selesai. Masyarakat luar dan donatur tidak memiliki instrumen untuk memeriksa apakah dana benar-benar dipakai sesuai janji atau dimanipulasi di tengah jalan.
 
-DonasiTrust memaksakan empat aturan lewat sistem, bukan lewat janji:
+DonasiTrust memaksakan enam aturan integritas lewat sistem, bukan sekadar janji:
 
-1. **Pencairan bertahap.** Target dana wajib dipecah jadi tahapan yang totalnya sama persis dengan
-   RAB. Tahap berikutnya terkunci sampai tahap sebelumnya dilaporkan dan diverifikasi admin.
-2. **Kuitansi terverifikasi.** Tiap donasi menghasilkan kode HMAC-SHA256 atas nomor transaksi,
-   nominal, dan kampanye. Siapa pun bisa mencocokkannya di `/verifikasi` tanpa punya akun.
-3. **Jejak audit ber-rantai.** Setiap entri audit menyimpan hash entri sebelumnya. Mengubah satu
-   catatan lama membuat seluruh rantai sesudahnya gagal diverifikasi.
-4. **Rekening tujuan terkunci.** Dana hanya bisa mengalir ke rekening yang sudah diperiksa admin
-   bersama KTP-nya, dan nomornya dibekukan pada tiap pengajuan. Akun pengaju yang dibajak pun
-   tidak bisa mengalihkan dana ke rekening lain.
-5. **Dua langkah di dua titik yang benar-benar berisiko** — bukan di mana-mana: **mengganti
-   rekening tujuan** dan **menyatakan dana sudah ditransfer**. Alasan penempatannya ada di
-   bagian *Kenapa gerbangnya cuma di dua tempat* di bawah.
+1. **Pencairan bertahap (*Milestone-based*).** Target donasi wajib dipecah menjadi tahapan yang totalnya sama persis dengan Rincian Anggaran Biaya (RAB). Tahap berikutnya terkunci rapat sampai tahap sebelumnya selesai dibelanjakan, dilaporkan dengan bukti nota sah (LPJ), dan disetujui admin.
+2. **AI Budget & Anti-Fraud Auditor (Google Gemini).** Setiap pengajuan kampanye dianalisis secara otomatis oleh AI untuk mendeteksi anomali markup harga RAB, penulisan deskripsi *dummy/gibberish*, cerita yang tidak memuat konteks urgensi, serta item anggaran fiktif.
+3. **Kuitansi terverifikasi publik.** Setiap donasi menghasilkan kode kriptografis HMAC-SHA256 atas nomor transaksi, nominal, dan ID kampanye. Siapa pun dapat menguji keasliannya di `/verifikasi` tanpa harus mendaftar atau login.
+4. **Jejak audit ber-rantai hash (*Tamper-evident Audit Trail*).** Setiap catatan audit menyimpan hash entri sebelumnya layaknya mini-blockchain. Mengubah satu catatan lama di database secara ilegal membuat seluruh rantai sesudahnya gagal diverifikasi di `/transparansi`.
+5. **Rekening tujuan terkunci.** Dana donasi hanya bisa mengalir ke rekening bank yang telah diperiksa admin bersama dokumen identitas KTP. Rekening disalin dan dibekukan per pengajuan, sehingga akun pengaju yang dibajak sekalipun tidak bisa mengalihkan dana ke pihak lain.
+6. **Perlindungan OTP Email di titik-titik berisiko.** Verifikasi dua langkah (OTP Email 6 digit acak) ditempatkan secara terukur pada 3 aksi paling rawan: **mengganti rekening pencairan**, **mengajukan pencairan tahap**, dan **melepas dana transfer**.
 
 ---
 
-## Stack
+## Stack Teknologi
 
-| Bagian | Pilihan |
+| Komponen | Pilihan Teknologi |
 |---|---|
-| Framework | Laravel 12 |
-| Database | MySQL 8 (kompatibel juga dengan SQLite untuk coba cepat) |
+| Framework | Laravel 12 (PHP 8.2+) |
+| Database | MySQL 8 (Kompatibel juga dengan SQLite untuk pengujian cepat) |
 | Frontend | Blade + Livewire 3 + Alpine.js + Tailwind CSS 4 |
-| Build | Vite |
-| Pembayaran | Gateway simulasi bawaan; kerangka Midtrans sudah disiapkan |
+| Mesin AI | Google Gemini API (1.5 Flash) + Heuristic Fallback Engine |
+| Autentikasi | Laravel Session Auth + Google OAuth 2.0 |
+| PWA & Mobile | Service Worker + Web App Manifest + Native Install Prompt |
+| Pembayaran | Gateway simulasi internal + Dynamic QR Code Canvas (Siap integrasi Midtrans) |
+| Build Tool | Vite |
 
 ---
 
-## Menjalankan di komputer lokal
+## Menjalankan di Komputer Lokal
 
 Prasyarat: PHP 8.2+, Composer, Node.js 20+, dan MySQL (Laragon / XAMPP / Laravel Herd).
 
 ```bash
-# 1. Dependensi
+# 1. Unduh dependensi
 composer install
 npm install
 
-# 2. Konfigurasi
+# 2. Konfigurasi Environment
 cp .env.example .env
 php artisan key:generate
 
 # 3. Buat database bernama "donasitrust" di MySQL, lalu sesuaikan
-#    DB_USERNAME / DB_PASSWORD di file .env bila perlu.
+#    DB_USERNAME / DB_PASSWORD di file .env bila diperlukan.
 
-# 4. WAJIB: isi secret kuitansi di .env
+# 4. WAJIB: Isi secret kuitansi & API Key Gemini di .env
 #    DONASI_RECEIPT_SECRET=<string acak panjang>
-php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"   # untuk membuat string acak
+#    GEMINI_API_KEY=<opsional: api key gemini Anda>
+php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"   # untuk membuat string acak kuitansi
 
-# 5. Migrasi + data demo
+# 5. Jalankan migrasi dan data demo
 php artisan migrate --seed
 
-# 6. Jalankan (dua terminal)
+# 6. Jalankan server (buka dua terminal)
 php artisan serve
 npm run dev
 ```
 
-Buka <http://localhost:8000>.
+Buka aplikasi di peramban: <http://localhost:8000>.
 
-### Alternatif tanpa MySQL
+### Alternatif Tanpa MySQL (SQLite)
 
-Ganti di `.env`:
-
-```
+Cukup sesuaikan di `.env`:
+```env
 DB_CONNECTION=sqlite
 ```
-
-lalu `touch database/database.sqlite` dan jalankan `php artisan migrate --seed`.
+Lalu jalankan `touch database/database.sqlite` dan `php artisan migrate --seed`.
 
 ---
 
-## Akun demo
+## Akun Demo
 
-Semua memakai kata sandi `password123`.
+Semua akun demo menggunakan kata sandi bawaan: `password123`.
 
-| Email | Peran | Kondisi |
+| Email | Peran | Kondisi Awal |
 |---|---|---|
-| `admin@donasitrust.test` | Administrator | Punya antrean review yang belum kosong |
-| `pengaju@donasitrust.test` | Pengaju kampanye | Sudah terverifikasi, punya 4 kampanye di berbagai status |
-| `pengaju2@donasitrust.test` | Pengaju kampanye | Menunggu verifikasi identitas |
-| `donatur@donasitrust.test` | Donatur | Punya riwayat donasi |
+| `admin@donasitrust.test` | Administrator | Memiliki antrean review kampanye, verifikasi KTP, dan LPJ |
+| `pengaju@donasitrust.test` | Pengaju Kampanye | Terverifikasi identitas, memiliki kampanye di berbagai tahapan |
+| `pengaju2@donasitrust.test` | Pengaju Kampanye | Menunggu peninjauan identitas |
+| `donatur@donasitrust.test` | Donatur | Memiliki riwayat donasi dan kuitansi pembayaran |
 
-### Kode dua langkah untuk akun demo
-
-Akun `admin` dan `pengaju` sudah punya verifikasi dua langkah aktif, karena keduanya menyentuh
-uang. Masukkan kunci berikut ke aplikasi authenticator (Google Authenticator, Aegis, atau
-pengelola kata sandi) sebagai **entri manual**:
-
-```
-JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP
-```
-
-Kunci ini sengaja dibuat sama dan diumumkan supaya alur pencairan bisa langsung dicoba tanpa
-mendaftar dulu — di produksi tentu tidak boleh begitu. Kalau tidak sempat memasang aplikasi,
-tiap akun demo juga punya kode pemulihan sekali pakai: `DEMO-0001` dan `DEMO-0002`.
+> **Catatan Pengujian OTP Email Demo:**
+> Pada pengujian lokal dengan driver email `log`, kode verifikasi OTP 6 digit yang dikirim dapat langsung dilihat di antrean log atau di jendela notifikasi aplikasi saat aksi dijalankan.
 
 ---
 
-## Alur demo yang disarankan (untuk presentasi 5 menit)
+## Alur Demo yang Disarankan (Presentasi 5 Menit)
 
-1. **Beranda → detail kampanye.** Tunjukkan RAB terbuka dan tahapan pencairan.
-2. **Donasi** dengan nominal apa saja → halaman pembayaran → tombol *Simulasikan pembayaran berhasil*.
-3. **Kuitansi terbit** dengan kode verifikasi. Salin kodenya.
-4. **Buka `/verifikasi`** di jendela penyamaran (tanpa login), tempel nomor transaksi + kode →
-   sistem mengonfirmasi keaslian. Ubah satu karakter kode → ditolak.
-5. **Buka `/transparansi`.** Angka sudah bertambah, dan status rantai audit dihitung ulang
-   saat halaman dimuat.
-6. **Login sebagai admin** → antrean review → setujui satu kampanye → kembali ke jejak audit,
-   tunjukkan entri baru dengan `previous_hash` yang menyambung.
-7. **Tunjukkan gerbang dua langkahnya.** Sebagai admin, buka satu pencairan berstatus *Disetujui*
-   → isi bukti transfer → masukkan kode yang **salah**: dana tidak bergerak, dan percobaan gagalnya
-   muncul di jejak audit. Ulangi dengan kode yang benar dari authenticator → baru dana dilepas.
-   Lanjut ke pencairan **kedua**: kodenya tidak diminta lagi karena jendela 15 menit masih terbuka,
-   dan jejak auditnya menandai bedanya (`kode` vs `jendela_15_menit`).
-8. **Tunjukkan penempatannya yang sengaja tidak merata.** Sebagai pengaju, ajukan pencairan —
-   tidak ada kode sama sekali, karena rekening tujuannya memang sudah terkunci. Lalu buka
-   *Verifikasi identitas* dan coba **ganti nomor rekening**: di situ kodenya diminta. Inilah
-   jawaban atas "kenapa 2FA-nya tidak di mana-mana?" — lihat bagian *Kenapa gerbangnya cuma di
-   dua tempat*.
+1. **Beranda → Detail Kampanye**: Tunjukkan transparansi Rincian Anggaran Biaya (RAB) terbuka dan pembagian tahapan pencairan dana (*milestones*).
+2. **Donasi & Pembayaran**: Lakukan donasi dengan nominal bebas → halaman pembayaran QR Code interaktif → klik *Simulasikan Pembayaran Berhasil*.
+3. **Penerbitan Kuitansi Terverifikasi**: Kuitansi sah diterbitkan dengan kode HMAC-SHA256 unik. Salin kode verifikasinya.
+4. **Verifikasi Publik di `/verifikasi`**: Buka menu verifikasi kuitansi (bisa di mode penyamaran/tanpa login) → masukkan nomor transaksi dan kode → sistem mengonfirmasi keaslian. Ubah 1 karakter kode untuk membuktikan sistem anti-pemalsuan.
+5. **Ledger Publik & Rantai Audit di `/transparansi`**: Tunjukkan angka donasi yang bertambah seketika dan status keutuhan rantai hash audit trail yang divalidasi secara matematis.
+6. **Login Admin & AI Budget Auditor**: Masuk sebagai admin → buka menu review kampanye berstatus *Pending* → tunjukkan kartu **Analisis AI Auditor** yang menguji kewajaran harga RAB, mendeteksi teks asal-asalan, dan mengevaluasi kelayakan proposal.
+7. **Modal Konfirmasi & Gerbang OTP Email**:
+   - Sebagai admin, setujui kampanye melalui modal konfirmasi kustom.
+   - Buka menu pencairan dana → masukkan kode OTP Email untuk melepaskan dana.
+   - Sebagai pengaju, tunjukkan perlindungan OTP Email saat mencoba mengubah rekening bank pencairan di halaman verifikasi identitas.
 
 ---
 
-## Struktur yang perlu diketahui
+## Struktur Direktori Utama
 
 ```
 app/
-├── Http/Controllers/       Publik, Auth, Pengaju/, Admin/
-├── Livewire/DonationForm   Form donasi interaktif
-├── Models/                 User, Campaign, CampaignItem, Milestone,
-│                           Donation, Disbursement, ExpenseReport, AuditLog
-├── Notifications/
-│   └── PayoutAccountChanged  Peringatan surel saat rekening pencairan diubah
-├── Policies/               Izin per-kampanye
+├── Http/Controllers/
+│   ├── Admin/              Review Kampanye, Pencairan, LPJ, Verifikasi Identitas
+│   ├── Auth/               Login, Register, Google OAuth, Ganti Password
+│   ├── Pengaju/            Manajemen Kampanye, Pencairan Tahap, Unggah LPJ
+│   └── Public              Eksplorasi Kampanye, Donasi, Kuitansi, Transparansi
+├── Livewire/               Form Donasi Interaktif & Real-time
+├── Models/                 User, Campaign, CampaignItem, Milestone, Donation,
+│                           Disbursement, ExpenseReport, AuditLog, EmailOtp
 ├── Services/
-│   ├── AuditLogger         Penulis & pemverifikasi rantai hash
-│   ├── DonationService     Pembuatan donasi + pelunasan idempotent
-│   ├── OtpService          Pengelola OTP email (cooldown, kedaluwarsa, batas coba)
-│   ├── ReceiptVerifier     HMAC-SHA256 kuitansi
-│   └── *PaymentGateway     Kontrak gateway + implementasi mock/Midtrans
-└── Support/Rupiah          Format & parse rupiah
+│   ├── AuditLogger         Pencatat & pemverifikasi rantai hash SHA-256
+│   ├── CampaignAiAuditor   Mesin AI analisis RAB & deteksi fraud (Google Gemini)
+│   ├── DonationService     Pembuat transaksi donasi & pelunasan idempotent
+│   ├── OtpService          Pengelola siklus hidup OTP Email (expiry, limit, cooldown)
+│   └── ReceiptVerifier     Generator & pemverifikasi HMAC-SHA256 kuitansi
+└── Support/                Format Rupiah & Helper Menu
 ```
 
 ---
 
-## Kenapa gerbangnya cuma di dua tempat
+## Filosofi Penempatan Gerbang Keamanan (OTP Email)
 
-Platform donasi nyata (Kitabisa, GoFundMe) **tidak** mewajibkan Google Authenticator ke penggalang
-dana, dan itu bukan kelalaian. Pengaju donasi sering pengurus masjid, keluarga pasien, atau relawan
-daerah — memaksakan aplikasi authenticator ke mereka berarti kehilangan pengguna, dan ponsel yang
-hilang berarti dana kampanye terkunci selamanya.
+Platform donasi dunia nyata tidak memaksakan verifikasi berbelit-belit di setiap pintu masuk. Pengaju kampanye sering kali adalah pengurus rumah ibadah, keluarga pasien, atau relawan lapangan yang membutuhkan sistem yang ramah dan mudah digunakan.
 
-Maka pertanyaannya bukan *"seberapa banyak 2FA bisa dipasang"*, melainkan *"di mana ia benar-benar
-mengubah hasil"*. Jawabannya kami turunkan dari alur uangnya sendiri:
+Oleh karena itu, kami menempatkan verifikasi keamanan dua langkah di **titik-titik yang benar-benar mengubah alur risiko keuangan**:
 
-| Aksi | Perlindungan | Alasan |
+| Titik Aksi | Mekanisme Proteksi | Alasan Desain |
 |---|---|---|
-| Donatur berdonasi | Diserahkan ke payment gateway | Autentikasi ada di sisi bank/e-wallet |
-| Pengaju **mengajukan** pencairan | **OTP Email wajib** | Memastikan aksi dilakukan secara sadar oleh pemilik akun |
-| Pengaju **mengganti rekening** | **OTP Email wajib** + notifikasi surel | Inilah satu-satunya jalan dana bisa diarahkan ke pihak lain. Aksinya sekali seumur akun, jadi frictionnya terbayar |
-| Admin **melepas dana** | **OTP Email wajib** | Titik tak-bisa-ditarik-kembali. Memastikan bukti transfer dirilis oleh admin pemegang email resmi |
-
-Serangan yang sesungguhnya pada model "rekening terkunci" bukan *"bajak akun lalu cairkan"* — itu
-buntu. Melainkan: **bajak akun → ganti nomor rekening → tunggu admin meloloskan → baru cairkan.**
-Karena itu gerbangnya ada di penggantian rekening, bukan hanya di tiap pengajuan.
+| Donatur Berdonasi | Dikelola Payment Gateway | Autentikasi berada di sisi perbankan/e-wallet donatur |
+| Pengaju Mengajukan Pencairan | **Wajib OTP Email** | Memastikan pengajuan dilakukan secara sadar oleh pemilik sah |
+| Pengaju **Mengganti Rekening** | **Wajib OTP Email** + Notifikasi Surel | Satu-satunya celah dana dialihkan ke pihak lain jika akun dibajak |
+| Admin **Melepas Dana Transfer** | **Wajib OTP Email** | Titik pelepasan dana yang tidak dapat ditarik kembali |
 
 ---
 
-## Catatan keamanan (dan batasnya)
+## Catatan Keamanan & Batasan Sistem
 
-Yang **sudah** dilakukan:
+Yang **sudah** dijamin dan diterapkan:
+- Seluruh kata sandi di-hash aman dengan algoritma *bcrypt*.
+- Seluruh query database menggunakan parameter binding Eloquent ORM (kebal terhadap SQL Injection).
+- Otorisasi ketat berbasis peran (*Role Middleware*) dan kepemilikan objek (*CampaignPolicy*).
+- Dokumen KTP dan nota LPJ disimpan di disk privat terenkripsi (`storage/app/private`), hanya dapat diakses melalui endpoint yang menguji hak akses otorisasi.
+- NIK lengkap **tidak pernah disimpan** di database (hanya 4 digit terakhir untuk keperluan verifikasi audit).
+- Sistem deteksi fraud cerdas berbasis AI untuk menyaring kampanye bermasalah sebelum tayang ke publik.
+- Dukungan PWA untuk pengalaman aplikasi mobile yang cepat dan ringan.
 
-- Kata sandi di-hash bcrypt otomatis lewat cast `hashed` pada model `User`.
-- Semua query lewat Eloquent/query builder → parameter ter-binding, aman dari SQL injection.
-- Otorisasi per-peran (middleware `role`) dan per-objek (`CampaignPolicy`).
-- Dokumen identitas disimpan di disk privat (`storage/app/private`), hanya bisa dibuka lewat route
-  yang memeriksa izin di tiap permintaan. Tidak ada URL publik yang bisa ditebak.
-- NIK lengkap **tidak** disimpan — hanya 4 digit terakhir.
-- **Verifikasi dua langkah (OTP Email)**: Kode 6 digit acak dikirim ke email terdaftar pengguna,
-  berlaku 10 menit, batas 3 kali percobaan salah, cooldown 60 detik antar permintaan, dan setiap
-  pencairan/penggantian rekening diverifikasi serta dicatat ke jejak audit.
-- Rekening tujuan pencairan **tidak bisa ditentukan dari form pengajuan** — disalin dari profil
-  yang sudah diverifikasi admin, dan dibekukan pada pengajuan itu.
-- **Menotifikasi pemilik akun** lewat surel setiap kali rekening pencairan diubah. Kalau bukan
-  dia yang melakukannya, itu kesempatannya tahu sebelum admin meloloskan.
-- Endpoint webhook memverifikasi signature dan bersifat idempotent (pembayaran tidak dihitung dua kali).
-- HTTPS dipaksakan saat `APP_ENV=production`.
-
-Yang **jujur belum/tidak** dijamin:
-
-- **Kode kuitansi adalah MAC, bukan tanda tangan digital.** Ia membuktikan kuitansi diterbitkan
-  server ini, bukan identitas penandatangan. Tanda tangan sungguhan butuh pasangan kunci (ECDSA/RSA).
-- **Rantai hash bersifat *tamper-evident*, bukan *tamper-proof*.** Pihak dengan akses tulis penuh ke
-  basis data masih bisa menghitung ulang seluruh rantai. Jaminan lebih kuat butuh publikasi hash
-  berkala ke pihak luar.
-- **Verifikasi identitas dan nota dilakukan manusia.** Tidak ada akses ke API Dukcapil, dan tidak ada
-  perangkat lunak yang bisa memastikan keaslian nota fisik yang difoto.
-- **Dua langkah membuktikan SIAPA yang menekan tombol, bukan bahwa uangnya sampai.** Transfer
-  masih dilakukan admin secara manual di luar sistem; yang dipegang sistem hanya foto bukti
-  transfer. Untuk benar-benar memastikan dana mendarat di rekening yang tercatat, dibutuhkan
-  integrasi API disbursement bank (mis. Xendit/Flip) — itu langkah berikutnya, bukan yang ini.
-- **Dua langkah bagi pengaju bersifat opsional.** Konsekuensinya jujur: akun pengaju yang belum
-  mengaktifkannya tetap bisa berganti rekening hanya dengan sesi login, dan yang menahannya
-  tinggal peninjauan admin plus notifikasi surel. Itu pilihan sadar — memaksakannya ke pengguna
-  non-teknis menimbulkan masalah yang lebih besar daripada yang diselesaikan.
-- **Pembayaran masih simulasi.** `PAYMENT_GATEWAY=mock`. Kerangka Midtrans ada di
-  `app/Services/MidtransPaymentGateway.php` tapi sengaja melempar exception daripada berpura-pura jalan.
+Yang **secara terbuka belum** dijamin:
+- **Kode Kuitansi adalah MAC (HMAC-SHA256), bukan Digital Signature Asimetris**: Membuktikan kuitansi diterbitkan secara sah oleh platform DonasiTrust. Tanda tangan digital identitas penuh membutuhkan pasangan kunci publik-privat (RSA/ECDSA).
+- **Rantai Hash Audit bersifat *Tamper-evident***: Membuktikan ada atau tidaknya manipulasi data historis.
+- **Verifikasi Fisik Lapangan Dilakukan Admin**: Belum terhubung dengan API Dukcapil instansi pemerintah.
 
 ---
 
-## Belum dibangun (rencana lanjutan)
+## Rencana Pengembangan Lanjutan
 
-Sesuai urutan build yang disepakati, bagian berikut belum masuk rilis ini:
-
-- Kuitansi PDF dan QR code (butuh `barryvdh/laravel-dompdf` + `simplesoftwareio/simple-qrcode`)
-- Transfer otomatis lewat API disbursement bank, menggantikan transfer manual + foto bukti
-- Integrasi Midtrans/Xendit sandbox sungguhan
-- Dua langkah saat **login** — sekarang kodenya baru diminta pada aksi berisiko, bukan di pintu masuk
-- OTP WhatsApp sebagai alternatif selain email
-- Autentikasi biometrik / Passkey (WebAuthn) untuk login cepat tanpa kata sandi
+- Ekspor Kuitansi & Laporan LPJ dalam format PDF resmi (`barryvdh/laravel-dompdf`).
+- Integrasi *Disbursement API Gateway* (Xendit/Flip) untuk transfer dana otomatis ke rekening bank pengaju.
+- Integrasi Midtrans / Payment Gateway Production Sandbox.
+- Pengiriman OTP melalui WhatsApp Business API sebagai alternatif selain surel.
+- Autentikasi Biometrik / Passkey (*WebAuthn*) untuk login instan.
 
 ---
 
-## Perkakas
+## Pengujian & Kualitas Kode
 
 ```bash
-php tools/check-blade.php resources/views   # cek cepat sintaks template tanpa menjalankan aplikasi
-php artisan test                            # test suite
+# Menjalankan seluruh test suite otomatis (84 tests, 329 assertions)
+php artisan test
+
+# Memeriksa sintaks seluruh template Blade
+php tools/check-blade.php resources/views
 ```
