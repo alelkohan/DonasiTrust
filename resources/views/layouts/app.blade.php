@@ -71,6 +71,7 @@
 
 @include('partials.footer')
 @include('partials.mobile-bottom-nav')
+@include('partials.app-install-prompt')
 
 @livewireScripts
 </body>

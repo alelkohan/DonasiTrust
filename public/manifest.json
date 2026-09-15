@@ -1,12 +1,26 @@
 {
-  "name": "DonasiTrust",
+  "name": "DonasiTrust - Donasi Transparan & Terverifikasi",
   "short_name": "DonasiTrust",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#069370",
-  "theme_color": "#069370",
+  "background_color": "#12101c",
+  "theme_color": "#12101c",
   "orientation": "portrait",
+  "description": "Platform penggalangan dana dan donasi transparan dengan pencairan bertahap dan kuitansi terverifikasi.",
   "icons": [
+    {
+      "src": "/images/logo-bg.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/logo-no-bg.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",

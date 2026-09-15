@@ -535,6 +535,7 @@
 
     document.addEventListener('DOMContentLoaded', updateGuestThemeUI);
 </script>
+@include('partials.app-install-prompt')
 @livewireScripts
 </body>
 </html>
