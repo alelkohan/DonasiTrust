@@ -304,6 +304,79 @@ const registerAlpineComponents = () => {
             },
         }));
     }
+
+    if (!window.Alpine.data('toastManager')) {
+        window.Alpine.data('toastManager', (initialData = {}) => ({
+            toasts: [],
+            init() {
+                if (initialData && Array.isArray(initialData.toasts)) {
+                    initialData.toasts.forEach(t => this.addToast(t));
+                }
+
+                const handleEvent = (e) => {
+                    const d = e.detail || {};
+                    if (typeof d === 'string') {
+                        this.addToast({ message: d, type: 'info' });
+                    } else {
+                        this.addToast(d);
+                    }
+                };
+
+                window.addEventListener('toast', handleEvent);
+                window.addEventListener('notify', handleEvent);
+            },
+            addToast(t) {
+                if (!t || (!t.message && !t.errors && !t.title)) return;
+
+                const id = t.id || 'toast_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+                if (this.toasts.some(item => item.id === id)) return;
+
+                const duration = t.duration || (t.errors && t.errors.length > 1 ? 8000 : 5000);
+                const toast = {
+                    id,
+                    type: t.type || 'success',
+                    title: t.title || (t.type === 'error' ? 'Gagal' : (t.type === 'warning' ? 'Peringatan' : (t.type === 'info' ? 'Informasi' : 'Berhasil'))),
+                    message: t.message || '',
+                    errors: Array.isArray(t.errors) ? t.errors : null,
+                    duration,
+                    progress: 100,
+                    paused: false,
+                    interval: null
+                };
+
+                this.toasts.push(toast);
+
+                const step = 50;
+                const decrement = (step / duration) * 100;
+
+                toast.interval = setInterval(() => {
+                    if (!toast.paused) {
+                        toast.progress -= decrement;
+                        if (toast.progress <= 0) {
+                            this.removeToast(id);
+                        }
+                    }
+                }, step);
+            },
+            pause(id) {
+                const item = this.toasts.find(t => t.id === id);
+                if (item) item.paused = true;
+            },
+            resume(id) {
+                const item = this.toasts.find(t => t.id === id);
+                if (item) item.paused = false;
+            },
+            removeToast(id) {
+                const idx = this.toasts.findIndex(t => t.id === id);
+                if (idx !== -1) {
+                    if (this.toasts[idx].interval) {
+                        clearInterval(this.toasts[idx].interval);
+                    }
+                    this.toasts.splice(idx, 1);
+                }
+            }
+        }));
+    }
 };
 
 document.addEventListener('alpine:init', registerAlpineComponents);
