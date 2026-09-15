@@ -341,6 +341,7 @@ const registerAlpineComponents = () => {
                     duration,
                     progress: 100,
                     paused: false,
+                    visible: true,
                     interval: null
                 };
 
@@ -367,12 +368,15 @@ const registerAlpineComponents = () => {
                 if (item) item.paused = false;
             },
             removeToast(id) {
-                const idx = this.toasts.findIndex(t => t.id === id);
-                if (idx !== -1) {
-                    if (this.toasts[idx].interval) {
-                        clearInterval(this.toasts[idx].interval);
+                const item = this.toasts.find(t => t.id === id);
+                if (item) {
+                    if (item.interval) {
+                        clearInterval(item.interval);
                     }
-                    this.toasts.splice(idx, 1);
+                    item.visible = false;
+                    setTimeout(() => {
+                        this.toasts = this.toasts.filter(t => t.id !== id);
+                    }, 350);
                 }
             }
         }));

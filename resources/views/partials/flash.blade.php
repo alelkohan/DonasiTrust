@@ -66,13 +66,13 @@
 >
     <template x-for="toast in toasts" :key="toast.id">
         <div
-            x-show="true"
-            x-transition:enter="transform ease-out duration-300 transition"
-            x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-6 scale-95"
+            x-show="toast.visible"
+            x-transition:enter="transform ease-out duration-350 transition"
+            x-transition:enter-start="translate-y-3 opacity-0 sm:translate-y-0 sm:translate-x-8 scale-90"
             x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0 scale-100"
-            x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-95 sm:translate-x-6"
+            x-transition:leave="transform ease-in duration-300 transition"
+            x-transition:leave-start="opacity-100 scale-100 sm:translate-x-0"
+            x-transition:leave-end="opacity-0 scale-90 sm:translate-x-8"
             @mouseenter="pause(toast.id)"
             @mouseleave="resume(toast.id)"
             class="dt-toast pointer-events-auto relative overflow-hidden rounded-2xl border backdrop-blur-2xl shadow-2xl transition-all duration-200"
@@ -223,6 +223,7 @@
                             duration,
                             progress: 100,
                             paused: false,
+                            visible: true,
                             interval: null
                         };
 
@@ -249,12 +250,15 @@
                         if (item) item.paused = false;
                     },
                     removeToast(id) {
-                        const idx = this.toasts.findIndex(t => t.id === id);
-                        if (idx !== -1) {
-                            if (this.toasts[idx].interval) {
-                                clearInterval(this.toasts[idx].interval);
+                        const item = this.toasts.find(t => t.id === id);
+                        if (item) {
+                            if (item.interval) {
+                                clearInterval(item.interval);
                             }
-                            this.toasts.splice(idx, 1);
+                            item.visible = false;
+                            setTimeout(() => {
+                                this.toasts = this.toasts.filter(t => t.id !== id);
+                            }, 350);
                         }
                     }
                 }));
