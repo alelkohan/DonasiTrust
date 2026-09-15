@@ -51,7 +51,7 @@ class AppServiceProvider extends ServiceProvider
                     ],
                     [
                         'label' => 'Review kampanye',
-                        'url' => route('admin.kampanye.index'),
+                        'url' => route('admin.kampanye.index', ['status' => 'pending']),
                         'active' => request()->routeIs('admin.kampanye.*'),
                         'badge' => \App\Models\Campaign::where('status', \App\Models\Campaign::STATUS_PENDING)->count() ?: null,
                     ],

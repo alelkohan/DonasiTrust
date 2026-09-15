@@ -42,7 +42,11 @@
 }
 
 @layer base {
+  :root,
   html {
+    color-scheme: dark;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     background-color: #12101c;
@@ -52,6 +56,8 @@
   }
 
   html.theme-light {
+    color-scheme: light !important;
+    scrollbar-color: rgba(15, 23, 42, 0.25) transparent;
     background-color: #f8fafc !important;
     color: #0f172a !important;
   }
@@ -100,6 +106,45 @@
 *::-moz-selection {
   background-color: #99ff04 !important;
   color: #000000 !important;
+}
+
+/* -------------------------------------------------------------------------
+   Modern Sleek Custom Scrollbars (Dark & Light Theme Responsive)
+------------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+html.theme-light ::-webkit-scrollbar-thumb {
+  background-color: rgba(15, 23, 42, 0.25);
+}
+
+html.theme-light ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(15, 23, 42, 0.4);
 }
 
 /* Comprehensive Global Light Mode Overrides */

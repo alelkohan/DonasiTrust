@@ -14,7 +14,7 @@
 
     <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <x-stat label="Kampanye menunggu review" :value="$stats['kampanye_pending']"
-                :href="route('admin.kampanye.index')"
+                :href="route('admin.kampanye.index', ['status' => 'pending'])"
                 hint="Klik untuk meninjau" empty-hint="Tidak ada antrean"
                 :tone="$stats['kampanye_pending'] > 0 ? 'warning' : 'neutral'" />
 
@@ -75,7 +75,7 @@
     <section class="dt-card mt-6 overflow-hidden">
         <div class="flex items-center justify-between border-b border-white/10 p-5 sm:p-6">
             <h2 class="text-base font-black text-white">Antrean review kampanye</h2>
-            <a href="{{ route('admin.kampanye.index') }}" wire:navigate class="text-xs font-extrabold text-[#99ff04] hover:underline">Lihat semua &rarr;</a>
+            <a href="{{ route('admin.kampanye.index', ['status' => 'pending']) }}" wire:navigate class="text-xs font-extrabold text-[#99ff04] hover:underline">Lihat semua &rarr;</a>
         </div>
 
         @if ($recentCampaigns->isEmpty())

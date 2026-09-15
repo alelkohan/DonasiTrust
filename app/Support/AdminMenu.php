@@ -26,22 +26,22 @@ class AdminMenu
         $antrean = $withBadges ? self::antrean() : [];
 
         $definisi = [
-            'ringkasan' => ['Dasbor', 'admin.dashboard', null],
-            'kampanye' => ['Review kampanye', 'admin.kampanye.index', 'kampanye'],
-            'pencairan' => ['Pencairan dana', 'admin.pencairan.index', 'pencairan'],
-            'lpj' => ['Verifikasi LPJ', 'admin.lpj.index', 'lpj'],
-            'pengguna' => ['Verifikasi pengguna', 'admin.pengguna.index', 'pengguna'],
-            'audit' => ['Jejak audit', 'admin.audit.index', null],
+            'ringkasan' => ['Dasbor', 'admin.dashboard', [], null],
+            'kampanye' => ['Review kampanye', 'admin.kampanye.index', ['status' => 'pending'], 'kampanye'],
+            'pencairan' => ['Pencairan dana', 'admin.pencairan.index', [], 'pencairan'],
+            'lpj' => ['Verifikasi LPJ', 'admin.lpj.index', [], 'lpj'],
+            'pengguna' => ['Verifikasi pengguna', 'admin.pengguna.index', [], 'pengguna'],
+            'audit' => ['Jejak audit', 'admin.audit.index', [], null],
         ];
 
         $menu = [];
 
-        foreach ($definisi as $kunci => [$label, $route, $badgeKey]) {
+        foreach ($definisi as $kunci => [$label, $route, $params, $badgeKey]) {
             $jumlah = $badgeKey ? ($antrean[$badgeKey] ?? 0) : 0;
 
             $menu[] = [
                 'label' => $label,
-                'url' => route($route),
+                'url' => route($route, $params),
                 'active' => $kunci === $active,
                 'badge' => $jumlah > 0 ? $jumlah : null,
             ];
