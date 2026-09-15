@@ -11,7 +11,7 @@ class CampaignReviewController extends Controller
 {
     public function index(Request $request)
     {
-        $status = $request->query('status', 'all');
+        $status = $request->query('status', 'pending');
 
         $campaigns = Campaign::with('user:id,name,organization')
             ->when($status !== 'all', fn ($q) => $q->where('status', $status))
@@ -32,11 +32,36 @@ class CampaignReviewController extends Controller
         return view('admin.campaigns.index', compact('campaigns'));
     }
 
-    public function show(Campaign $campaign)
+    public function show(Campaign $campaign, \App\Services\CampaignAiAuditor $auditor)
     {
         $campaign->load(['user', 'items', 'milestones', 'reviewer:id,name']);
 
+        // Jika kampanye belum diaudit AI dan berstatus pending/draf/aktif, jalankan audit otomatis
+        if (! $campaign->hasAiAnalysis() && $campaign->items->isNotEmpty()) {
+            $auditor->analyze($campaign);
+        }
+
         return view('admin.campaigns.show', compact('campaign'));
+    }
+
+    public function auditAi(Request $request, Campaign $campaign, \App\Services\CampaignAiAuditor $auditor)
+    {
+        $this->authorize('view', $campaign);
+
+        $analysis = $auditor->analyze($campaign);
+
+        if ($request->expectsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'message' => 'Analisis kelayakan anggaran oleh AI berhasil diperbarui.',
+                'analysis' => $analysis,
+                'risk_level' => $campaign->ai_risk_level,
+                'risk_label' => $campaign->aiRiskLabel(),
+                'risk_tone' => $campaign->aiRiskTone(),
+            ]);
+        }
+
+        return back()->with('status', 'Analisis kelayakan anggaran oleh AI berhasil diperbarui.');
     }
 
     public function approve(Request $request, Campaign $campaign, AuditLogger $audit)
@@ -63,11 +88,11 @@ class CampaignReviewController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'redirect' => route('admin.kampanye.index'),
+                'redirect' => route('admin.kampanye.index', ['status' => 'pending']),
             ]);
         }
 
-        return redirect()->route('admin.kampanye.index')
+        return redirect()->route('admin.kampanye.index', ['status' => 'pending'])
             ->with('status', $message);
     }
 
@@ -97,11 +122,11 @@ class CampaignReviewController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'redirect' => route('admin.kampanye.index'),
+                'redirect' => route('admin.kampanye.index', ['status' => 'pending']),
             ]);
         }
 
-        return redirect()->route('admin.kampanye.index')
+        return redirect()->route('admin.kampanye.index', ['status' => 'pending'])
             ->with('status', $message);
     }
 
@@ -120,11 +145,11 @@ class CampaignReviewController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'redirect' => route('admin.kampanye.index'),
+                'redirect' => route('admin.kampanye.index', ['status' => 'pending']),
             ]);
         }
 
-        return redirect()->route('admin.kampanye.index')
+        return redirect()->route('admin.kampanye.index', ['status' => 'pending'])
             ->with('status', $message);
     }
 }

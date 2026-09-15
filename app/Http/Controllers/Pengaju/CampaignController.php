@@ -119,7 +119,7 @@ class CampaignController extends Controller
         return back()->with('status', 'Perubahan tersimpan.');
     }
 
-    public function submit(Request $request, Campaign $campaign, AuditLogger $audit)
+    public function submit(Request $request, Campaign $campaign, AuditLogger $audit, \App\Services\CampaignAiAuditor $aiAuditor)
     {
         $this->authorize('submit', $campaign);
 
@@ -135,6 +135,9 @@ class CampaignController extends Controller
             'submitted_at' => now(),
             'review_note' => null,
         ]);
+
+        // Jalankan audit kelayakan anggaran awal secara otomatis
+        $aiAuditor->analyze($campaign);
 
         $audit->record('campaign.submitted', $campaign, ['judul' => $campaign->title]);
 

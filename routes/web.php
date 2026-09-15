@@ -145,6 +145,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/kampanye/{campaign}', [CampaignReviewController::class, 'show'])->name('kampanye.show');
     Route::post('/kampanye/{campaign}/setujui', [CampaignReviewController::class, 'approve'])->name('kampanye.approve');
     Route::post('/kampanye/{campaign}/tolak', [CampaignReviewController::class, 'reject'])->name('kampanye.reject');
+    Route::post('/kampanye/{campaign}/audit-ai', [CampaignReviewController::class, 'auditAi'])->name('kampanye.audit-ai');
     Route::delete('/kampanye/{campaign}', [CampaignReviewController::class, 'destroy'])->name('kampanye.destroy');
 
     Route::get('/pencairan', [\App\Http\Controllers\Admin\DisbursementController::class, 'index'])->name('pencairan.index');

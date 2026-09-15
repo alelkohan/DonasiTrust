@@ -29,6 +29,7 @@ class Campaign extends Model
         'user_id', 'title', 'slug', 'category', 'cover_path', 'summary', 'description',
         'target_amount', 'collected_amount', 'disbursed_amount', 'deadline',
         'status', 'review_note', 'submitted_at', 'reviewed_at', 'reviewed_by',
+        'ai_analysis', 'ai_risk_level', 'ai_analyzed_at',
     ];
 
     protected function casts(): array
@@ -40,6 +41,8 @@ class Campaign extends Model
             'target_amount' => 'integer',
             'collected_amount' => 'integer',
             'disbursed_amount' => 'integer',
+            'ai_analysis' => 'array',
+            'ai_analyzed_at' => 'datetime',
         ];
     }
 
@@ -231,6 +234,44 @@ class Campaign extends Model
     public function hasCover(): bool
     {
         return ! empty($this->cover_path);
+    }
+
+    /** Cek apakah kampanye sudah memiliki hasil audit AI. */
+    public function hasAiAnalysis(): bool
+    {
+        return ! empty($this->ai_analysis) && is_array($this->ai_analysis);
+    }
+
+    /** Tone warna status risiko AI (success | warning | danger | neutral). */
+    public function aiRiskTone(): string
+    {
+        return match (strtolower($this->ai_risk_level ?? '')) {
+            'low' => 'success',
+            'medium' => 'warning',
+            'high' => 'danger',
+            default => 'neutral',
+        };
+    }
+
+    /** Label deskriptif untuk tingkat risiko AI. */
+    public function aiRiskLabel(): string
+    {
+        return match (strtolower($this->ai_risk_level ?? '')) {
+            'low' => 'Risiko Rendah (Wajar)',
+            'medium' => 'Risiko Sedang (Perlu Perhatian)',
+            'high' => 'Risiko Tinggi (Indikasi Anomali)',
+            default => 'Belum Dianalisis',
+        };
+    }
+
+    /** Jumlah temuan anomali/flag yang terdeteksi AI. */
+    public function aiFlagsCount(): int
+    {
+        if (! $this->hasAiAnalysis()) {
+            return 0;
+        }
+
+        return count($this->ai_analysis['flags'] ?? []);
     }
 }
 
