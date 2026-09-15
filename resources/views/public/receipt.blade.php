@@ -24,9 +24,7 @@
     <article class="rounded-3xl border border-white/10 bg-[#1b182a] overflow-hidden shadow-2xl print:border-0 print:shadow-none">
         <header class="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5 sm:px-8 bg-[#231f36]">
             <div class="flex items-center gap-2.5">
-                <span class="grid h-9 w-9 place-items-center rounded-xl bg-[#99ff04] text-black font-black" aria-hidden="true">
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 3 4 6.2v5.1c0 4.6 3.2 8.4 8 9.7 4.8-1.3 8-5.1 8-9.7V6.2Z"/><path d="m9 12 2.2 2.2L15.4 10"/></svg>
-                </span>
+                <img src="{{ asset('images/logo-no-bg.png') }}" alt="DonasiTrust Logo" class="h-9 w-9 object-contain">
                 <div>
                     <p class="font-black tracking-tight text-white">DonasiTrust</p>
                     <p class="text-[10px] text-slate-400 font-bold uppercase">Kuitansi Digital Resmi</p>

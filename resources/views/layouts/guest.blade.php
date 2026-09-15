@@ -60,6 +60,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="DonasiTrust">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-no-bg.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-bg.png') }}">
 
     <!-- Theme Initialization (Prevents FOUC & matches dt_theme) -->
     <script>
@@ -230,12 +232,7 @@
         {{-- Header Logo & Theme Toggle --}}
         <div class="relative z-10 flex items-center justify-between">
             <a href="{{ route('home') }}" class="group flex items-center gap-3 transition-transform hover:scale-105">
-                <span class="grid h-10 w-10 place-items-center rounded-2xl bg-[#99ff04] text-black shadow-lg shadow-[#99ff04]/20 transition-all group-hover:rotate-6">
-                    <svg class="h-6 w-6 stroke-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 3 4 6.2v5.1c0 4.6 3.2 8.4 8 9.7 4.8-1.3 8-5.1 8-9.7V6.2Z"/>
-                        <path d="m9 12 2.2 2.2L15.4 10"/>
-                    </svg>
-                </span>
+                <img src="{{ asset('images/logo-no-bg.png') }}" alt="DonasiTrust Logo" class="h-10 w-10 object-contain transition-transform group-hover:rotate-6">
                 <span class="brand-logo-text text-xl font-black tracking-tight text-white">
                     Donasi<span class="brand-trust-text text-[#99ff04]">Trust</span>
                 </span>

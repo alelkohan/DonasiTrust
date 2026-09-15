@@ -5,9 +5,7 @@
 <div class="w-full max-w-3xl mx-auto py-12">
 
     <header class="text-center">
-        <span class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#99ff04] text-black font-black shadow-lg" aria-hidden="true">
-            <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6.2v5.1c0 4.6 3.2 8.4 8 9.7 4.8-1.3 8-5.1 8-9.7V6.2Z"/><path d="m9 12 2.2 2.2L15.4 10"/></svg>
-        </span>
+        <img src="{{ asset('images/logo-no-bg.png') }}" alt="DonasiTrust Logo" class="mx-auto h-14 w-14 object-contain shadow-lg">
         <h1 class="mt-4 text-3xl font-black tracking-tight text-white sm:text-4xl">Verifikasi Keaslian Kuitansi Donasi</h1>
         <p class="mx-auto mt-3 max-w-lg text-sm text-slate-300 leading-relaxed">
             Punya kuitansi DonasiTrust dan ingin memastikan keasliannya? Masukkan nomor transaksi
