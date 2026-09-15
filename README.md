@@ -26,7 +26,7 @@ DonasiTrust memaksakan enam aturan integritas lewat sistem, bukan sekadar janji:
 
 | Komponen | Pilihan Teknologi |
 |---|---|
-| Framework | Laravel 12 (PHP 8.2+) |
+| Framework | Laravel 13 (PHP 8.3+) |
 | Database | MySQL 8 (Kompatibel juga dengan SQLite untuk pengujian cepat) |
 | Frontend | Blade + Livewire 3 + Alpine.js + Tailwind CSS 4 |
 | Mesin AI | Google Gemini API (1.5 Flash) + Heuristic Fallback Engine |
@@ -39,7 +39,7 @@ DonasiTrust memaksakan enam aturan integritas lewat sistem, bukan sekadar janji:
 
 ## Menjalankan di Komputer Lokal
 
-Prasyarat: PHP 8.2+, Composer, Node.js 20+, dan MySQL (Laragon / XAMPP / Laravel Herd).
+Prasyarat: PHP 8.3+, Composer, Node.js 20+, dan MySQL (Laragon / XAMPP / Laravel Herd).
 
 ```bash
 # 1. Unduh dependensi
