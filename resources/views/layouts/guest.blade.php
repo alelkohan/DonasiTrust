@@ -62,6 +62,7 @@
     <meta name="apple-mobile-web-app-title" content="DonasiTrust">
     <link rel="icon" type="image/png" href="{{ asset('images/logo-no-bg.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo-bg.png') }}">
+    <link rel="manifest" href="/manifest.json">
 
     <!-- Theme Initialization (Prevents FOUC & matches dt_theme) -->
     <script>

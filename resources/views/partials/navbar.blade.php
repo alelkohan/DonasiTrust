@@ -267,7 +267,7 @@
 
             <a href="{{ route('transparansi') }}" 
                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition-all {{ request()->routeIs('transparansi*') ? 'bg-[#99ff04]/10 text-[#99ff04]' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-                <span>Audit Ledger HMAC</span>
+                <span>Audit &amp; Transparansi</span>
             </a>
 
             @if(Route::has('verifikasi.form'))

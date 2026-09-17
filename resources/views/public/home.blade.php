@@ -300,9 +300,25 @@
                     <span>Jelajahi Kampanye</span>
                     <svg class="h-4 w-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7V17"/></svg>
                 </a>
-                <a href="#cara-kerja" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10 transition-all">
-                    Lihat Cara Kerja
-                </a>
+                @guest
+                    <a href="{{ route('register') }}?role=pengaju" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10 transition-all">
+                        Ajukan Kampanye
+                    </a>
+                @else
+                    @if(auth()->user()->isPengaju())
+                        <a href="{{ route('pengaju.kampanye.create') }}" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10 transition-all">
+                            Buat Kampanye
+                        </a>
+                    @elseif(auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10 transition-all">
+                            Panel Admin
+                        </a>
+                    @else
+                        <a href="{{ route('verifikasi.identitas') }}" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10 transition-all">
+                            Ajukan Kampanye
+                        </a>
+                    @endif
+                @endguest
             </div>
 
             {{-- Trust Indicators / Checklist --}}
@@ -333,7 +349,7 @@
     <div class="w-full px-4 sm:px-6 lg:px-8">
 
 {{-- -------------------------------------------------------------------------
-   SECTION 3: MAIN CAMPAIGN EXPLORATION SECTION (3 Columns Grid)
+   SECTION 2: MAIN CAMPAIGN EXPLORATION SECTION (3 Columns Grid)
 ------------------------------------------------------------------------- --}}
 <section id="kampanye-section" class="w-full">
     
@@ -402,7 +418,7 @@
 </section>
 
 {{-- -------------------------------------------------------------------------
-   SECTION 4: PUBLIC AUDIT LEDGER SHOWCASE SECTION ("Kepercayaan bukan sekadar janji")
+   SECTION 3: PUBLIC AUDIT LEDGER SHOWCASE SECTION ("Kepercayaan bukan sekadar janji")
 ------------------------------------------------------------------------- --}}
 <section class="py-16 border-t border-white/10 w-full">
     <div class="grid gap-10 lg:grid-cols-12 lg:items-center">
@@ -470,9 +486,9 @@
 </section>
 
 {{-- -------------------------------------------------------------------------
-   SECTION 5: BOTTOM CTA BANNER
+   SECTION 4: BOTTOM CTA BANNER
 ------------------------------------------------------------------------- --}}
-<section class="py-12 w-full">
+<section class="py-12 w-full" id="cta">
     <div data-aos="zoom-in-up" data-aos-duration="750" class="relative overflow-hidden rounded-3xl bg-[#1b182a] p-8 sm:p-12 border border-white/15 shadow-2xl">
         <div class="grid items-center gap-8 lg:grid-cols-[1.5fr_1fr]">
             <div>
@@ -484,10 +500,29 @@
                 </p>
             </div>
             <div class="flex flex-col gap-3 sm:flex-row lg:justify-end">
-                <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#99ff04] px-8 py-3.5 text-sm font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 text-center shadow-xl">
-                    Ajukan Kampanye
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                </a>
+                @guest
+                    <a href="{{ route('register') }}?role=pengaju" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#99ff04] px-8 py-3.5 text-sm font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 text-center shadow-xl">
+                        Ajukan Kampanye
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </a>
+                @else
+                    @if(auth()->user()->isPengaju())
+                        <a href="{{ route('pengaju.kampanye.create') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#99ff04] px-8 py-3.5 text-sm font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 text-center shadow-xl">
+                            Buat Kampanye Sekarang
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                    @elseif(auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#99ff04] px-8 py-3.5 text-sm font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 text-center shadow-xl">
+                            Panel Admin
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                    @else
+                        <a href="{{ route('verifikasi.identitas') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#99ff04] px-8 py-3.5 text-sm font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 text-center shadow-xl">
+                            Upgrade Pengaju &amp; Buat Kampanye
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                    @endif
+                @endguest
             </div>
         </div>
     </div>

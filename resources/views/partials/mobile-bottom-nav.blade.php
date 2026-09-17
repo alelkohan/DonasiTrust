@@ -43,30 +43,7 @@
             <span class="truncate">Audit</span>
         </a>
 
-        {{-- 4. Riwayat Donasi Saya --}}
-        @guest
-            <a href="{{ route('login') }}" class="mobile-nav-item flex flex-col items-center justify-center flex-1 h-full py-1 text-[10px] leading-none transition-colors text-slate-400 hover:text-white font-bold">
-                <div class="p-1.5 mb-0.5 flex items-center justify-center">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 8v4l3 3"/>
-                        <circle cx="12" cy="12" r="9"/>
-                    </svg>
-                </div>
-                <span class="truncate">Riwayat</span>
-            </a>
-        @else
-            <a href="{{ route('donatur.dashboard') }}" class="mobile-nav-item flex flex-col items-center justify-center flex-1 h-full py-1 text-[10px] leading-none transition-colors {{ $isRiwayat ? 'is-active text-[#99ff04] font-black' : 'text-slate-400 hover:text-white font-bold' }}">
-                <div class="{{ $isRiwayat ? 'nav-icon-box bg-[#99ff04] text-black rounded-full p-1.5 mb-0.5 shadow-sm flex items-center justify-center' : 'p-1.5 mb-0.5 flex items-center justify-center' }}">
-                    <svg class="h-4 w-4 {{ $isRiwayat ? 'stroke-black' : '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{{ $isRiwayat ? '2.3' : '1.7' }}" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 8v4l3 3"/>
-                        <circle cx="12" cy="12" r="9"/>
-                    </svg>
-                </div>
-                <span class="truncate">Riwayat</span>
-            </a>
-        @endguest
-
-        {{-- 5. Akun / Dasbor --}}
+        {{-- 4. Akun / Dasbor --}}
         @guest
             <a href="{{ route('login') }}" class="mobile-nav-item flex flex-col items-center justify-center flex-1 h-full py-1 text-[10px] leading-none transition-colors text-slate-400 hover:text-white font-bold">
                 <div class="p-1.5 mb-0.5 flex items-center justify-center">

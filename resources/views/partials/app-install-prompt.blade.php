@@ -1,246 +1,388 @@
-{{-- Komponen Pasang Aplikasi di HP (Mobile Install Prompt) --}}
-<div
-    x-data="{
-        deferredPrompt: null,
-        showPrompt: false,
-        showIosGuide: false,
-        isIos: false,
-        isStandalone: false,
+{{-- Komponen Pasang Aplikasi PWA (Metode & Layout Identik Salsabila Admin/Pegawai) --}}
+<style>
+    #pwa-install-banner {
+        position: fixed;
+        bottom: 1.25rem;
+        right: 1.25rem;
+        left: 1.25rem;
+        max-width: 410px;
+        margin-left: auto;
+        z-index: 99999;
+        background-color: #1b182a;
+        color: #f4f4f5;
+        padding: 1rem 1.125rem;
+        border-radius: 1rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        font-family: inherit;
+        box-sizing: border-box;
+        backdrop-filter: blur(16px);
+    }
 
-        init() {
-            // Cek apakah aplikasi sudah berjalan dalam mode terpasang (standalone)
-            this.isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-            if (this.isStandalone) {
-                return;
-            }
+    html.theme-light #pwa-install-banner {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border-color: #cbd5e1 !important;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15) !important;
+    }
 
-            // Deteksi perangkat iOS
-            const ua = window.navigator.userAgent.toLowerCase();
-            this.isIos = /iphone|ipad|ipod/.test(ua) && !window.MSStream;
-
-            // Deteksi apakah perangkat mobile / tablet
-            const isMobileDevice = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(ua) || window.innerWidth <= 768;
-
-            // Cek apakah user pernah menutup prompt dalam 5 hari terakhir
-            const lastDismissed = localStorage.getItem('dt_install_dismissed');
-            const now = Date.now();
-            const fiveDaysInMs = 5 * 24 * 60 * 60 * 1000;
-
-            if (lastDismissed && (now - parseInt(lastDismissed, 10)) < fiveDaysInMs) {
-                return;
-            }
-
-            // Tangkap event instalasi browser Android / Chromium
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                this.deferredPrompt = e;
-                if (isMobileDevice) {
-                    setTimeout(() => {
-                        this.showPrompt = true;
-                    }, 2500);
-                }
-            });
-
-            // Untuk iOS Safari (yang tidak mendukung beforeinstallprompt), munculkan banner jika di mobile
-            if (this.isIos && isMobileDevice && !this.isStandalone) {
-                setTimeout(() => {
-                    this.showPrompt = true;
-                }, 3000);
-            }
-
-            // Daftarkan service worker
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js').catch(() => {});
-            }
-        },
-
-        async installApp() {
-            if (this.deferredPrompt) {
-                this.deferredPrompt.prompt();
-                const { outcome } = await this.deferredPrompt.userChoice;
-                this.deferredPrompt = null;
-                this.showPrompt = false;
-                if (outcome === 'accepted') {
-                    localStorage.setItem('dt_install_dismissed', Date.now().toString());
-                }
-            } else if (this.isIos) {
-                this.showIosGuide = true;
-            } else {
-                this.dismiss();
-            }
-        },
-
-        dismiss() {
-            this.showPrompt = false;
-            this.showIosGuide = false;
-            localStorage.setItem('dt_install_dismissed', Date.now().toString());
+    @media (min-width: 640px) {
+        #pwa-install-banner {
+            left: auto;
         }
-    }"
-    x-cloak
-    class="print:hidden"
->
-    {{-- Banner Pasang Aplikasi di Bawah Layar Mobile --}}
-    <div
-        x-show="showPrompt && !showIosGuide"
-        x-transition:enter="transition ease-out duration-400 transform"
-        x-transition:enter-start="translate-y-full opacity-0"
-        x-transition:enter-end="translate-y-0 opacity-100"
-        x-transition:leave="transition ease-in duration-300 transform"
-        x-transition:leave-start="translate-y-0 opacity-100"
-        x-transition:leave-end="translate-y-full opacity-0"
-        class="fixed bottom-0 sm:bottom-6 sm:right-6 inset-x-0 sm:inset-x-auto sm:max-w-md z-[70] p-4 sm:p-5 pb-6 sm:pb-5"
-    >
-        <div class="relative overflow-hidden rounded-3xl border border-white/15 bg-[#181528]/95 p-5 shadow-2xl backdrop-blur-2xl ring-1 ring-white/10">
-            {{-- Ambient Glow --}}
-            <div aria-hidden="true" class="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-[#99ff04]/15 blur-2xl pointer-events-none"></div>
+    }
 
-            {{-- Tombol Tutup X --}}
-            <button
-                type="button"
-                @click="dismiss()"
-                class="absolute top-3.5 right-3.5 grid h-7 w-7 place-items-center rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-                aria-label="Tutup"
-            >
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
+    .pwa-banner-flex {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.875rem;
+    }
 
-            <div class="flex items-start gap-3.5">
-                {{-- Logo App --}}
-                <div class="relative shrink-0 mt-0.5">
-                    <div class="grid h-12 w-12 place-items-center rounded-2xl bg-[#231f36] border border-white/15 p-1.5 shadow-lg shadow-[#99ff04]/10">
-                        <img src="{{ asset('images/logo-no-bg.png') }}" alt="DonasiTrust" class="h-8 w-8 object-contain">
-                    </div>
-                    <span class="absolute -bottom-1 -right-1 grid h-4 w-4 place-items-center rounded-full bg-[#99ff04] text-[9px] font-black text-black ring-2 ring-[#181528]">
-                        ✓
-                    </span>
-                </div>
+    .pwa-icon-box {
+        background-color: #231f36;
+        border-radius: 0.75rem;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
-                {{-- Deskripsi --}}
-                <div class="flex-1 min-w-0 pr-4">
-                    <div class="flex items-center gap-2">
-                        <span class="rounded bg-[#99ff04]/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-[#99ff04] border border-[#99ff04]/30">
-                            Aplikasi Resmi
-                        </span>
-                    </div>
-                    <h3 class="mt-1 text-sm font-black text-white leading-tight">
-                        Pasang Donasi<span class="text-[#99ff04]">Trust</span> di HP
-                    </h3>
-                    <p class="mt-1 text-xs font-medium text-slate-300 leading-relaxed">
-                        Akses instan lebih cepat, hemat kuota, dan pantau donasi transparan langsung dari layar utama HP Anda.
-                    </p>
-                </div>
+    html.theme-light .pwa-icon-box {
+        background-color: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+    }
+
+    .pwa-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .pwa-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .pwa-title {
+        font-weight: 800;
+        font-size: 0.875rem;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: -0.01em;
+    }
+
+    html.theme-light .pwa-title {
+        color: #0f172a !important;
+    }
+
+    .pwa-close-btn {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 1.125rem;
+        cursor: pointer;
+        padding: 0 0.25rem;
+        line-height: 1;
+        transition: color 0.15s;
+    }
+
+    .pwa-close-btn:hover {
+        color: #ffffff;
+    }
+
+    html.theme-light .pwa-close-btn:hover {
+        color: #0f172a !important;
+    }
+
+    .pwa-desc {
+        font-size: 0.78125rem;
+        color: #cbd5e1;
+        margin-top: 0.25rem;
+        margin-bottom: 0.875rem;
+        line-height: 1.45;
+    }
+
+    html.theme-light .pwa-desc {
+        color: #475569 !important;
+    }
+
+    .pwa-btn-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .pwa-btn-primary {
+        background-color: #99ff04;
+        color: #000000;
+        font-weight: 900;
+        font-size: 0.75rem;
+        padding: 0.5rem 0.875rem;
+        border-radius: 0.625rem;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        transition: all 0.15s ease-in-out;
+        box-shadow: 0 4px 10px rgba(153, 255, 4, 0.25);
+    }
+
+    .pwa-btn-primary:hover {
+        background-color: #84e000;
+        transform: scale(1.02);
+    }
+
+    .pwa-btn-secondary {
+        background-color: transparent;
+        color: #cbd5e1;
+        font-weight: 700;
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.625rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        transition: background-color 0.15s, border-color 0.15s;
+    }
+
+    .pwa-btn-secondary:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #ffffff;
+    }
+
+    html.theme-light .pwa-btn-secondary {
+        color: #334155 !important;
+        border-color: #cbd5e1 !important;
+    }
+
+    html.theme-light .pwa-btn-secondary:hover {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+    }
+
+    /* Modal styling */
+    .pwa-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(6px);
+        z-index: 999999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .pwa-modal-card {
+        background-color: #1b182a;
+        color: #f4f4f5;
+        border-radius: 1.25rem;
+        max-width: 440px;
+        width: 100%;
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-sizing: border-box;
+    }
+
+    html.theme-light .pwa-modal-card {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border-color: #e2e8f0 !important;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .pwa-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    html.theme-light .pwa-modal-header {
+        border-bottom-color: #e2e8f0 !important;
+    }
+
+    .pwa-modal-guide-box {
+        padding: 0.875rem;
+        border-radius: 0.75rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.78125rem;
+        background-color: #231f36;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #cbd5e1;
+    }
+
+    html.theme-light .pwa-modal-guide-box {
+        background-color: #f8fafc !important;
+        border-color: #e2e8f0 !important;
+        color: #334155 !important;
+    }
+
+    .pwa-hidden {
+        display: none !important;
+    }
+</style>
+
+<div id="pwa-install-banner" class="no-print pwa-hidden">
+    <div class="pwa-banner-flex">
+        <div class="pwa-icon-box">
+            <img src="{{ asset('images/logo-no-bg.png') }}" alt="DonasiTrust Logo" style="width: 1.5rem; height: 1.5rem; object-fit: contain;">
+        </div>
+        <div class="pwa-content">
+            <div class="pwa-header">
+                <h4 class="pwa-title">Install Aplikasi Donasi<span style="color: #99ff04;">Trust</span></h4>
+                <button type="button" onclick="dismissPwaBanner()" class="pwa-close-btn" aria-label="Tutup Banner">✕</button>
             </div>
-
-            {{-- 3 Keunggulan Mini --}}
-            <div class="mt-3.5 flex items-center justify-between border-t border-white/10 pt-3 text-[11px] font-bold text-slate-300">
-                <span class="flex items-center gap-1.5">
-                    <span class="text-[#99ff04]">⚡</span> Ringan & Cepat
-                </span>
-                <span class="flex items-center gap-1.5">
-                    <span class="text-[#99ff04]">📱</span> Akses 1-Klik
-                </span>
-                <span class="flex items-center gap-1.5">
-                    <span class="text-[#99ff04]">🔒</span> Aman & Sah
-                </span>
-            </div>
-
-            {{-- Tombol Aksi --}}
-            <div class="mt-4 flex flex-col sm:flex-row items-center gap-2.5">
-                <button
-                    type="button"
-                    @click="installApp()"
-                    class="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#99ff04] px-4 py-3 text-xs font-black text-black shadow-lg shadow-[#99ff04]/25 hover:bg-[#84e000] active:scale-98 transition-all cursor-pointer"
-                >
-                    <svg class="h-4 w-4 stroke-black" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
+            <p class="pwa-desc">
+                Pasang aplikasi ke HP / Laptop Anda agar dapat diakses cepat &amp; hemat kuota.
+            </p>
+            <div class="pwa-btn-group">
+                <button type="button" id="pwa-install-btn" onclick="triggerPwaInstall()" class="pwa-btn-primary">
+                    <svg style="width: 0.9rem; height: 0.9rem; stroke: #000000;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                     </svg>
-                    <span>Pasang Sekarang</span>
+                    <span id="pwa-install-btn-text">Install Langsung</span>
                 </button>
-
-                <button
-                    type="button"
-                    @click="dismiss()"
-                    class="w-full sm:w-auto py-2 text-center text-xs font-bold text-slate-400 hover:text-white transition-colors cursor-pointer"
-                >
-                    Nanti Saja
+                <button type="button" onclick="showPwaGuide()" class="pwa-btn-secondary">
+                    Panduan Manual
                 </button>
             </div>
         </div>
     </div>
+</div>
 
-    {{-- Modal Panduan Khusus iOS (Safari) --}}
-    <div
-        x-show="showIosGuide"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-[80] flex items-end sm:items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
-    >
-        <div
-            @click.outside="showIosGuide = false"
-            class="relative w-full max-w-sm rounded-3xl border border-white/15 bg-[#181528] p-6 shadow-2xl text-white"
-        >
-            <div class="flex items-center justify-between border-b border-white/10 pb-3.5">
-                <div class="flex items-center gap-2.5">
-                    <img src="{{ asset('images/logo-no-bg.png') }}" alt="DonasiTrust" class="h-6 w-6 object-contain">
-                    <h3 class="text-sm font-black">Pasang di iPhone / iPad</h3>
-                </div>
-                <button
-                    type="button"
-                    @click="showIosGuide = false"
-                    class="rounded-full p-1 text-slate-400 hover:text-white"
-                >
-                    ✕
-                </button>
+<!-- Modal Panduan Manual -->
+<div id="pwa-guide-modal" class="pwa-modal-overlay pwa-hidden">
+    <div class="pwa-modal-card">
+        <div class="pwa-modal-header">
+            <h3 style="font-weight: 800; font-size: 0.9375rem; margin: 0;">
+                Panduan Install Layar Utama
+            </h3>
+            <button type="button" onclick="closePwaGuide()" style="background: none; border: none; font-size: 1.125rem; cursor: pointer; color: #94a3b8;">✕</button>
+        </div>
+
+        <div style="font-size: 0.78125rem; line-height: 1.5;">
+            <div class="pwa-modal-guide-box">
+                <strong style="display: block; font-weight: 800; color: #99ff04; margin-bottom: 0.375rem;">Android / Desktop (Chrome, Edge, Opera):</strong>
+                <ol style="margin: 0; padding-left: 1.125rem;">
+                    <li>Buka menu browser (titik tiga ⋮ di sudut kanan atas).</li>
+                    <li>Pilih menu <strong>"Install DonasiTrust"</strong> atau <strong>"Tambahkan ke layar Utama"</strong>.</li>
+                    <li>Konfirmasi tombol Install pada layar perangkat Anda.</li>
+                </ol>
             </div>
 
-            <div class="mt-4 space-y-3.5 text-xs text-slate-200">
-                <div class="flex items-start gap-3 rounded-2xl bg-white/5 p-3 border border-white/10">
-                    <span class="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#99ff04] text-xs font-black text-black">
-                        1
-                    </span>
-                    <p class="leading-relaxed">
-                        Ketuk tombol <strong class="text-white">Bagikan (Share)</strong>
-                        <svg class="inline h-4 w-4 text-sky-400 -mt-0.5 mx-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-                        </svg>
-                        di bilah bawah browser Safari.
-                    </p>
-                </div>
-
-                <div class="flex items-start gap-3 rounded-2xl bg-white/5 p-3 border border-white/10">
-                    <span class="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#99ff04] text-xs font-black text-black">
-                        2
-                    </span>
-                    <p class="leading-relaxed">
-                        Gulir ke bawah pada menu lalu pilih <strong class="text-[#99ff04]">"Tambahkan ke Layar Utama"</strong> (<em>Add to Home Screen</em>).
-                    </p>
-                </div>
-
-                <div class="flex items-start gap-3 rounded-2xl bg-white/5 p-3 border border-white/10">
-                    <span class="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#99ff04] text-xs font-black text-black">
-                        3
-                    </span>
-                    <p class="leading-relaxed">
-                        Ketuk tombol <strong class="text-white">"Tambah"</strong> di pojok kanan atas. Ikon aplikasi DonasiTrust akan langsung muncul di layar HP Anda!
-                    </p>
-                </div>
+            <div class="pwa-modal-guide-box">
+                <strong style="display: block; font-weight: 800; color: #38bdf8; margin-bottom: 0.375rem;">iPhone / iPad (Safari):</strong>
+                <ol style="margin: 0; padding-left: 1.125rem;">
+                    <li>Ketuk tombol Bagikan (Share / 📤) di bagian bawah Safari.</li>
+                    <li>Geser ke bawah dan pilih <strong>"Tambah ke Layar Utama"</strong> (Add to Home Screen).</li>
+                    <li>Ketuk <strong>"Tambah"</strong> di kanan atas.</li>
+                </ol>
             </div>
+        </div>
 
-            <button
-                type="button"
-                @click="dismiss()"
-                class="mt-5 w-full rounded-2xl bg-[#99ff04] py-2.5 text-xs font-black text-black shadow-md hover:bg-[#84e000] cursor-pointer"
-            >
-                Saya Mengerti
+        <div style="margin-top: 1rem; text-align: right;">
+            <button type="button" onclick="closePwaGuide()" class="pwa-btn-primary" style="padding: 0.45rem 1.25rem;">
+                Mengerti
             </button>
         </div>
     </div>
 </div>
+
+<script>
+    let localDeferredPrompt = null;
+
+    function getActivePrompt() {
+        return window.deferredPwaPrompt || localDeferredPrompt;
+    }
+
+    // Register Service Worker & tangkap event instalasi browser
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        window.deferredPwaPrompt = e;
+        localDeferredPrompt = e;
+        updatePwaUI();
+        checkAndShowPwaBanner();
+    });
+
+    window.addEventListener('pwa-prompt-ready', () => {
+        updatePwaUI();
+        checkAndShowPwaBanner();
+    });
+
+    window.addEventListener('appinstalled', () => {
+        dismissPwaBanner();
+        window.deferredPwaPrompt = null;
+        localDeferredPrompt = null;
+    });
+
+    function updatePwaUI() {
+        const promptEvent = getActivePrompt();
+        const btnText = document.getElementById('pwa-install-btn-text');
+        if (btnText) {
+            if (promptEvent) {
+                btnText.textContent = 'Install Langsung';
+            } else {
+                btnText.textContent = 'Install Aplikasi';
+            }
+        }
+    }
+
+    function checkAndShowPwaBanner() {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const isDismissed = sessionStorage.getItem('dt_pwa_banner_dismissed') === 'true';
+
+        if (!isStandalone && !isDismissed) {
+            const banner = document.getElementById('pwa-install-banner');
+            if (banner) banner.classList.remove('pwa-hidden');
+        }
+    }
+
+    function triggerPwaInstall() {
+        const promptEvent = getActivePrompt();
+        if (promptEvent) {
+            promptEvent.prompt();
+            promptEvent.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    dismissPwaBanner();
+                }
+                window.deferredPwaPrompt = null;
+                localDeferredPrompt = null;
+            });
+        } else {
+            showPwaGuide();
+        }
+    }
+
+    function dismissPwaBanner() {
+        sessionStorage.setItem('dt_pwa_banner_dismissed', 'true');
+        const banner = document.getElementById('pwa-install-banner');
+        if (banner) banner.classList.add('pwa-hidden');
+    }
+
+    function showPwaGuide() {
+        document.getElementById('pwa-guide-modal')?.classList.remove('pwa-hidden');
+    }
+
+    function closePwaGuide() {
+        document.getElementById('pwa-guide-modal')?.classList.add('pwa-hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updatePwaUI();
+        setTimeout(checkAndShowPwaBanner, 1000);
+    });
+</script>

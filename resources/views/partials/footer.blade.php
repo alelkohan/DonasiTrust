@@ -19,9 +19,9 @@
             <div>
                 <h2 class="text-xs font-black uppercase tracking-wider text-white">Jelajahi</h2>
                 <ul class="mt-4 space-y-2.5 text-xs font-bold">
-                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('kampanye.index') }}">Semua Kampanye</a></li>
-                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('transparansi') }}">Jejak Audit Donasi</a></li>
-                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('verifikasi.form') }}">Cek Keaslian Kuitansi</a></li>
+                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('kampanye.index') }}">Eksplor Kampanye</a></li>
+                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('transparansi') }}">Audit &amp; Transparansi</a></li>
+                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('verifikasi.form') }}">Verifikasi Kuitansi</a></li>
                 </ul>
             </div>
 
