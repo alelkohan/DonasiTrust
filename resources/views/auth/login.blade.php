@@ -145,14 +145,5 @@
         </svg>
         <span>Lanjutkan dengan Google</span>
     </a>
-    <div class="mt-8 rounded-2xl border border-white/10 bg-[#1b182a] p-4 text-xs">
-        <p class="font-extrabold uppercase tracking-wider text-slate-400">Akun Demo Pengujian</p>
-        <ul class="mt-2.5 space-y-1.5 font-medium text-slate-300">
-            <li><code class="rounded bg-[#231f36] px-2 py-0.5 text-xs text-[#99ff04] font-mono">jokibuat121@gmail.com</code> &mdash; Administrator</li>
-            <li><code class="rounded bg-[#231f36] px-2 py-0.5 text-xs text-[#99ff04] font-mono">pengaju@donasitrust.test</code> &mdash; Pengaju kampanye</li>
-            <li><code class="rounded bg-[#231f36] px-2 py-0.5 text-xs text-[#99ff04] font-mono">donatur@donasitrust.test</code> &mdash; Donatur</li>
-        </ul>
-        <p class="mt-2.5 text-slate-400">Kata sandi semua akun demo: <code class="rounded bg-[#231f36] px-2 py-0.5 font-mono text-white">password123</code></p>
-    </div>
 </div>
 @endsection
