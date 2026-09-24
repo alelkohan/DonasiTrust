@@ -29,8 +29,7 @@
             <div>
                 <h2 class="text-xs font-black uppercase tracking-wider text-white">Akun & Portal</h2>
                 <ul class="mt-4 space-y-2.5 text-xs font-bold">
-                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('register') }}">Daftar Donatur</a></li>
-                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('register') }}">Ajukan Kampanye (+Pengaju)</a></li>
+                    <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('register') }}">Galang dana</a></li>
                     <li><a class="text-slate-300 hover:text-[#99ff04] transition-colors" href="{{ route('login') }}">Masuk Ke Akun</a></li>
                 </ul>
             </div>
@@ -38,11 +37,7 @@
 
         {{-- Bottom Copyright & Disclaimer --}}
         <div class="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-            <p>&copy; {{ date('Y') }} DonasiTrust. Sistem Transparansi Donasi Berbasis Jejak Audit Terverifikasi.</p>
-            <p class="flex items-center gap-1.5">
-                <span class="h-2 w-2 rounded-full bg-[#99ff04]"></span>
-                Platform Akuntabilitas Donasi Indonesia
-            </p>
+            <p>&copy; {{ date('Y') }} DonasiTrust.</p>
         </div>
     </div>
 </footer>

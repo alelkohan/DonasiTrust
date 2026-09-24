@@ -96,15 +96,6 @@
                         <div class="min-w-0">
                             <p class="truncate text-sm font-bold text-white flex items-center gap-1.5">
                                 {{ $campaign->user->organization ?: $campaign->user->name }}
-                                <svg class="h-4 w-4 text-sky-400 fill-current" viewBox="0 0 20 20" title="Pengaju Terverifikasi KTP"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
-                            </p>
-                            <p class="text-xs text-slate-400">
-                                Identitas KTP terverifikasi admin
-                            </p>
-                            <p class="mt-1 flex items-center gap-1.5 text-xs font-medium text-emerald-400"
-                               title="Rekening pencairan pengaju ini terverifikasi admin dan dikunci verifikasi email.">
-                                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
-                                Rekening pencairan terverifikasi &amp; terkunci
                             </p>
                         </div>
                     </div>

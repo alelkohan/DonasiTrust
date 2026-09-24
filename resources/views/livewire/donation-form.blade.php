@@ -79,9 +79,6 @@
         </div>
     @else
         <h2 class="text-lg font-black text-white">Donasi sekarang</h2>
-        <p class="mt-1 text-xs sm:text-sm text-slate-300">
-            Setiap donasi menerbitkan kuitansi digital dengan kode yang bisa diverifikasi publik.
-        </p>
 
         <form @submit.prevent="valid() && (bukaModalKonfirmasi = true)" class="mt-5 space-y-4"
               x-data="formDonasi({
@@ -188,10 +185,6 @@
                 <span x-show="!valid()">Pilih nominal dulu</span>
                 <span x-show="valid()" x-cloak>Lanjut ke pembayaran &middot; <span x-text="penuh(nominal)"></span></span>
             </button>
-
-            <p class="text-center text-xs text-slate-400">
-                Mode simulasi &mdash; tidak ada uang sungguhan yang berpindah.
-            </p>
 
             {{-- MODAL KONFIRMASI DONASI (Mobile: Bottom Sheet Drawer, Desktop: Centered Glassmorphism Modal) --}}
             <div x-show="bukaModalKonfirmasi" x-cloak

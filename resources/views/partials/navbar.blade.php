@@ -112,8 +112,7 @@
             @else
                 @if ($u->isPengaju())
                     <a href="{{ route('pengaju.kampanye.create') }}" class="rounded-full bg-[#99ff04] px-4 py-1.5 text-xs font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 active:scale-95 flex items-center gap-1">
-                        <svg class="h-3.5 w-3.5 stroke-black" fill="none" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                        <span>Buat Kampanye</span>
+                        <span>Galang dana</span>
                     </a>
                 @elseif ($u->isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="rounded-full bg-[#99ff04] px-4 py-1.5 text-xs font-black text-black hover:bg-[#84e000] transition-transform hover:scale-105 active:scale-95 flex items-center gap-1">
@@ -284,7 +283,7 @@
                     Masuk Akun
                 </a>
                 <a href="{{ route('register') }}?role=pengaju" class="w-full text-center rounded-xl bg-[#99ff04] py-2.5 text-xs font-black text-black hover:bg-[#84e000] transition-all">
-                    Galang Dana (Buat Kampanye)
+                    Galang Dana
                 </a>
             @else
                 @if ($u->isPengaju())
