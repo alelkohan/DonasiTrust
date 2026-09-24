@@ -167,7 +167,7 @@
                             <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
                             <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
                                 <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[9px] font-black tracking-wider text-black uppercase shadow-sm">OPEN</span>
-                                <span class="rounded bg-black/70 px-2 py-0.5 text-[9px] font-extrabold text-white backdrop-blur-md uppercase border border-white/10">{{ $catLabel }}</span>
+                                <span class="card-category-badge rounded bg-black/70 px-2 py-0.5 text-[9px] font-extrabold text-white backdrop-blur-md uppercase border border-white/10">{{ $catLabel }}</span>
                             </div>
                         </div>
                         <div class="flex flex-1 flex-col p-3.5">
@@ -206,7 +206,7 @@
                             <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
                             <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
                                 <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[9px] font-black tracking-wider text-black uppercase shadow-sm">OPEN</span>
-                                <span class="rounded bg-black/70 px-2 py-0.5 text-[9px] font-extrabold text-white backdrop-blur-md uppercase border border-white/10">{{ $catLabel }}</span>
+                                <span class="card-category-badge rounded bg-black/70 px-2 py-0.5 text-[9px] font-extrabold text-white backdrop-blur-md uppercase border border-white/10">{{ $catLabel }}</span>
                             </div>
                         </div>
                         <div class="flex flex-1 flex-col p-3.5">
@@ -245,7 +245,7 @@
                             <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
                             <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
                                 <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[9px] font-black tracking-wider text-black uppercase shadow-sm">OPEN</span>
-                                <span class="rounded bg-black/70 px-2 py-0.5 text-[9px] font-extrabold text-white backdrop-blur-md uppercase border border-white/10">{{ $catLabel }}</span>
+                                <span class="card-category-badge rounded bg-black/70 px-2 py-0.5 text-[9px] font-extrabold text-white backdrop-blur-md uppercase border border-white/10">{{ $catLabel }}</span>
                             </div>
                         </div>
                         <div class="flex flex-1 flex-col p-3.5">

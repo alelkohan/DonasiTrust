@@ -407,10 +407,16 @@ html.theme-light {
     background-color: rgba(18, 16, 28, 0.85) !important;
   }
 
-  /* Badges over campaign card cover images */
-  .card-cover-badge {
-    background-color: rgba(15, 23, 42, 0.85) !important;
-    color: #ffffff !important;
+  /* Category & cover badges over campaign card images in Light Mode */
+  html.theme-light .card-cover-badge,
+  html.theme-light .card-category-badge,
+  html.theme-light .hero-marquee-card span.bg-black\/70,
+  html.theme-light [class*="aspect-"] span.bg-black\/70 {
+    background-color: rgba(255, 255, 255, 0.92) !important;
+    color: #0f172a !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: blur(8px) !important;
   }
 
   /* Brand Logo Text in Light Mode */

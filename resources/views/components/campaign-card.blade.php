@@ -21,7 +21,7 @@
             <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[10px] font-black tracking-wider text-black uppercase shadow-sm">
                 OPEN
             </span>
-            <span class="card-cover-badge rounded bg-black/70 px-2 py-0.5 text-[10px] font-extrabold text-white backdrop-blur-md uppercase tracking-wide border border-white/10">
+            <span class="card-cover-badge card-category-badge rounded bg-black/70 px-2 py-0.5 text-[10px] font-extrabold text-white backdrop-blur-md uppercase tracking-wide border border-white/10">
                 {{ $campaign->categoryLabel() }}
             </span>
         </div>
