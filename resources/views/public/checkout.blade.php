@@ -43,7 +43,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
             </div>
-            <h2 class="text-xl font-black text-white">Pembayaran Berhasil Ditentukan!</h2>
+            <h2 class="text-xl font-black text-white">Pembayaran Berhasil!</h2>
             <p class="mt-1 text-xs text-[#99ff04]" x-text="paidMessage"></p>
         </div>
     </template>

@@ -10,8 +10,8 @@
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m5 12 4.5 4.5L19 7.5"/></svg>
             </span>
             <div>
-                <p class="text-sm font-black text-white">Donasi Diterima & Terdaftar</p>
-                <p class="text-xs text-[#99ff04]">Terima kasih atas kebaikan Anda. Kuitansi digital ini dapat diverifikasi publik.</p>
+                <p class="text-sm font-black text-white">Terima kasih atas kebaikan Anda.</p>
+                <p class="text-xs text-[#99ff04]">Kuitansi digital ini dapat diverifikasi publik.</p>
             </div>
         </div>
     @else

@@ -24,7 +24,7 @@
         </p>
 
         {{-- Kartu Transaksi Pending Aktif (Form Baru Terkunci) --}}
-        <div class="mt-4 rounded-3xl border border-amber-400/30 bg-[#231f36] p-5 shadow-2xl relative overflow-hidden">
+        <div class="mt-4 rounded-3xl border border-amber-400/30 bg-[#231f36] p-5 shadow-2xl relative overflow-hidden dt-pending-card">
             <div class="flex items-start gap-3.5">
                 <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-400/20 text-amber-300 shadow-inner">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -53,7 +53,7 @@
                             Lanjutkan Pembayaran &rarr;
                         </a>
                         <button type="button" @click="$dispatch('buka-batal-donasi')"
-                                class="inline-flex items-center justify-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/10 py-3 px-4 text-xs font-bold text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition-colors cursor-pointer">
+                                class="inline-flex items-center justify-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/10 py-3 px-4 text-xs font-bold text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition-colors cursor-pointer dt-btn-danger-outline">
                             Batalkan Pembayaran
                         </button>
                     </div>

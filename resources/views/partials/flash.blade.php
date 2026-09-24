@@ -77,10 +77,10 @@
             @mouseleave="resume(toast.id)"
             class="dt-toast pointer-events-auto relative overflow-hidden rounded-2xl border backdrop-blur-2xl shadow-2xl transition-all duration-200"
             :class="{
-                'bg-[#181528]/95 border-[#99ff04]/40 shadow-[#99ff04]/10 text-white': toast.type === 'success',
-                'bg-[#181528]/95 border-rose-500/40 shadow-rose-500/10 text-white': toast.type === 'error',
-                'bg-[#181528]/95 border-amber-500/40 shadow-amber-500/10 text-white': toast.type === 'warning',
-                'bg-[#181528]/95 border-sky-500/40 shadow-sky-500/10 text-white': toast.type === 'info'
+                'dt-toast-success bg-[#181528]/95 border-[#99ff04]/40 shadow-[#99ff04]/10 text-white': toast.type === 'success',
+                'dt-toast-error bg-[#181528]/95 border-rose-500/40 shadow-rose-500/10 text-white': toast.type === 'error',
+                'dt-toast-warning bg-[#181528]/95 border-amber-500/40 shadow-amber-500/10 text-white': toast.type === 'warning',
+                'dt-toast-info bg-[#181528]/95 border-sky-500/40 shadow-sky-500/10 text-white': toast.type === 'info'
             }"
             role="alert"
         >
@@ -89,7 +89,7 @@
                 <div class="shrink-0 mt-0.5">
                     {{-- Success Icon --}}
                     <template x-if="toast.type === 'success'">
-                        <span class="grid h-8 w-8 place-items-center rounded-xl bg-[#99ff04]/15 border border-[#99ff04]/30 text-[#99ff04]">
+                        <span class="dt-toast-icon-success grid h-8 w-8 place-items-center rounded-xl bg-[#99ff04]/15 border border-[#99ff04]/30 text-[#99ff04]">
                             <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="9"/>
                                 <path d="m8.5 12 2.4 2.4 4.6-4.8"/>
@@ -99,7 +99,7 @@
 
                     {{-- Error Icon --}}
                     <template x-if="toast.type === 'error'">
-                        <span class="grid h-8 w-8 place-items-center rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400">
+                        <span class="dt-toast-icon-error grid h-8 w-8 place-items-center rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400">
                             <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="9"/>
                                 <path d="m9 9 6 6m0-6-6 6"/>
@@ -109,7 +109,7 @@
 
                     {{-- Warning Icon --}}
                     <template x-if="toast.type === 'warning'">
-                        <span class="grid h-8 w-8 place-items-center rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400">
+                        <span class="dt-toast-icon-warning grid h-8 w-8 place-items-center rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400">
                             <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 9v4.5m0 3.5h.01M10.3 4.2 2.9 17.1a1.9 1.9 0 0 0 1.7 2.9h14.8a1.9 1.9 0 0 0 1.7-2.9L13.7 4.2a1.9 1.9 0 0 0-3.4 0Z"/>
                             </svg>
@@ -118,7 +118,7 @@
 
                     {{-- Info Icon --}}
                     <template x-if="toast.type === 'info'">
-                        <span class="grid h-8 w-8 place-items-center rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400">
+                        <span class="dt-toast-icon-info grid h-8 w-8 place-items-center rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400">
                             <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="9"/>
                                 <path d="M12 16v-4m0-4h.01"/>
@@ -133,16 +133,16 @@
                         <span
                             class="text-[11px] font-black tracking-wider uppercase"
                             :class="{
-                                'text-[#99ff04]': toast.type === 'success',
-                                'text-rose-400': toast.type === 'error',
-                                'text-amber-400': toast.type === 'warning',
-                                'text-sky-400': toast.type === 'info'
+                                'dt-toast-title-success text-[#99ff04]': toast.type === 'success',
+                                'dt-toast-title-error text-rose-400': toast.type === 'error',
+                                'dt-toast-title-warning text-amber-400': toast.type === 'warning',
+                                'dt-toast-title-info text-sky-400': toast.type === 'info'
                             }"
                             x-text="toast.title"
                         ></span>
                     </div>
 
-                    <p class="mt-0.5 text-xs sm:text-sm font-semibold text-slate-100 leading-snug" x-text="toast.message"></p>
+                    <p class="dt-toast-msg mt-0.5 text-xs sm:text-sm font-semibold text-slate-100 leading-snug" x-text="toast.message"></p>
 
                     {{-- Multiple error list if present --}}
                     <template x-if="toast.errors && toast.errors.length > 1">
@@ -158,7 +158,7 @@
                 <button
                     type="button"
                     @click="removeToast(toast.id)"
-                    class="shrink-0 -mr-1 -mt-1 rounded-xl p-1.5 text-slate-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
+                    class="dt-toast-close shrink-0 -mr-1 -mt-1 rounded-xl p-1.5 text-slate-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
                     aria-label="Tutup notifikasi"
                 >
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -172,10 +172,10 @@
                 <div
                     class="h-full transition-all duration-75"
                     :class="{
-                        'bg-[#99ff04]': toast.type === 'success',
-                        'bg-rose-500': toast.type === 'error',
-                        'bg-amber-400': toast.type === 'warning',
-                        'bg-sky-400': toast.type === 'info'
+                        'dt-toast-bar-success bg-[#99ff04]': toast.type === 'success',
+                        'dt-toast-bar-error bg-rose-500': toast.type === 'error',
+                        'dt-toast-bar-warning bg-amber-400': toast.type === 'warning',
+                        'dt-toast-bar-info bg-sky-400': toast.type === 'info'
                     }"
                     :style="'width: ' + toast.progress + '%'"
                 ></div>

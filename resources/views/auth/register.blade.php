@@ -2,7 +2,7 @@
 @section('title', 'Daftar Akun Baru')
 
 @section('content')
-<div x-data="{ role: '{{ old('role', 'donatur') }}' }">
+<div>
     {{-- Heading --}}
     <div class="mb-6">
         <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white brand-logo-text">
@@ -18,48 +18,6 @@
 
     <form method="POST" action="{{ route('register') }}" class="space-y-4">
         @csrf
-
-        {{-- Role Selection Radio --}}
-        <div>
-            <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-300 mb-2">
-                Saya ingin mendaftar sebagai:
-            </label>
-            <div class="grid gap-2.5 sm:grid-cols-2">
-                @foreach ([
-                    ['donatur', 'Berdonasi', 'Langsung donasi & lacak bukti kuitansi.'],
-                    ['pengaju', 'Menggalang Dana', 'Memerlukan verifikasi identitas (KTP).'],
-                ] as [$value, $label, $hint])
-                    <label class="cursor-pointer rounded-2xl border p-3.5 transition-all select-none"
-                           :class="role === '{{ $value }}' ? 'border-[#99ff04] bg-[#99ff04]/10 shadow-md' : 'border-white/15 bg-[#1b182a] hover:border-white/30'">
-                        <input type="radio" name="role" value="{{ $value }}" x-model="role" class="sr-only">
-                        <span class="block text-sm font-extrabold text-white" :class="role === '{{ $value }}' ? 'text-[#99ff04]' : ''">{{ $label }}</span>
-                        <span class="mt-0.5 block text-[11px] font-medium text-slate-400">{{ $hint }}</span>
-                    </label>
-                @endforeach
-            </div>
-            @error('role') <p class="mt-1 text-xs font-bold text-rose-400">{{ $message }}</p> @enderror
-        </div>
-
-        {{-- Dynamic Role Information Banner --}}
-        <div x-show="role === 'donatur'" x-cloak class="rounded-2xl border border-[#99ff04]/30 bg-[#99ff04]/10 p-3.5 text-xs text-[#99ff04] flex items-start gap-2.5 shadow-md">
-            <svg class="h-4 w-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <div>
-                <strong class="font-extrabold text-white">Akun Donatur Langsung Aktif:</strong>
-                <p class="mt-0.5 text-[11px] text-slate-300 leading-relaxed">Pendaftaran cepat tanpa upload KTP. Anda dapat langsung berdonasi, melacak kuitansi digital, dan mengunduh sertifikat.</p>
-            </div>
-        </div>
-
-        <div x-show="role === 'pengaju'" x-cloak class="rounded-2xl border border-amber-400/30 bg-amber-400/10 p-3.5 text-xs text-amber-300 flex items-start gap-2.5 shadow-md">
-            <svg class="h-4 w-4 shrink-0 mt-0.5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            <div>
-                <strong class="font-extrabold text-white">Registrasi 2-Tahap (Verifikasi Identitas KTP):</strong>
-                <p class="mt-0.5 text-[11px] text-slate-300 leading-relaxed">Buat akun dasar sekarang. Saat akan membuat kampanye di dashboard, Anda akan diminta mengunggah KTP &amp; Rekening Bank untuk kebutuhan verifikasi keamanan publik.</p>
-            </div>
-        </div>
 
         {{-- Full Name --}}
         <div>
@@ -144,8 +102,8 @@
         </div>
     </div>
 
-    {{-- Social Google SSO Button with dynamic role parameter --}}
-    <a :href="'{{ route('auth.google') }}?role=' + role"
+    {{-- Social Google SSO Button --}}
+    <a href="{{ route('auth.google') }}"
        class="flex w-full items-center justify-center gap-3 rounded-2xl border border-white/15 bg-[#1b182a] py-3 px-4 text-xs font-bold text-white shadow-md transition-all hover:bg-white/10 hover:border-white/30 focus:outline-none">
         <svg class="h-4 w-4" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

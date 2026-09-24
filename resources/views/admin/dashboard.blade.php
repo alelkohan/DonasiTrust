@@ -4,14 +4,7 @@
 @php($menu = \App\Support\AdminMenu::items('ringkasan'))
 
 @section('panel')
-    <header>
-        <h1 class="text-2xl font-black tracking-tight text-white">Dasbor admin</h1>
-        <p class="mt-1 text-sm font-medium text-slate-400">Antrean yang menunggu keputusan Anda.</p>
-    </header>
-
-    {{-- Antrean: kartu yang bernilai 0 tidak boleh mengundang klik ke halaman kosong --}}
-    <h2 class="mt-6 text-xs font-black tracking-wider text-slate-400 uppercase">Menunggu keputusan</h2>
-
+    <h1 class="text-2xl font-black tracking-tight text-white">Dasbor admin</h1>
     <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <x-stat label="Kampanye menunggu review" :value="$stats['kampanye_pending']"
                 :href="route('admin.kampanye.index', ['status' => 'pending'])"
@@ -33,9 +26,6 @@
                 hint="Klik untuk meninjau" empty-hint="Tidak ada antrean"
                 :tone="$stats['lpj_pending'] > 0 ? 'warning' : 'neutral'" />
     </div>
-
-    <h2 class="mt-8 text-xs font-black tracking-wider text-slate-400 uppercase">Ringkasan platform</h2>
-
     <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <x-stat label="Total terkumpul" :value="rupiah($stats['total_terkumpul'])" tone="success"
                 hint="Dari seluruh donasi lunas" />

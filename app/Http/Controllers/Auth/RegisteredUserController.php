@@ -23,7 +23,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'phone' => ['nullable', 'string', 'max:30'],
-            'role' => ['required', 'in:donatur,pengaju'],
+            'role' => ['nullable', 'in:donatur,pengaju'],
             'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
             'terms' => ['accepted'],
         ], [], [
@@ -37,7 +37,7 @@ class RegisteredUserController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'phone' => $data['phone'] ?? null,
-            'role' => $data['role'],
+            'role' => $data['role'] ?? User::ROLE_DONATUR,
             // Di-hash otomatis oleh cast 'password' => 'hashed' pada model User.
             'password' => $data['password'],
             'verification_status' => User::VERIFICATION_UNVERIFIED,
