@@ -167,7 +167,6 @@
                             <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
                             <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
                                 <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[9px] font-black tracking-wider text-black uppercase shadow-sm">OPEN</span>
-                                <span class="card-category-badge rounded bg-black/70 px-2 py-0.5 text-[9px] font-extrabold text-white backdrop-blur-md uppercase border border-white/10">{{ $catLabel }}</span>
                             </div>
                         </div>
                         <div class="flex flex-1 flex-col p-3.5">
@@ -206,7 +205,6 @@
                             <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
                             <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
                                 <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[9px] font-black tracking-wider text-black uppercase shadow-sm">OPEN</span>
-                                <span class="card-category-badge rounded bg-black/70 px-2 py-0.5 text-[9px] font-extrabold text-white backdrop-blur-md uppercase border border-white/10">{{ $catLabel }}</span>
                             </div>
                         </div>
                         <div class="flex flex-1 flex-col p-3.5">
@@ -245,7 +243,6 @@
                             <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
                             <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
                                 <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[9px] font-black tracking-wider text-black uppercase shadow-sm">OPEN</span>
-                                <span class="card-category-badge rounded bg-black/70 px-2 py-0.5 text-[9px] font-extrabold text-white backdrop-blur-md uppercase border border-white/10">{{ $catLabel }}</span>
                             </div>
                         </div>
                         <div class="flex flex-1 flex-col p-3.5">
@@ -410,9 +407,81 @@
 
     </div>
 
-    {{-- Campaign Grid Responsive Columns --}}
-    <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="200" id="campaign-grid-container-v2" class="-mx-4 sm:mx-0 px-3 sm:px-0 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-h-[300px] transition-all">
+    {{-- Filtered / Searched Container (Hidden when viewing 'semua' category with no query) --}}
+    <div x-show="searchQuery || (activeCategory && activeCategory !== 'semua')" id="campaign-grid-container-v2"
+         class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-h-[300px] transition-all mb-10">
         @include('partials.campaign-grid')
+    </div>
+
+    {{-- Default 2-Row Layout with Section Titles --}}
+    <div x-show="!searchQuery && (!activeCategory || activeCategory === 'semua')" class="space-y-12">
+        
+        {{-- ROW 1: Kampanye Paling Ramai --}}
+        <div data-aos="fade-up" data-aos-duration="700" x-data="{
+            scrollLeft() { $refs.popularTrack.scrollBy({ left: -450, behavior: 'smooth' }); },
+            scrollRight() { $refs.popularTrack.scrollBy({ left: 450, behavior: 'smooth' }); }
+        }">
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <span class="text-[11px] font-black uppercase tracking-wider text-[#99ff04]">Trending</span>
+                    <h3 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                        Kampanye Paling Ramai
+                    </h3>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="scrollLeft()" title="Geser Kiri"
+                            class="grid h-9 w-9 place-items-center rounded-xl border border-white/15 bg-[#231f36] text-white hover:bg-[#99ff04] hover:text-black transition-all cursor-pointer shadow-md active:scale-95">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <button type="button" @click="scrollRight()" title="Geser Kanan"
+                            class="grid h-9 w-9 place-items-center rounded-xl border border-white/15 bg-[#231f36] text-white hover:bg-[#99ff04] hover:text-black transition-all cursor-pointer shadow-md active:scale-95">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div x-ref="popularTrack" class="flex gap-4 sm:gap-6 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory scroll-smooth">
+                @foreach ($popularCampaigns as $campaign)
+                    <div class="snap-start shrink-0 w-[85vw] sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] xl:w-[calc(25%-1.125rem)]">
+                        <x-campaign-card :campaign="$campaign" :dark="true" />
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- ROW 2: Kampanye Terbaru --}}
+        <div data-aos="fade-up" data-aos-duration="700" data-aos-delay="150" x-data="{
+            scrollLeft() { $refs.latestTrack.scrollBy({ left: -450, behavior: 'smooth' }); },
+            scrollRight() { $refs.latestTrack.scrollBy({ left: 450, behavior: 'smooth' }); }
+        }">
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <span class="text-[11px] font-black uppercase tracking-wider text-sky-400">Terbaru</span>
+                    <h3 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                        Kampanye Terbaru
+                    </h3>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="scrollLeft()" title="Geser Kiri"
+                            class="grid h-9 w-9 place-items-center rounded-xl border border-white/15 bg-[#231f36] text-white hover:bg-[#99ff04] hover:text-black transition-all cursor-pointer shadow-md active:scale-95">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <button type="button" @click="scrollRight()" title="Geser Kanan"
+                            class="grid h-9 w-9 place-items-center rounded-xl border border-white/15 bg-[#231f36] text-white hover:bg-[#99ff04] hover:text-black transition-all cursor-pointer shadow-md active:scale-95">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div x-ref="latestTrack" class="flex gap-4 sm:gap-6 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory scroll-smooth">
+                @foreach ($latestCampaigns as $campaign)
+                    <div class="snap-start shrink-0 w-[85vw] sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] xl:w-[calc(25%-1.125rem)]">
+                        <x-campaign-card :campaign="$campaign" :dark="true" />
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
     </div>
 
 </section>

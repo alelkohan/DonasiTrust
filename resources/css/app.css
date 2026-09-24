@@ -407,6 +407,12 @@ html.theme-light {
     background-color: rgba(18, 16, 28, 0.85) !important;
   }
 
+  html.theme-light .hero-marquee-card {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+  }
+
   /* Category & cover badges over campaign card images in Light Mode */
   html.theme-light .card-cover-badge,
   html.theme-light .card-category-badge,
@@ -901,11 +907,11 @@ html.theme-light nav.fixed.bottom-0 .mobile-nav-item:not(.is-active) span.trunca
 }
 
 .animate-hero-marquee-up {
-  animation: hero-marquee-up 32s linear infinite;
+  animation: hero-marquee-up 75s linear infinite;
 }
 
 .animate-hero-marquee-down {
-  animation: hero-marquee-down 38s linear infinite;
+  animation: hero-marquee-down 85s linear infinite;
 }
 
 /* Light Mode Adaptation for Right Hero Panel */

@@ -260,7 +260,6 @@
                     {{-- Header --}}
                     <div class="flex items-start justify-between border-b border-white/10 pb-5 shrink-0">
                         <div>
-                            <span class="inline-block rounded bg-[#99ff04] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-black mb-2" x-text="activeCampaign.category_label"></span>
                             <h2 class="text-xl sm:text-2xl font-black text-white" x-text="activeCampaign.title"></h2>
                         </div>
                         <button type="button" @click="showModal = false"

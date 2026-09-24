@@ -1,5 +1,5 @@
 @if ($campaigns->isEmpty())
-    <div class="col-span-full rounded-3xl border border-white/10 bg-[#1b182a] p-12 text-center">
+    <div class="col-span-full rounded-3xl border border-white/10 bg-[#1b182a] p-12 text-center w-full">
         <svg class="mx-auto h-12 w-12 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
         </svg>
@@ -8,7 +8,7 @@
     </div>
 @else
     @foreach ($campaigns as $index => $campaign)
-        <div data-aos="fade-up" data-aos-duration="650" data-aos-delay="{{ min(($loop->index % 3) * 100 + 50, 350) }}">
+        <div data-aos="fade-up" data-aos-duration="650" data-aos-delay="{{ min(($loop->index % 4) * 100 + 50, 350) }}">
             <x-campaign-card :campaign="$campaign" :dark="true" />
         </div>
     @endforeach

@@ -72,16 +72,13 @@
                 </div>
 
                 <div class="p-6 sm:p-8">
-                    <div class="flex flex-wrap items-center gap-2 mb-3">
-                        <span class="rounded bg-[#99ff04] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-black">
-                            {{ $campaign->categoryLabel() }}
-                        </span>
-                        @if ($campaign->status === \App\Models\Campaign::STATUS_COMPLETED)
+                    @if ($campaign->status === \App\Models\Campaign::STATUS_COMPLETED)
+                        <div class="flex flex-wrap items-center gap-2 mb-3">
                             <span class="rounded bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-400">
                                 Selesai
                             </span>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
 
                     <h1 class="text-2xl sm:text-3xl font-black leading-tight tracking-tight text-white">
                         {{ $campaign->title }}
