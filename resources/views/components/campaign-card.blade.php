@@ -18,9 +18,19 @@
 
         {{-- Top Left Badges (Solid VGen Style) --}}
         <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5 pointer-events-none">
-            <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[10px] font-black tracking-wider text-black uppercase shadow-sm">
-                OPEN
-            </span>
+            @if($campaign->collected_amount >= $campaign->target_amount)
+                <span class="rounded bg-sky-400 px-2 py-0.5 text-[10px] font-black tracking-wider text-sky-950 uppercase shadow-sm">
+                    TERDANAI
+                </span>
+            @elseif($campaign->deadline && $campaign->deadline->isPast())
+                <span class="rounded bg-slate-700 px-2 py-0.5 text-[10px] font-black tracking-wider text-slate-200 uppercase shadow-sm">
+                    DITUTUP
+                </span>
+            @else
+                <span class="rounded bg-[#99ff04] px-2 py-0.5 text-[10px] font-black tracking-wider text-black uppercase shadow-sm">
+                    OPEN
+                </span>
+            @endif
         </div>
 
         <!-- {{-- Top Right Bookmark Button --}}

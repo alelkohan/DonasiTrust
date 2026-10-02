@@ -182,7 +182,7 @@
              }
          }">
 
-        <div class="space-y-6">
+        <div class="space-y-6 min-w-0">
 
             {{-- 1. AI Budget Auditor Insights Card --}}
             <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-[#1b182a] p-5 sm:p-6 shadow-xl backdrop-blur-md">
