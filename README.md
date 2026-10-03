@@ -18,7 +18,7 @@ DonasiTrust memaksakan enam aturan integritas lewat sistem, bukan sekadar janji:
 3. **Kuitansi terverifikasi publik.** Setiap donasi menghasilkan kode kriptografis HMAC-SHA256 atas nomor transaksi, nominal, dan ID kampanye. Siapa pun dapat menguji keasliannya di `/verifikasi` tanpa harus mendaftar atau login.
 4. **Jejak audit ber-rantai hash (*Tamper-evident Audit Trail*).** Setiap catatan audit menyimpan hash entri sebelumnya layaknya mini-blockchain. Mengubah satu catatan lama di database secara ilegal membuat seluruh rantai sesudahnya gagal diverifikasi di `/transparansi`.
 5. **Rekening tujuan terkunci.** Dana donasi hanya bisa mengalir ke rekening bank yang telah diperiksa admin bersama dokumen identitas KTP. Rekening disalin dan dibekukan per pengajuan, sehingga akun pengaju yang dibajak sekalipun tidak bisa mengalihkan dana ke pihak lain.
-6. **Perlindungan OTP Email di titik-titik berisiko.** Verifikasi dua langkah (OTP Email 6 digit acak) ditempatkan secara terukur pada 3 aksi paling rawan: **mengganti rekening pencairan**, **mengajukan pencairan tahap**, dan **melepas dana transfer**.
+6. **Perlindungan OTP Email di titik-titik berisiko.** Verifikasi dua langkah (OTP Email 6 digit acak) ditempatkan secara terukur pada 4 aksi paling rawan: **mengganti rekening pencairan**, **mengajukan pencairan tahap**, **melepas dana transfer**, dan **mengubah kata sandi akun**.
 
 ---
 
@@ -30,9 +30,9 @@ DonasiTrust memaksakan enam aturan integritas lewat sistem, bukan sekadar janji:
 | Database | MySQL 8 (Kompatibel juga dengan SQLite untuk pengujian cepat) |
 | Frontend | Blade + Livewire 3 + Alpine.js + Tailwind CSS 4 |
 | Mesin AI | Google Gemini API (1.5 Flash) + Heuristic Fallback Engine |
-| Autentikasi | Laravel Session Auth + Google OAuth 2.0 |
+| Autentikasi | Laravel Session Auth + Google OAuth 2.0 (Socialite) |
 | PWA & Mobile | Service Worker + Web App Manifest + Native Install Prompt |
-| Pembayaran | Gateway simulasi internal + Dynamic QR Code Canvas (Siap integrasi Midtrans) |
+| Pembayaran | Midtrans Payment Gateway (Snap & Core QRIS) + Simulasi Internal Mock Gateway |
 | Build Tool | Vite |
 
 ---
@@ -53,13 +53,19 @@ php artisan key:generate
 # 3. Buat database bernama "donasitrust" di MySQL, lalu sesuaikan
 #    DB_USERNAME / DB_PASSWORD di file .env bila diperlukan.
 
-# 4. WAJIB: Isi secret kuitansi & API Key Gemini di .env
-#    DONASI_RECEIPT_SECRET=<string acak panjang>
-#    GEMINI_API_KEY=<opsional: api key gemini Anda>
-php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"   # untuk membuat string acak kuitansi
+# 4. Pengaturan Tambahan di .env:
+#    - Kuitansi HMAC (WAJIB):
+#      DONASI_RECEIPT_SECRET=<string acak panjang>
+#      (Buat dengan: php -r "echo bin2hex(random_bytes(32)), PHP_EOL;")
+#    - Payment Gateway (Lokal / Demo):
+#      PAYMENT_GATEWAY=mock        # Mode simulasi offline (tanpa akun Midtrans)
+#      PAYMENT_GATEWAY=midtrans    # Mode Midtrans Snap & QRIS Sandbox
+#    - AI Budget Auditor (Opsional):
+#      GEMINI_API_KEY=<api key Google Gemini Anda>
 
-# 5. Jalankan migrasi dan data demo
+# 5. Jalankan migrasi, link storage (wajib untuk sampul/gambar), dan data demo
 php artisan migrate --seed
+php artisan storage:link
 
 # 6. Jalankan server (buka dua terminal)
 php artisan serve
@@ -74,7 +80,10 @@ Cukup sesuaikan di `.env`:
 ```env
 DB_CONNECTION=sqlite
 ```
-Lalu jalankan `touch database/database.sqlite` dan `php artisan migrate --seed`.
+Lalu buat berkas database:
+- **Windows (PowerShell):** `New-Item database/database.sqlite -ItemType File`
+- **Linux/macOS:** `touch database/database.sqlite`
+Kemudian jalankan `php artisan migrate --seed` dan `php artisan storage:link`.
 
 ---
 
@@ -84,13 +93,14 @@ Semua akun demo menggunakan kata sandi bawaan: `password123`.
 
 | Email | Peran | Kondisi Awal |
 |---|---|---|
-| `admin@donasitrust.test` | Administrator | Memiliki antrean review kampanye, verifikasi KTP, dan LPJ |
+| `jokibuat121@gmail.com` *(atau `admin@donasitrust.test`)* | Administrator | Memiliki antrean review kampanye, verifikasi KTP, dan LPJ |
 | `pengaju@donasitrust.test` | Pengaju Kampanye | Terverifikasi identitas, memiliki kampanye di berbagai tahapan |
-| `pengaju2@donasitrust.test` | Pengaju Kampanye | Menunggu peninjauan identitas |
+| `pengaju2@donasitrust.test` | Pengaju Kampanye | Menunggu peninjauan identitas (*Pending Verification*) |
 | `donatur@donasitrust.test` | Donatur | Memiliki riwayat donasi dan kuitansi pembayaran |
 
-> **Catatan Pengujian OTP Email Demo:**
-> Pada pengujian lokal dengan driver email `log`, kode verifikasi OTP 6 digit yang dikirim dapat langsung dilihat di antrean log atau di jendela notifikasi aplikasi saat aksi dijalankan.
+> **Catatan Pengujian Tambahan:**
+> - **OTP Email Demo:** Pada pengujian lokal dengan driver email `log` (`MAIL_MAILER=log`), kode OTP 6 digit dapat langsung dilihat di berkas `storage/logs/laravel.log`. Jika driver disetel `smtp`, OTP dikirim ke surel asli.
+> - **Mock Google Login:** Tersedia fitur login simulasi Google sekali klik via tombol *"Lanjutkan dengan Google"* tanpa perlu mendaftarkan Client ID Google Cloud Console saat pengujian lokal.
 
 ---
 
@@ -117,7 +127,7 @@ app/
 │   ├── Admin/              Review Kampanye, Pencairan, LPJ, Verifikasi Identitas
 │   ├── Auth/               Login, Register, Google OAuth, Ganti Password
 │   ├── Pengaju/            Manajemen Kampanye, Pencairan Tahap, Unggah LPJ
-│   └── Public              Eksplorasi Kampanye, Donasi, Kuitansi, Transparansi
+│   └── (Publik)            Home, Eksplorasi Kampanye, Donasi, Kuitansi, Transparansi
 ├── Livewire/               Form Donasi Interaktif & Real-time
 ├── Models/                 User, Campaign, CampaignItem, Milestone, Donation,
 │                           Disbursement, ExpenseReport, AuditLog, EmailOtp
@@ -125,6 +135,8 @@ app/
 │   ├── AuditLogger         Pencatat & pemverifikasi rantai hash SHA-256
 │   ├── CampaignAiAuditor   Mesin AI analisis RAB & deteksi fraud (Google Gemini)
 │   ├── DonationService     Pembuat transaksi donasi & pelunasan idempotent
+│   ├── MidtransPaymentGateway Integrasi pembayaran Midtrans Snap & Core QRIS
+│   ├── MockPaymentGateway  Simulasi pembayaran lokal/offline
 │   ├── OtpService          Pengelola siklus hidup OTP Email (expiry, limit, cooldown)
 │   └── ReceiptVerifier     Generator & pemverifikasi HMAC-SHA256 kuitansi
 └── Support/                Format Rupiah & Helper Menu
@@ -136,7 +148,7 @@ app/
 
 Platform donasi dunia nyata tidak memaksakan verifikasi berbelit-belit di setiap pintu masuk. Pengaju kampanye sering kali adalah pengurus rumah ibadah, keluarga pasien, atau relawan lapangan yang membutuhkan sistem yang ramah dan mudah digunakan.
 
-Oleh karena itu, kami menempatkan verifikasi keamanan dua langkah di **titik-titik yang benar-benar mengubah alur risiko keuangan**:
+Oleh karena itu, kami menempatkan verifikasi keamanan dua langkah di **titik-titik yang benar-benar mengubah alur risiko finansial dan keamanan akun**:
 
 | Titik Aksi | Mekanisme Proteksi | Alasan Desain |
 |---|---|---|
@@ -144,6 +156,7 @@ Oleh karena itu, kami menempatkan verifikasi keamanan dua langkah di **titik-tit
 | Pengaju Mengajukan Pencairan | **Wajib OTP Email** | Memastikan pengajuan dilakukan secara sadar oleh pemilik sah |
 | Pengaju **Mengganti Rekening** | **Wajib OTP Email** + Notifikasi Surel | Satu-satunya celah dana dialihkan ke pihak lain jika akun dibajak |
 | Admin **Melepas Dana Transfer** | **Wajib OTP Email** | Titik pelepasan dana yang tidak dapat ditarik kembali |
+| Pengguna **Mengubah Kata Sandi** | **Wajib OTP Email** | Mencegah pembajakan permanen akun jika sesi login sempat ditinggalkan terbuka |
 
 ---
 
@@ -169,7 +182,6 @@ Yang **secara terbuka belum** dijamin:
 
 - Ekspor Kuitansi & Laporan LPJ dalam format PDF resmi (`barryvdh/laravel-dompdf`).
 - Integrasi *Disbursement API Gateway* (Xendit/Flip) untuk transfer dana otomatis ke rekening bank pengaju.
-- Integrasi Midtrans / Payment Gateway Production Sandbox.
 - Pengiriman OTP melalui WhatsApp Business API sebagai alternatif selain surel.
 - Autentikasi Biometrik / Passkey (*WebAuthn*) untuk login instan.
 
